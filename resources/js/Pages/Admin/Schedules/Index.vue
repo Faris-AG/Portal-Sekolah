@@ -32,6 +32,11 @@ const form = useForm({
     end_time: '',
 });
 
+const filteredTeachers = computed(() => {
+    if (!form.subject_id) return props.teachers;
+    return props.teachers.filter(t => t.subject_id === form.subject_id);
+});
+
 const onClassFilterChange = () => {
     router.get(
         route('admin.schedules.index'),
@@ -97,7 +102,7 @@ const formatTime = (timeString) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between w-full">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
                     <Calendar size="24" class="text-indigo-600" /> Jadwal Pelajaran
                 </h2>
@@ -284,6 +289,7 @@ const formatTime = (timeString) => {
                             <select
                                 id="subject_id"
                                 v-model="form.subject_id"
+                                @change="form.teacher_id = ''"
                                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                 required
                             >
@@ -303,7 +309,7 @@ const formatTime = (timeString) => {
                                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             >
                                 <option value="">-- Belum Ditentukan --</option>
-                                <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
+                                <option v-for="teacher in filteredTeachers" :key="teacher.id" :value="teacher.id">
                                     {{ teacher.name }}
                                 </option>
                             </select>

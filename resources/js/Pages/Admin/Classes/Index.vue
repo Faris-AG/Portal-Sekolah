@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Plus, Trash2, GraduationCap, LayoutList, Pencil, AlertCircle } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
@@ -85,7 +85,7 @@ const deleteClass = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between w-full">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
                     <LayoutList size="24" class="text-indigo-600" /> Manajemen Kelas
                 </h2>
@@ -134,6 +134,13 @@ const deleteClass = () => {
                                     </td>
                                     <td class="py-4 px-6 text-right">
                                         <div class="flex justify-end gap-2">
+                                            <Link
+                                                :href="route('admin.classes.show', cls.id)"
+                                                class="text-indigo-500 hover:text-indigo-700 transition-colors p-2 rounded-lg hover:bg-indigo-50 inline-flex items-center justify-center focus:outline-none"
+                                                title="Detail"
+                                            >
+                                                <LayoutList size="18" />
+                                            </Link>
                                             <button
                                                 @click="openModal(true, cls)"
                                                 class="text-blue-500 hover:text-blue-700 transition-colors p-2 rounded-lg hover:bg-blue-50 inline-flex items-center justify-center focus:outline-none"

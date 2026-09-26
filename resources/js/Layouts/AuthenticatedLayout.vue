@@ -15,10 +15,13 @@ import {
     X, 
     LogOut, 
     User,
-    School
+    School,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-vue-next';
 
 const showingSidebar = ref(false);
+const isSidebarCollapsed = ref(false);
 
 const flashSuccess = ref('');
 const flashError = ref('');
@@ -55,7 +58,8 @@ const navigation = [];
 if (userRole === 'admin') {
     navigation.push(
         { name: 'Dashboard', href: route('admin.dashboard'), current: route().current('admin.dashboard'), icon: LayoutDashboard },
-        { name: 'Kelas', href: route('admin.classes.index'), current: route().current('admin.classes.*'), icon: GraduationCap },
+        { name: 'Guru', href: route('admin.teachers.index'), current: route().current('admin.teachers.*'), icon: GraduationCap },
+        { name: 'Kelas', href: route('admin.classes.index'), current: route().current('admin.classes.*'), icon: School },
         { name: 'Siswa', href: route('admin.students.index'), current: route().current('admin.students.*'), icon: Users },
         { name: 'Mata Pelajaran', href: route('admin.subjects.index'), current: route().current('admin.subjects.*'), icon: BookOpen },
         { name: 'Jadwal Pelajaran', href: route('admin.schedules.index'), current: route().current('admin.schedules.*'), icon: Calendar }
@@ -67,7 +71,9 @@ if (userRole === 'admin') {
     );
 } else if (userRole === 'siswa') {
     navigation.push(
-        { name: 'Dashboard', href: route('siswa.dashboard'), current: route().current('siswa.dashboard'), icon: LayoutDashboard }
+        { name: 'Dashboard', href: route('siswa.dashboard'), current: route().current('siswa.dashboard'), icon: LayoutDashboard },
+        { name: 'Jadwal Saya', href: route('siswa.schedules'), current: route().current('siswa.schedules'), icon: Calendar },
+        { name: 'Tugas Belajar', href: route('siswa.assignments'), current: route().current('siswa.assignments'), icon: BookOpen }
     );
 }
 </script>
@@ -97,36 +103,41 @@ if (userRole === 'admin') {
 
         <!-- Sidebar Navigation -->
         <aside 
-            class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-300 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 flex flex-col shadow-xl"
-            :class="showingSidebar ? 'translate-x-0' : '-translate-x-full'"
+            class="fixed inset-y-0 left-0 z-50 bg-slate-900 text-slate-300 transition-all duration-300 ease-in-out lg:static lg:translate-x-0 flex flex-col shadow-xl"
+            :class="[
+                showingSidebar ? 'translate-x-0' : '-translate-x-full',
+                isSidebarCollapsed ? 'w-20' : 'w-72'
+            ]"
         >
             <!-- Logo & Portal Name -->
-            <div class="flex items-center gap-3 px-6 py-5 h-16 bg-slate-950/50 border-b border-slate-800 shrink-0">
-                <div class="flex items-center justify-center w-8 h-8 rounded bg-indigo-500 text-white">
+            <div class="flex items-center gap-3 px-6 py-5 h-16 bg-slate-950/50 border-b border-slate-800 shrink-0 relative overflow-hidden transition-all duration-300" :class="isSidebarCollapsed ? 'px-0 justify-center' : ''">
+                <div class="flex items-center justify-center w-8 h-8 rounded bg-indigo-500 text-white shrink-0">
                     <School size="20" />
                 </div>
-                <div class="flex-1 overflow-hidden">
+                <div class="flex-1 overflow-hidden transition-opacity duration-300" :class="isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'">
                     <h1 class="text-sm font-bold text-white tracking-wider truncate uppercase">Portal Akademik</h1>
                 </div>
-                <button @click="showingSidebar = false" class="lg:hidden text-slate-400 hover:text-white">
+                <button @click="showingSidebar = false" class="lg:hidden text-slate-400 hover:text-white shrink-0">
                     <X size="20" />
                 </button>
             </div>
 
             <!-- User Info (Sidebar) -->
-            <div class="px-6 py-6 border-b border-slate-800 flex flex-col items-center shrink-0">
-                <div class="w-16 h-16 rounded-full bg-slate-800 border-2 border-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-inner mb-3">
+            <div class="px-6 py-6 border-b border-slate-800 flex flex-col items-center shrink-0 transition-all duration-300" :class="isSidebarCollapsed ? 'px-2' : ''">
+                <div class="w-12 h-12 rounded-full bg-slate-800 border-2 border-indigo-500 flex items-center justify-center text-white text-lg font-bold shadow-inner mb-3 shrink-0" :class="!isSidebarCollapsed ? 'w-16 h-16 text-xl' : ''">
                     {{ userInitials }}
                 </div>
-                <h3 class="text-white font-bold text-base truncate w-full text-center">{{ $page.props.auth.user.name }}</h3>
-                <div class="mt-2 inline-flex items-center justify-center px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest"
-                    :class="{
-                        'bg-blue-500/20 text-blue-400 border border-blue-500/30': userRole === 'admin',
-                        'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': userRole === 'guru',
-                        'bg-orange-500/20 text-orange-400 border border-orange-500/30': userRole === 'siswa',
-                    }"
-                >
-                    {{ userRole }}
+                <div class="flex flex-col items-center overflow-hidden transition-all duration-300" :class="isSidebarCollapsed ? 'h-0 opacity-0' : 'h-auto opacity-100'">
+                    <h3 class="text-white font-bold text-base truncate w-full text-center">{{ $page.props.auth.user.name }}</h3>
+                    <div class="mt-2 inline-flex items-center justify-center px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest"
+                        :class="{
+                            'bg-blue-500/20 text-blue-400 border border-blue-500/30': userRole === 'admin',
+                            'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': userRole === 'guru',
+                            'bg-orange-500/20 text-orange-400 border border-orange-500/30': userRole === 'siswa',
+                        }"
+                    >
+                        {{ userRole }}
+                    </div>
                 </div>
             </div>
 
@@ -140,16 +151,23 @@ if (userRole === 'admin') {
                     :class="[
                         item.current 
                             ? 'bg-indigo-500/10 text-indigo-400' 
-                            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                            : 'text-slate-400 hover:bg-slate-800 hover:text-white',
+                        isSidebarCollapsed ? 'justify-center px-0' : ''
                     ]"
+                    :title="isSidebarCollapsed ? item.name : ''"
                 >
                     <component 
                         :is="item.icon" 
-                        class="mr-3 flex-shrink-0 h-5 w-5 transition-colors duration-200" 
-                        :class="[item.current ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300']"
+                        class="flex-shrink-0 h-5 w-5 transition-colors duration-200" 
+                        :class="[
+                            item.current ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300',
+                            !isSidebarCollapsed ? 'mr-3' : ''
+                        ]"
                         aria-hidden="true" 
                     />
-                    {{ item.name }}
+                    <span class="truncate transition-opacity duration-300" :class="isSidebarCollapsed ? 'hidden opacity-0' : 'opacity-100'">
+                        {{ item.name }}
+                    </span>
                 </Link>
             </nav>
 
@@ -160,9 +178,13 @@ if (userRole === 'admin') {
                     method="post" 
                     as="button" 
                     class="group flex w-full items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                    :class="isSidebarCollapsed ? 'justify-center px-0' : ''"
+                    :title="isSidebarCollapsed ? 'Keluar Sistem' : ''"
                 >
-                    <LogOut class="mr-3 h-5 w-5 text-slate-500 group-hover:text-red-400" />
-                    Keluar Sistem
+                    <LogOut class="h-5 w-5 text-slate-500 group-hover:text-red-400" :class="!isSidebarCollapsed ? 'mr-3' : ''" />
+                    <span class="truncate transition-opacity duration-300" :class="isSidebarCollapsed ? 'hidden opacity-0' : 'opacity-100'">
+                        Keluar Sistem
+                    </span>
                 </Link>
             </div>
         </aside>
@@ -173,16 +195,24 @@ if (userRole === 'admin') {
             <!-- Top Header -->
             <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 z-10 shadow-sm">
                 <!-- Left side (Mobile toggle & Page Header) -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 flex-1 min-w-0">
                     <button 
                         @click="showingSidebar = true"
-                        class="lg:hidden text-gray-500 hover:text-gray-700 focus:outline-none p-1 rounded-md hover:bg-gray-100"
+                        class="lg:hidden text-gray-500 hover:text-gray-700 focus:outline-none p-1 rounded-md hover:bg-gray-100 shrink-0"
                     >
                         <Menu size="24" />
                     </button>
+                    
+                    <button 
+                        @click="isSidebarCollapsed = !isSidebarCollapsed"
+                        class="hidden lg:flex text-gray-500 hover:text-gray-700 focus:outline-none p-1 rounded-md hover:bg-gray-100 shrink-0"
+                    >
+                        <ChevronRight v-if="isSidebarCollapsed" size="24" />
+                        <ChevronLeft v-else size="24" />
+                    </button>
 
                     <!-- Render slot name="header" if exists -->
-                    <div class="hidden sm:block" v-if="$slots.header">
+                    <div class="hidden sm:block flex-1 min-w-0 pr-4" v-if="$slots.header">
                         <slot name="header" />
                     </div>
                 </div>

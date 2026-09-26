@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 
 class TeacherDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $teacherId = auth()->id();
+        $teacherId = $request->user()->id;
         
         $schedules = Schedule::where('teacher_id', $teacherId)
             ->with(['schoolClass', 'subject'])

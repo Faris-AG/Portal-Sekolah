@@ -56,7 +56,7 @@ class ScheduleController extends Controller
         return redirect()->back()->with('success', 'Jadwal pelajaran berhasil ditambahkan.');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $schedule = Schedule::findOrFail($id);
         $schedule->delete();

@@ -18,6 +18,34 @@ class SchoolClassController extends Controller
         ]);
     }
 
+    public function show(int $id)
+    {
+        $schoolClass = SchoolClass::findOrFail($id);
+        
+        $students = \App\Models\User::where('role', 'siswa')
+            ->where('class_id', $id)
+            ->orderBy('name')
+            ->get();
+            
+        $schedules = \App\Models\Schedule::with(['subject', 'teacher'])
+            ->where('school_class_id', $id)
+            ->orderByRaw("CASE day 
+                WHEN 'Senin' THEN 1 
+                WHEN 'Selasa' THEN 2 
+                WHEN 'Rabu' THEN 3 
+                WHEN 'Kamis' THEN 4 
+                WHEN 'Jumat' THEN 5 
+                ELSE 6 END")
+            ->orderBy('start_time')
+            ->get();
+
+        return Inertia::render('Admin/Classes/Show', [
+            'schoolClass' => $schoolClass,
+            'students' => $students,
+            'schedules' => $schedules
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -31,7 +59,7 @@ class SchoolClassController extends Controller
         return redirect()->back()->with('success', 'Kelas berhasil ditambahkan.');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $class = SchoolClass::findOrFail($id);
 
@@ -46,7 +74,7 @@ class SchoolClassController extends Controller
         return redirect()->back()->with('success', 'Kelas berhasil diperbarui.');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $class = SchoolClass::findOrFail($id);
         $class->delete();

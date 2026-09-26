@@ -75,6 +75,11 @@ class DatabaseSeeder extends Seeder
         $subjFisika = Subject::create(['name' => 'Fisika', 'code' => 'FIS-10', 'description' => 'Fisika Peminatan']);
         $subjSejarah = Subject::create(['name' => 'Sejarah', 'code' => 'SEJ-10', 'description' => 'Sejarah Indonesia']);
 
+        // Assign subjects to teachers
+        $guru1->update(['subject_id' => $subjMath->id]);
+        $guru2->update(['subject_id' => $subjIndo->id]);
+        $guru3->update(['subject_id' => $subjEng->id]);
+
         // 4. Create Students
         $siswa1 = User::factory()->create([
             'name' => 'Andi Wijaya',

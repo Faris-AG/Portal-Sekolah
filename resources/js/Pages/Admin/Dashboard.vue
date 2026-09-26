@@ -94,7 +94,7 @@ const user = usePage().props.auth.user;
                                         <span v-else class="text-gray-400 italic text-sm">Belum ditentukan</span>
                                     </td>
                                     <td class="py-4 px-6 text-right">
-                                        <button class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Detail</button>
+                                        <Link :href="route('admin.classes.show', kelas.id)" class="text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors">Detail</Link>
                                     </td>
                                 </tr>
                             </tbody>

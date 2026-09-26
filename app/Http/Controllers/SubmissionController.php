@@ -23,7 +23,7 @@ class SubmissionController extends Controller
         Submission::updateOrCreate(
             [
                 'assignment_id' => $request->assignment_id,
-                'student_id' => auth()->id(),
+                'student_id' => $request->user()->id,
             ],
             [
                 'file_path' => $path,
@@ -36,15 +36,15 @@ class SubmissionController extends Controller
         return redirect()->back()->with('success', 'Tugas berhasil dikumpulkan.');
     }
 
-    public function grade(Request $request, $id)
+    public function grade(Request $request, int $id)
     {
         $request->validate([
             'grade' => 'required|integer|min:0|max:100',
             'feedback' => 'nullable|string',
         ]);
 
-        $submission = Submission::whereHas('assignment', function($q) {
-            $q->where('teacher_id', auth()->id());
+        $submission = Submission::whereHas('assignment', function($q) use ($request) {
+            $q->where('teacher_id', $request->user()->id);
         })->findOrFail($id);
 
         $submission->update([
@@ -55,12 +55,12 @@ class SubmissionController extends Controller
         return redirect()->back()->with('success', 'Nilai berhasil disimpan.');
     }
 
-    public function download($id)
+    public function download(Request $request, int $id)
     {
-        $submission = Submission::whereHas('assignment', function($q) {
-            $q->where('teacher_id', auth()->id());
+        $submission = Submission::whereHas('assignment', function($q) use ($request) {
+            $q->where('teacher_id', $request->user()->id);
         })->findOrFail($id);
 
-        return Storage::disk('public')->download($submission->file_path, $submission->file_name);
+        return response()->download(storage_path('app/public/' . $submission->file_path), $submission->file_name);
     }
 }

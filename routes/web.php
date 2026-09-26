@@ -18,8 +18,8 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    $role = auth()->user()->role;
+Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
+    $role = $request->user()->role;
     if ($role === 'admin') return redirect()->route('admin.dashboard');
     if ($role === 'guru') return redirect()->route('guru.dashboard');
     return redirect()->route('siswa.dashboard');
@@ -37,8 +37,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
     Route::get('/classes', [SchoolClassController::class, 'index'])->name('classes.index');
     Route::post('/classes', [SchoolClassController::class, 'store'])->name('classes.store');
+    Route::get('/classes/{id}', [SchoolClassController::class, 'show'])->name('classes.show');
     Route::put('/classes/{id}', [SchoolClassController::class, 'update'])->name('classes.update');
     Route::delete('/classes/{id}', [SchoolClassController::class, 'destroy'])->name('classes.destroy');
+
+    Route::resource('teachers', \App\Http\Controllers\TeacherController::class)->except(['create', 'edit', 'show'])->names('teachers');
 
     Route::get('/subjects', [SubjectController::class, 'index'])->name('subjects.index');
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
@@ -68,6 +71,8 @@ Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru
 
 Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\StudentDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/schedules', [\App\Http\Controllers\StudentDashboardController::class, 'schedules'])->name('schedules');
+    Route::get('/assignments', [\App\Http\Controllers\StudentDashboardController::class, 'assignments'])->name('assignments');
     Route::post('/submissions', [\App\Http\Controllers\SubmissionController::class, 'store'])->name('submissions.store');
 });
 

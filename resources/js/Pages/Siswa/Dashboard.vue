@@ -1,30 +1,21 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, usePage, useForm } from '@inertiajs/vue3';
+import { Head, usePage, Link } from '@inertiajs/vue3';
 import { 
-    Book, Bell, CalendarDays, ArrowRight, Clock, User, 
-    GraduationCap, AlertCircle, Calendar, CheckCircle, 
-    XCircle, UploadCloud, FileText, Star
+    Book, Bell, ArrowRight, Clock, User, 
+    GraduationCap, AlertCircle, CheckCircle, 
+    XCircle, FileText, Star
 } from 'lucide-vue-next';
-import { ref } from 'vue';
-import Modal from '@/Components/Modal.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
     student: Object,
     schoolClass: Object,
     todaySchedules: Array,
-    allSchedules: Array,
     tugasTerdekat: Array,
     attendanceStats: Object,
-    recentAttendances: Array,
 });
 
 const user = usePage().props.auth.user;
-const daysOfWeek = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
 const formatTime = (timeString) => {
     if (!timeString) return '';
@@ -41,47 +32,6 @@ const formatDate = (dateString) => {
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
-    });
-};
-
-const activeTab = ref(new Date().toLocaleDateString('id-ID', { weekday: 'long' }));
-if (!daysOfWeek.includes(activeTab.value)) {
-    activeTab.value = 'Senin';
-}
-
-// Submission Logic
-const isSubmissionModalOpen = ref(false);
-const selectedAssignment = ref(null);
-
-const form = useForm({
-    assignment_id: '',
-    file: null,
-    note: '',
-});
-
-const openSubmissionModal = (assignment) => {
-    selectedAssignment.value = assignment;
-    form.assignment_id = assignment.id;
-    form.file = null;
-    form.note = '';
-    form.clearErrors();
-    isSubmissionModalOpen.value = true;
-};
-
-const closeSubmissionModal = () => {
-    isSubmissionModalOpen.value = false;
-    selectedAssignment.value = null;
-    form.reset();
-};
-
-const handleFileChange = (e) => {
-    form.file = e.target.files[0];
-};
-
-const submitTask = () => {
-    form.post(route('siswa.submissions.store'), {
-        onSuccess: () => closeSubmissionModal(),
-        preserveScroll: true,
     });
 };
 
@@ -135,14 +85,19 @@ const hasSubmitted = (assignment) => {
                         
                         <!-- Tasks & Assignments Section -->
                         <div v-if="schoolClass" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-                            <div class="p-6 border-b border-gray-100 flex items-center gap-2">
-                                <FileText class="text-orange-500" size="20" />
-                                <h3 class="text-lg font-bold text-gray-900">Tugas & PR Kelas</h3>
+                            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <FileText class="text-orange-500" size="20" />
+                                    <h3 class="text-lg font-bold text-gray-900">Tugas Perlu Dikerjakan</h3>
+                                </div>
+                                <Link :href="route('siswa.assignments')" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                                    Lihat Semua Tugas <ArrowRight size="16" />
+                                </Link>
                             </div>
                             <div class="p-6">
                                 <div v-if="tugasTerdekat.length === 0" class="text-gray-400 text-center py-12 flex flex-col items-center">
                                     <CheckCircle size="48" class="mb-4 opacity-20" />
-                                    <p>Yeay! Tidak ada tugas saat ini.</p>
+                                    <p>Yeay! Tidak ada tugas mendesak saat ini.</p>
                                 </div>
                                 <div v-else class="space-y-4">
                                     <div v-for="tugas in tugasTerdekat" :key="tugas.id" class="border border-gray-100 rounded-xl p-5 hover:border-indigo-100 hover:shadow-md transition-all bg-white relative overflow-hidden group">
@@ -158,7 +113,6 @@ const hasSubmitted = (assignment) => {
                                                     </span>
                                                 </div>
                                                 <h4 class="text-lg font-bold text-gray-900">{{ tugas.title }}</h4>
-                                                <p class="text-sm text-gray-600 mt-2 line-clamp-2" :title="tugas.description">{{ tugas.description }}</p>
                                                 
                                                 <div class="flex items-center gap-4 mt-4 text-sm font-medium">
                                                     <span class="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-2 py-1 rounded-md">
@@ -179,74 +133,9 @@ const hasSubmitted = (assignment) => {
                                                 <div v-else class="inline-flex items-center gap-1.5 text-red-700 bg-red-50 border border-red-200 px-3 py-1.5 rounded-full text-sm font-bold shadow-sm">
                                                     <XCircle size="16" /> Belum
                                                 </div>
-
-                                                <button 
-                                                    @click="openSubmissionModal(tugas)"
-                                                    class="w-full justify-center flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
-                                                >
-                                                    <UploadCloud size="16" /> 
-                                                    {{ hasSubmitted(tugas) ? 'Detail / Revisi' : 'Kumpulkan' }}
-                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Weekly Schedule Tabs -->
-                        <div v-if="schoolClass" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="p-6 border-b border-gray-100 flex items-center gap-2">
-                                <Calendar class="text-indigo-500" size="20" />
-                                <h3 class="text-lg font-bold text-gray-900">Jadwal Pelajaran Mingguan</h3>
-                            </div>
-                            
-                            <div class="flex border-b border-gray-100 overflow-x-auto">
-                                <button 
-                                    v-for="day in daysOfWeek" 
-                                    :key="day"
-                                    @click="activeTab = day"
-                                    class="flex-1 py-4 px-6 text-sm font-medium transition-colors border-b-2 whitespace-nowrap focus:outline-none"
-                                    :class="activeTab === day ? 'border-indigo-500 text-indigo-600 bg-indigo-50/30' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                                >
-                                    {{ day }}
-                                </button>
-                            </div>
-
-                            <div class="p-0">
-                                <div v-for="day in daysOfWeek" :key="'content-'+day" v-show="activeTab === day">
-                                    <table class="w-full text-left border-collapse">
-                                        <thead>
-                                            <tr class="bg-gray-50/50 text-xs uppercase tracking-wider text-gray-500">
-                                                <th class="py-3 px-6 font-semibold w-1/4">Waktu</th>
-                                                <th class="py-3 px-6 font-semibold w-2/4">Mata Pelajaran</th>
-                                                <th class="py-3 px-6 font-semibold w-1/4">Guru Pengampu</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-50">
-                                            <template v-for="schedule in allSchedules.filter(s => s.day === day)" :key="schedule.id">
-                                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                                    <td class="py-4 px-6">
-                                                        <div class="flex items-center gap-2 text-gray-900 font-medium text-sm">
-                                                            <Clock size="14" class="text-indigo-400" />
-                                                            {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
-                                                        </div>
-                                                    </td>
-                                                    <td class="py-4 px-6">
-                                                        <div class="font-bold text-gray-900">{{ schedule.subject?.name }}</div>
-                                                    </td>
-                                                    <td class="py-4 px-6">
-                                                        <span class="text-gray-600 text-sm font-medium">{{ schedule.teacher?.name || '-' }}</span>
-                                                    </td>
-                                                </tr>
-                                            </template>
-                                            <tr v-if="allSchedules.filter(s => s.day === day).length === 0">
-                                                <td colspan="3" class="py-8 px-6 text-center text-gray-400">
-                                                    Tidak ada jadwal di hari ini.
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -290,144 +179,30 @@ const hasSubmitted = (assignment) => {
                                 <h3 class="text-base font-bold text-gray-900">Kehadiran Saya</h3>
                             </div>
                             <div class="p-5 flex-1">
-                                <div class="grid grid-cols-4 gap-2 mb-6">
-                                    <div class="text-center bg-green-50 rounded-lg p-2 border border-green-100">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="text-center bg-green-50 rounded-xl p-3 border border-green-100">
                                         <p class="text-xs font-bold text-green-700 uppercase">Hadir</p>
-                                        <p class="text-xl font-black text-green-900">{{ attendanceStats?.hadir || 0 }}</p>
+                                        <p class="text-3xl font-black text-green-900">{{ attendanceStats?.hadir || 0 }}</p>
                                     </div>
-                                    <div class="text-center bg-orange-50 rounded-lg p-2 border border-orange-100">
+                                    <div class="text-center bg-orange-50 rounded-xl p-3 border border-orange-100">
                                         <p class="text-xs font-bold text-orange-700 uppercase">Sakit</p>
-                                        <p class="text-xl font-black text-orange-900">{{ attendanceStats?.sakit || 0 }}</p>
+                                        <p class="text-3xl font-black text-orange-900">{{ attendanceStats?.sakit || 0 }}</p>
                                     </div>
-                                    <div class="text-center bg-blue-50 rounded-lg p-2 border border-blue-100">
+                                    <div class="text-center bg-blue-50 rounded-xl p-3 border border-blue-100">
                                         <p class="text-xs font-bold text-blue-700 uppercase">Izin</p>
-                                        <p class="text-xl font-black text-blue-900">{{ attendanceStats?.izin || 0 }}</p>
+                                        <p class="text-3xl font-black text-blue-900">{{ attendanceStats?.izin || 0 }}</p>
                                     </div>
-                                    <div class="text-center bg-red-50 rounded-lg p-2 border border-red-100">
+                                    <div class="text-center bg-red-50 rounded-xl p-3 border border-red-100">
                                         <p class="text-xs font-bold text-red-700 uppercase">Alpa</p>
-                                        <p class="text-xl font-black text-red-900">{{ attendanceStats?.alpa || 0 }}</p>
+                                        <p class="text-3xl font-black text-red-900">{{ attendanceStats?.alpa || 0 }}</p>
                                     </div>
                                 </div>
-
-                                <div v-if="!recentAttendances || recentAttendances.length === 0" class="text-gray-500 text-center py-4 text-xs">
-                                    Belum ada catatan kehadiran.
-                                </div>
-                                <ul v-else class="space-y-3">
-                                    <li v-for="att in recentAttendances" :key="'att-'+att.id" class="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-100">
-                                        <div>
-                                            <p class="text-sm font-bold text-gray-900">{{ att.subject?.name || 'Umum' }}</p>
-                                            <p class="text-xs text-gray-500">{{ formatDate(att.date) }}</p>
-                                        </div>
-                                        <div>
-                                            <span 
-                                                class="text-[10px] font-bold uppercase px-2 py-1 rounded"
-                                                :class="{
-                                                    'bg-green-100 text-green-700': att.status === 'hadir',
-                                                    'bg-orange-100 text-orange-700': att.status === 'sakit',
-                                                    'bg-blue-100 text-blue-700': att.status === 'izin',
-                                                    'bg-red-100 text-red-700': att.status === 'alpa',
-                                                }"
-                                            >
-                                                {{ att.status }}
-                                            </span>
-                                        </div>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
 
-                        <!-- Upcoming Tasks Mini Card -->
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-                            <div class="p-5 border-b border-gray-100 flex items-center gap-2">
-                                <Bell class="text-red-500" size="18" />
-                                <h3 class="text-base font-bold text-gray-900">Deadline Terdekat</h3>
-                            </div>
-                            <div class="p-5 flex-1">
-                                <div v-if="tugasTerdekat.length === 0" class="text-gray-500 text-center py-6 text-sm">
-                                    Tidak ada tugas dalam waktu dekat.
-                                </div>
-                                <ul v-else class="space-y-3">
-                                    <li v-for="tugas in tugasTerdekat.slice(0,3)" :key="'mini-'+tugas.id" class="group flex flex-col justify-between p-3 rounded-xl border border-gray-100 hover:border-red-200 hover:bg-red-50/50 transition-all">
-                                        <div>
-                                            <h4 class="font-bold text-sm text-gray-900">{{ tugas.title }}</h4>
-                                            <p class="text-xs font-medium text-gray-600 mt-1">{{ tugas.subject?.name }}</p>
-                                        </div>
-                                        <div class="mt-3 flex items-center justify-between border-t border-gray-50 pt-2">
-                                            <p class="text-[11px] font-bold text-red-600 flex items-center gap-1">
-                                                <Clock size="12" /> {{ formatDate(tugas.due_date) }}
-                                            </p>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Submission Modal -->
-        <Modal :show="isSubmissionModalOpen" @close="closeSubmissionModal" max-width="lg">
-            <div class="p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <UploadCloud class="text-indigo-600" size="24" />
-                    Kumpulkan Tugas
-                </h2>
-
-                <div v-if="selectedAssignment" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <h4 class="font-bold text-gray-900">{{ selectedAssignment.title }}</h4>
-                    <p class="text-sm text-gray-600 mt-1">Mata Pelajaran: {{ selectedAssignment.subject?.name }}</p>
-                    <p class="text-sm font-bold text-red-600 mt-2 flex items-center gap-1">
-                        <Clock size="14" /> Deadline: {{ formatDate(selectedAssignment.due_date) }}
-                    </p>
-                    
-                    <div v-if="hasSubmitted(selectedAssignment) && selectedAssignment.submissions[0].feedback" class="mt-4 p-3 bg-blue-50/50 rounded-md border border-blue-100">
-                        <span class="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1 flex items-center gap-1"><Star size="12" /> Umpan Balik Guru (Nilai: {{ selectedAssignment.submissions[0].grade }})</span>
-                        <p class="text-sm text-gray-700 italic mt-1">"{{ selectedAssignment.submissions[0].feedback }}"</p>
-                    </div>
-                </div>
-
-                <form @submit.prevent="submitTask" class="space-y-5">
-                    <div>
-                        <InputLabel for="file" value="Pilih File (.pdf, .docx, .zip, .png, .jpg - Max 5MB)" />
-                        <input
-                            id="file"
-                            type="file"
-                            @change="handleFileChange"
-                            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-gray-300 rounded-md shadow-sm p-1"
-                            required
-                        />
-                        <InputError class="mt-2" :message="form.errors.file" />
-                    </div>
-
-                    <div v-if="form.progress" class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                        <div class="bg-indigo-600 h-2.5 rounded-full" :style="{ width: form.progress.percentage + '%' }"></div>
-                    </div>
-
-                    <div>
-                        <InputLabel for="note" value="Catatan Tambahan (Opsional)" />
-                        <textarea
-                            id="note"
-                            rows="3"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                            v-model="form.note"
-                            placeholder="Ketik catatan untuk guru di sini..."
-                        ></textarea>
-                        <InputError class="mt-2" :message="form.errors.note" />
-                    </div>
-
-                    <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        <SecondaryButton @click="closeSubmissionModal" type="button"> Batal </SecondaryButton>
-                        <PrimaryButton
-                            :class="{ 'opacity-25': form.processing }"
-                            :disabled="form.processing"
-                        >
-                            <span v-if="form.processing">Mengunggah...</span>
-                            <span v-else>Kirim Tugas</span>
-                        </PrimaryButton>
-                    </div>
-                </form>
-            </div>
-        </Modal>
     </AuthenticatedLayout>
 </template>

@@ -84,7 +84,7 @@ const deleteSubject = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between w-full">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
                     <BookOpen size="24" class="text-indigo-600" /> Mata Pelajaran
                 </h2>
