@@ -28,8 +28,8 @@ const user = usePage().props.auth.user;
                 <!-- Welcome Banner -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900">Halo, {{ user.name }}! 👋</h3>
-                        <p class="text-gray-500 mt-1">Selamat datang di panel administrasi portal sekolah.</p>
+                        <h3 class="text-2xl font-bold text-gray-900">Selamat Datang, {{ user.name }}</h3>
+                        <p class="text-gray-500 mt-1">Panel administrasi portal sekolah.</p>
                     </div>
                 </div>
 

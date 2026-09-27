@@ -60,7 +60,7 @@ const hasSubmitted = (assignment) => {
                             <User class="h-10 w-10 text-indigo-500" />
                         </div>
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-900">Halo, {{ student.name }}! 👋</h3>
+                            <h3 class="text-3xl font-bold text-gray-900">Selamat Datang, {{ student.name }}</h3>
                             <p class="mt-1 text-gray-500 flex items-center gap-2">
                                 <span>{{ student.email }}</span>
                             </p>

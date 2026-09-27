@@ -12,207 +12,209 @@ use App\Models\Attendance;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // 1. Create Users
-        $admin = User::factory()->create([
+        $faker = Faker::create('id_ID');
+
+        // 1. Create Admin
+        User::factory()->create([
             'name' => 'Admin Utama',
             'email' => 'admin@sekolah.test',
             'password' => Hash::make('password'),
             'role' => 'admin',
         ]);
 
-        $guru1 = User::factory()->create([
-            'name' => 'Budi Santoso, S.Pd',
-            'email' => 'guru@sekolah.test',
+        // 2. Create Subjects
+        $subjectNames = [
+            'Matematika Wajib' => 'MTK',
+            'Bahasa Indonesia' => 'BIND',
+            'Bahasa Inggris' => 'BING',
+            'Fisika' => 'FIS',
+            'Kimia' => 'KIM',
+            'Biologi' => 'BIO',
+            'Sejarah' => 'SEJ',
+            'Ekonomi' => 'EKO',
+            'Geografi' => 'GEO',
+            'Pendidikan Jasmani (PJOK)' => 'PJK',
+            'Pendidikan Agama Islam (PAI)' => 'PAI',
+            'Informatika' => 'INF'
+        ];
+
+        $subjects = [];
+        foreach ($subjectNames as $name => $code) {
+            $subjects[$name] = Subject::create([
+                'name' => $name,
+                'code' => $code . '-' . rand(10, 99),
+                'description' => $name . ' Terpadu'
+            ]);
+        }
+
+        // 3. Create Teachers
+        $teachers = [];
+        $emails = [
+            'guru.mtk', 'guru.bindo', 'guru.bing', 'guru.fisika', 'guru.kimia',
+            'guru.biologi', 'guru.sejarah', 'guru.ekonomi', 'guru.geografi',
+            'guru.pjok', 'guru.pai', 'guru.informatika'
+        ];
+        
+        $i = 0;
+        foreach ($subjects as $name => $subject) {
+            $teachers[] = User::factory()->create([
+                'name' => $faker->name . ', S.Pd',
+                'email' => $emails[$i] . '@sekolah.test',
+                'password' => Hash::make('password'),
+                'role' => 'guru',
+                'subject_id' => $subject->id,
+            ]);
+            $i++;
+        }
+        
+        // Add a couple more teachers for variety
+        $teachers[] = User::factory()->create([
+            'name' => $faker->name . ', M.Pd',
+            'email' => 'guru.mtk2@sekolah.test',
             'password' => Hash::make('password'),
             'role' => 'guru',
+            'subject_id' => $subjects['Matematika Wajib']->id,
         ]);
-
-        $guru2 = User::factory()->create([
-            'name' => 'Siti Aminah, M.Pd',
-            'email' => 'siti@sekolah.test',
+        $teachers[] = User::factory()->create([
+            'name' => $faker->name . ', S.Pd',
+            'email' => 'guru.bing2@sekolah.test',
             'password' => Hash::make('password'),
             'role' => 'guru',
+            'subject_id' => $subjects['Bahasa Inggris']->id,
         ]);
 
-        $guru3 = User::factory()->create([
-            'name' => 'Rahmat Hidayat, S.Kom',
-            'email' => 'rahmat@sekolah.test',
-            'password' => Hash::make('password'),
-            'role' => 'guru',
-        ]);
+        // 4. Create Classes
+        $classNames = ['X MIPA 1', 'X MIPA 2', 'X IPS 1', 'XI MIPA 1', 'XI MIPA 2', 'XII MIPA 1'];
+        $classes = [];
+        
+        foreach ($classNames as $index => $cName) {
+            $level = explode(' ', $cName)[0] === 'X' ? 10 : (explode(' ', $cName)[0] === 'XI' ? 11 : 12);
+            $classes[] = SchoolClass::create([
+                'name' => $cName,
+                'grade_level' => $level,
+                'teacher_id' => $teachers[$index]->id, // First 6 teachers are wali kelas
+                'wali_kelas' => $teachers[$index]->name,
+            ]);
+        }
 
-        // 2. Create Classes
-        $class1 = SchoolClass::create([
-            'name' => 'X MIPA 1',
-            'grade_level' => 10,
-            'wali_kelas' => $guru1->name,
-        ]);
+        // 5. Create Students (30 per class)
+        $studentCounter = 1;
+        foreach ($classes as $index => $class) {
+            for ($s = 1; $s <= 30; $s++) {
+                $email = 'siswa' . $studentCounter . '@sekolah.test';
+                // Make sure 'siswa@sekolah.test' exists at class 1
+                if ($index === 0 && $s === 1) {
+                    $email = 'siswa@sekolah.test';
+                    $name = 'Andi Utama';
+                } else {
+                    $name = $faker->name;
+                }
 
-        $class2 = SchoolClass::create([
-            'name' => 'X MIPA 2',
-            'grade_level' => 10,
-            'wali_kelas' => $guru2->name,
-        ]);
+                User::factory()->create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => Hash::make('password'),
+                    'role' => 'siswa',
+                    'class_id' => $class->id,
+                ]);
+                $studentCounter++;
+            }
+        }
 
-        $class3 = SchoolClass::create([
-            'name' => 'XI IPS 1',
-            'grade_level' => 11,
-            'wali_kelas' => $guru3->name,
-        ]);
+        // 6. Generate Realistic Schedules (No Conflicts)
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+        $timeSlotsNormal = [
+            ['06:30', '08:00'],
+            ['08:00', '09:30'],
+            ['10:00', '11:30'],
+            ['12:30', '13:45'],
+            ['13:45', '15:00'],
+        ];
+        $timeSlotsFriday = [
+            ['07:30', '09:00'],
+            ['09:15', '10:45'],
+        ];
 
-        // 3. Create Subjects
-        $subjMath = Subject::create(['name' => 'Matematika Wajib', 'code' => 'MTK-10', 'description' => 'Matematika Wajib Kelas 10']);
-        $subjIndo = Subject::create(['name' => 'Bahasa Indonesia', 'code' => 'BIND-10', 'description' => 'Bahasa Indonesia Kelas 10']);
-        $subjEng = Subject::create(['name' => 'Bahasa Inggris', 'code' => 'BING-10', 'description' => 'Bahasa Inggris Lintas Minat']);
-        $subjFisika = Subject::create(['name' => 'Fisika', 'code' => 'FIS-10', 'description' => 'Fisika Peminatan']);
-        $subjSejarah = Subject::create(['name' => 'Sejarah', 'code' => 'SEJ-10', 'description' => 'Sejarah Indonesia']);
+        // Ensure teacher doesn't have multiple classes at the same time
+        $teacherSchedule = [];
 
-        // Assign subjects to teachers
-        $guru1->update(['subject_id' => $subjMath->id]);
-        $guru2->update(['subject_id' => $subjIndo->id]);
-        $guru3->update(['subject_id' => $subjEng->id]);
+        foreach ($classes as $class) {
+            $subjectsList = collect($subjects)->values()->shuffle();
+            $subjIdx = 0;
 
-        // 4. Create Students
-        $siswa1 = User::factory()->create([
-            'name' => 'Andi Wijaya',
-            'email' => 'siswa@sekolah.test',
-            'password' => Hash::make('password'),
-            'role' => 'siswa',
-            'class_id' => $class1->id,
-        ]);
+            foreach ($days as $day) {
+                $slots = ($day === 'Jumat') ? $timeSlotsFriday : $timeSlotsNormal;
+                
+                foreach ($slots as $slotIndex => $slot) {
+                    if ($subjIdx >= $subjectsList->count()) {
+                        $subjIdx = 0; // repeat subjects
+                    }
+                    
+                    $subject = $subjectsList[$subjIdx];
+                    // Find teacher for this subject
+                    $availTeachers = collect($teachers)->where('subject_id', $subject->id)->values();
+                    $teacher = $availTeachers->first(); // fallback
+                    
+                    // Try to find a non-conflicting teacher
+                    foreach ($availTeachers as $t) {
+                        $timeKey = $day . '-' . $slot[0];
+                        if (!isset($teacherSchedule[$t->id][$timeKey])) {
+                            $teacher = $t;
+                            $teacherSchedule[$t->id][$timeKey] = true;
+                            break;
+                        }
+                    }
 
-        $studentsClass1 = User::factory(2)->create([
-            'password' => Hash::make('password'),
-            'role' => 'siswa',
-            'class_id' => $class1->id,
-        ]);
+                    Schedule::create([
+                        'school_class_id' => $class->id,
+                        'subject_id' => $subject->id,
+                        'teacher_id' => $teacher->id,
+                        'day' => $day,
+                        'start_time' => $slot[0],
+                        'end_time' => $slot[1],
+                    ]);
 
-        $studentsClass2 = User::factory(2)->create([
-            'password' => Hash::make('password'),
-            'role' => 'siswa',
-            'class_id' => $class2->id,
-        ]);
-
-        $studentsClass3 = User::factory(1)->create([
-            'password' => Hash::make('password'),
-            'role' => 'siswa',
-            'class_id' => $class3->id,
-        ]);
-
-        // 5. Create Schedules (for X MIPA 1 and others)
-        Schedule::create([
-            'school_class_id' => $class1->id,
-            'subject_id' => $subjMath->id,
-            'teacher_id' => $guru1->id,
-            'day' => 'Senin',
-            'start_time' => '07:30',
-            'end_time' => '09:00',
-        ]);
-        Schedule::create([
-            'school_class_id' => $class1->id,
-            'subject_id' => $subjIndo->id,
-            'teacher_id' => $guru2->id,
-            'day' => 'Senin',
-            'start_time' => '09:30',
-            'end_time' => '11:00',
-        ]);
-        Schedule::create([
-            'school_class_id' => $class2->id,
-            'subject_id' => $subjFisika->id,
-            'teacher_id' => $guru1->id,
-            'day' => 'Selasa',
-            'start_time' => '07:30',
-            'end_time' => '09:00',
-        ]);
-        Schedule::create([
-            'school_class_id' => $class1->id,
-            'subject_id' => $subjEng->id,
-            'teacher_id' => $guru3->id,
-            'day' => 'Rabu',
-            'start_time' => '08:00',
-            'end_time' => '09:30',
-        ]);
-        Schedule::create([
-            'school_class_id' => $class1->id,
-            'subject_id' => $subjFisika->id,
-            'teacher_id' => $guru1->id,
-            'day' => 'Kamis',
-            'start_time' => '10:00',
-            'end_time' => '11:30',
-        ]);
-        Schedule::create([
-            'school_class_id' => $class1->id,
-            'subject_id' => $subjSejarah->id,
-            'teacher_id' => $guru2->id,
-            'day' => 'Jumat',
-            'start_time' => '07:30',
-            'end_time' => '09:00',
-        ]);
-
-        // 6. Create Assignments
-        $assignment1 = Assignment::create([
-            'teacher_id' => $guru1->id,
-            'school_class_id' => $class1->id,
-            'subject_id' => $subjMath->id,
-            'title' => 'Tugas Matriks dan Vektor',
-            'description' => 'Kerjakan LKS halaman 12-15 bagian A dan B. Upload dalam format PDF.',
+                    $subjIdx++;
+                }
+            }
+        }
+        
+        // 7. Add Some Dummy Assignments & Submissions
+        $assignment = Assignment::create([
+            'teacher_id' => $teachers[0]->id,
+            'school_class_id' => $classes[0]->id,
+            'subject_id' => $teachers[0]->subject_id,
+            'title' => 'Tugas ' . $teachers[0]->subject->name,
+            'description' => 'Kerjakan LKS halaman 12-15 bagian A dan B.',
             'due_date' => Carbon::now()->addDays(2)->format('Y-m-d 23:59:00'),
         ]);
 
-        $assignment2 = Assignment::create([
-            'teacher_id' => $guru2->id,
-            'school_class_id' => $class1->id,
-            'subject_id' => $subjIndo->id,
-            'title' => 'Makalah Teks Eksposisi',
-            'description' => 'Buat teks eksposisi bertema Lingkungan Hidup minimal 3 paragraf.',
-            'due_date' => Carbon::now()->addDays(1)->format('Y-m-d 23:59:00'),
-        ]);
-
-        // 7. Create Submissions
+        $siswa = User::where('email', 'siswa@sekolah.test')->first();
         Submission::create([
-            'assignment_id' => $assignment1->id,
-            'student_id' => $siswa1->id,
+            'assignment_id' => $assignment->id,
+            'student_id' => $siswa->id,
             'file_path' => 'dummy/path.pdf',
-            'file_name' => 'Tugas_Matriks_Andi.pdf',
-            'note' => 'Maaf pak, tulisan saya agak kurang jelas',
+            'file_name' => 'Tugas_Andi.pdf',
+            'note' => 'Ini tugas saya pak',
             'submitted_at' => Carbon::now()->subHours(2),
             'grade' => 85,
-            'feedback' => 'Sudah cukup baik, pelajari lagi perkalian matriks.',
+            'feedback' => 'Sudah cukup baik.',
         ]);
 
-        // 8. Create Attendances (Today and past week)
-        $today = Carbon::today();
-        $studentsInClass1 = User::where('class_id', $class1->id)->get();
-        
-        foreach ($studentsInClass1 as $student) {
-            // Today's attendance for Math
-            Attendance::create([
-                'school_class_id' => $class1->id,
-                'student_id' => $student->id,
-                'teacher_id' => $guru1->id,
-                'subject_id' => $subjMath->id,
-                'date' => $today->format('Y-m-d'),
-                'status' => $student->id === $siswa1->id ? 'hadir' : 'hadir',
-            ]);
-
-            // Yesterday's attendance
-            Attendance::create([
-                'school_class_id' => $class1->id,
-                'student_id' => $student->id,
-                'teacher_id' => $guru1->id,
-                'subject_id' => $subjFisika->id,
-                'date' => $today->copy()->subDays(1)->format('Y-m-d'),
-                'status' => $student->id === $siswa1->id ? 'hadir' : 'sakit',
-                'note' => $student->id === $siswa1->id ? null : 'Demam',
-            ]);
-        }
+        // Attendance
+        Attendance::create([
+            'school_class_id' => $classes[0]->id,
+            'student_id' => $siswa->id,
+            'teacher_id' => $teachers[0]->id,
+            'subject_id' => $teachers[0]->subject_id,
+            'date' => Carbon::today()->format('Y-m-d'),
+            'status' => 'hadir',
+        ]);
     }
 }

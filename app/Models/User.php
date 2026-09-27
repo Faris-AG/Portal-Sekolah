@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Subject::class, 'subject_id');
     }
+
+    public function waliClass()
+    {
+        return $this->hasOne(SchoolClass::class, 'teacher_id');
+    }
 }

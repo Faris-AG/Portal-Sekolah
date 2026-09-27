@@ -13,7 +13,7 @@ class TeacherController extends Controller
 {
     public function index()
     {
-        $teachers = User::with('subject')
+        $teachers = User::with(['subject', 'waliClass'])
             ->where('role', 'guru')
             ->latest()
             ->get();

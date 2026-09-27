@@ -99,6 +99,7 @@ const deleteTeacher = (teacher) => {
                                     <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Nama Guru</th>
                                     <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Email</th>
                                     <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Spesialisasi Mapel</th>
+                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Status Wali Kelas</th>
                                     <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-right">Aksi</th>
                                 </tr>
                             </thead>
@@ -121,6 +122,12 @@ const deleteTeacher = (teacher) => {
                                         </span>
                                         <span v-else class="text-gray-400 italic text-sm">Belum ditentukan</span>
                                     </td>
+                                    <td class="py-4 px-6">
+                                        <span v-if="teacher.wali_class" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                            Wali Kelas {{ teacher.wali_class.name }}
+                                        </span>
+                                        <span v-else class="text-gray-400 text-center">-</span>
+                                    </td>
                                     <td class="py-4 px-6 text-right">
                                         <div class="flex justify-end gap-2">
                                             <button 
@@ -141,7 +148,7 @@ const deleteTeacher = (teacher) => {
                                     </td>
                                 </tr>
                                 <tr v-if="teachers.length === 0">
-                                    <td colspan="4" class="py-8 text-center text-gray-500">
+                                    <td colspan="5" class="py-8 text-center text-gray-500">
                                         Belum ada data guru.
                                     </td>
                                 </tr>

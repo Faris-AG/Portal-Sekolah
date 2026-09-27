@@ -109,11 +109,10 @@ const deleteAssignment = () => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
                 
                 <!-- Welcome Banner -->
-                <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-3xl p-8 shadow-lg text-white flex flex-col md:flex-row items-center justify-between relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/4"></div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
-                        <h3 class="text-3xl font-bold">Selamat datang, Guru {{ user.name }}! 🎓</h3>
-                        <p class="mt-2 text-blue-100 text-lg">Semoga hari ini penuh inspirasi dan semangat mengajar.</p>
+                        <h3 class="text-2xl font-bold text-gray-900">Selamat Datang, {{ user.name }}</h3>
+                        <p class="text-gray-500 mt-1">Semoga hari ini penuh inspirasi dan semangat mengajar.</p>
                     </div>
                 </div>
 
