@@ -56,6 +56,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 
     Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class)->except(['create', 'edit', 'show'])->names('announcements');
+    
+    Route::get('/attendance', [\App\Http\Controllers\AdminAttendanceController::class, 'index'])->name('attendance.index');
+    
+    Route::get('/forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');
+    Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
+    Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
+    Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
 });
 
 Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
@@ -72,8 +79,14 @@ Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru
     Route::post('/submissions/{id}/grade', [\App\Http\Controllers\SubmissionController::class, 'grade'])->name('submissions.grade');
     Route::get('/submissions/{id}/download', [\App\Http\Controllers\SubmissionController::class, 'download'])->name('submissions.download');
 
+    Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance', [\App\Http\Controllers\AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance', [\App\Http\Controllers\AttendanceController::class, 'store'])->name('attendance.store');
+    
+    Route::get('/forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');
+    Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
+    Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
+    Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
 });
 
 Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
@@ -82,8 +95,14 @@ Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('si
     Route::get('/assignments', [\App\Http\Controllers\StudentDashboardController::class, 'assignments'])->name('assignments');
     Route::get('/assignments/{id}', [\App\Http\Controllers\StudentDashboardController::class, 'showAssignment'])->name('assignments.show');
     Route::get('/grades', [\App\Http\Controllers\StudentDashboardController::class, 'grades'])->name('grades');
+    Route::get('/attendance', [\App\Http\Controllers\StudentDashboardController::class, 'attendance'])->name('attendance');
     Route::post('/submissions', [\App\Http\Controllers\SubmissionController::class, 'store'])->name('submissions.store');
     Route::get('/materials', [\App\Http\Controllers\StudentMaterialController::class, 'index'])->name('materials.index');
+    
+    Route::get('/forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');
+    Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
+    Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
+    Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
 });
 
 Route::middleware('auth')->group(function () {
