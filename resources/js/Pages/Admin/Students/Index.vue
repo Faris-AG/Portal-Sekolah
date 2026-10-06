@@ -1,8 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Users, BookOpen, AlertCircle, RefreshCw } from 'lucide-vue-next';
+import { Users, BookOpen, AlertCircle, RefreshCw, ChevronUp, ChevronDown } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -10,9 +10,40 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
-    students: Array,
+    students: Object,
     classes: Array,
+    filters: Object,
 });
+
+const currentSortBy = ref(props.filters.sort_by || 'name');
+const currentDirection = ref(props.filters.direction || 'asc');
+const currentPerPage = ref(props.filters.per_page || 10);
+
+const sortBy = (column) => {
+    if (currentSortBy.value === column) {
+        currentDirection.value = currentDirection.value === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortBy.value = column;
+        currentDirection.value = 'asc';
+    }
+    
+    applyFilters();
+};
+
+const changePerPage = () => {
+    applyFilters();
+};
+
+const applyFilters = () => {
+    router.get(route('admin.students.index'), {
+        sort_by: currentSortBy.value,
+        direction: currentDirection.value,
+        per_page: currentPerPage.value,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
 
 const isModalOpen = ref(false);
 const currentStudent = ref(null);
@@ -63,20 +94,45 @@ const submit = () => {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50">
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Nama Siswa</th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Email</th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Kelas Saat Ini</th>
+                                    <th @click="sortBy('name')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                        <div class="flex items-center gap-1">
+                                            Nama Siswa
+                                            <span v-if="currentSortBy === 'name'">
+                                                <ChevronUp v-if="currentDirection === 'asc'" size="14" />
+                                                <ChevronDown v-else size="14" />
+                                            </span>
+                                            <span v-else class="text-gray-300 opacity-0 group-hover:opacity-100"><ChevronUp size="14" /></span>
+                                        </div>
+                                    </th>
+                                    <th @click="sortBy('email')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                        <div class="flex items-center gap-1">
+                                            Email
+                                            <span v-if="currentSortBy === 'email'">
+                                                <ChevronUp v-if="currentDirection === 'asc'" size="14" />
+                                                <ChevronDown v-else size="14" />
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th @click="sortBy('class_id')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                        <div class="flex items-center gap-1">
+                                            Kelas Saat Ini
+                                            <span v-if="currentSortBy === 'class_id'">
+                                                <ChevronUp v-if="currentDirection === 'asc'" size="14" />
+                                                <ChevronDown v-else size="14" />
+                                            </span>
+                                        </div>
+                                    </th>
                                     <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                <tr v-if="students.length === 0">
+                                <tr v-if="students.data.length === 0">
                                     <td colspan="4" class="py-8 text-center text-gray-500 flex flex-col items-center justify-center">
                                         <AlertCircle size="32" class="text-gray-400 mb-2" />
                                         Belum ada data siswa yang terdaftar.
                                     </td>
                                 </tr>
-                                <tr v-for="student in students" :key="student.id" class="hover:bg-gray-50/50 transition-colors group">
+                                <tr v-for="student in students.data" :key="student.id" class="hover:bg-gray-50/50 transition-colors group">
                                     <td class="py-4 px-6">
                                         <span class="font-bold text-gray-900 text-base">{{ student.name }}</span>
                                     </td>
@@ -102,6 +158,31 @@ const submit = () => {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Pagination & Per Page -->
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500">Tampilkan:</span>
+                            <select v-model="currentPerPage" @change="changePerPage" class="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 pl-2 pr-8">
+                                <option value="10">10 baris</option>
+                                <option value="25">25 baris</option>
+                                <option value="50">50 baris</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex gap-1" v-if="students.links">
+                            <template v-for="(link, i) in students.links" :key="i">
+                                <button
+                                    v-if="link.url"
+                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage }, { preserveState: true, preserveScroll: true })"
+                                    class="px-3 py-1 rounded text-sm font-medium transition-colors"
+                                    :class="link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50'"
+                                    v-html="link.label"
+                                ></button>
+                                <span v-else class="px-3 py-1 text-sm text-gray-400" v-html="link.label"></span>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>

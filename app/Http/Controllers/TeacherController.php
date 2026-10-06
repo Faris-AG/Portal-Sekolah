@@ -11,18 +11,41 @@ use Illuminate\Validation\Rules;
 
 class TeacherController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $teachers = User::with(['subject', 'waliClass'])
-            ->where('role', 'guru')
-            ->latest()
-            ->get();
+        $sortBy = $request->query('sort_by', 'name');
+        $direction = $request->query('direction', 'asc');
+        $perPage = $request->query('per_page', 10);
+
+        $allowedSorts = ['name', 'email', 'subject_id'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'name';
+        }
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'asc';
+        }
+
+        $query = User::with(['subject', 'waliClass'])
+            ->where('role', 'guru');
+            
+        if ($sortBy === 'subject_id') {
+            $query->orderBy('subject_id', $direction);
+        } else {
+            $query->orderBy($sortBy, $direction);
+        }
+
+        $teachers = $query->paginate($perPage)->withQueryString();
             
         $subjects = Subject::all();
 
         return Inertia::render('Admin/Teachers/Index', [
             'teachers' => $teachers,
             'subjects' => $subjects,
+            'filters' => [
+                'sort_by' => $sortBy,
+                'direction' => $direction,
+                'per_page' => $perPage,
+            ]
         ]);
     }
 

@@ -35,11 +35,17 @@ class TeacherDashboardController extends Controller
         $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
         $subjects = Subject::orderBy('name')->get();
 
+        $announcements = \App\Models\Announcement::whereIn('target_role', ['all', 'guru'])
+            ->latest()
+            ->take(3)
+            ->get();
+
         return Inertia::render('Guru/Dashboard', [
             'schedules' => $schedules,
             'assignments' => $assignments,
             'classes' => $classes,
             'subjects' => $subjects,
+            'announcements' => $announcements,
         ]);
     }
 }

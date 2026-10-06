@@ -3,8 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, usePage, useForm, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { 
-    Calendar, Clock, CheckSquare, BookOpen, GraduationCap, 
-    Plus, Trash2, FileText, AlertCircle 
+    Calendar, Clock, CheckSquare, BookOpen, GraduationCap,
+    Plus, Trash2, FileText, AlertCircle, Megaphone, Users
 } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
 import InputError from '@/Components/InputError.vue';
@@ -18,6 +18,7 @@ const props = defineProps({
     assignments: Array,
     classes: Array,
     subjects: Array,
+    announcements: Array,
 });
 
 const user = usePage().props.auth.user;
@@ -45,6 +46,18 @@ const formatDate = (dateString) => {
         hour: '2-digit',
         minute: '2-digit'
     });
+};
+
+const getTargetBadgeColor = (role) => {
+    if (role === 'all') return 'bg-purple-100 text-purple-800 border-purple-200';
+    if (role === 'guru') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+    return 'bg-orange-100 text-orange-800 border-orange-200';
+};
+
+const getTargetLabel = (role) => {
+    if (role === 'all') return 'Umum';
+    if (role === 'guru') return 'Guru';
+    return 'Siswa';
 };
 
 // Modals
@@ -134,6 +147,32 @@ const deleteAssignment = () => {
                         <div>
                             <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Tugas Aktif</p>
                             <h4 class="text-3xl font-bold text-gray-900 mt-1">{{ activeAssignments }} <span class="text-lg font-medium text-gray-400">tugas</span></h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pengumuman Section -->
+                <div v-if="announcements && announcements.length > 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    <div class="p-6 border-b border-gray-100 flex items-center gap-2">
+                        <Megaphone class="text-purple-500" size="20" />
+                        <h3 class="text-lg font-bold text-gray-900">Pengumuman Sekolah</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div v-for="announcement in announcements" :key="announcement.id" class="border border-gray-100 rounded-xl p-5 hover:border-purple-100 hover:shadow-sm transition-all bg-white">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs font-bold px-2 py-1 rounded border" :class="getTargetBadgeColor(announcement.target_role)">
+                                        {{ getTargetLabel(announcement.target_role) }}
+                                    </span>
+                                    <span class="text-xs font-medium text-gray-500">
+                                        {{ formatDate(announcement.created_at) }}
+                                    </span>
+                                </div>
+                                <h4 class="text-lg font-bold text-gray-900 mb-2">{{ announcement.title }}</h4>
+                                <div class="text-sm text-gray-600 line-clamp-2">
+                                    {{ announcement.content }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

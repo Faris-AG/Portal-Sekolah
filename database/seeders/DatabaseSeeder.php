@@ -53,7 +53,8 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 3. Create Teachers
+        // 3. Create Teachers — exactly one per subject, no extras
+        // With 12 subjects and 6 classes, each teacher will serve multiple classes
         $teachers = [];
         $emails = [
             'guru.mtk', 'guru.bindo', 'guru.bing', 'guru.fisika', 'guru.kimia',
@@ -72,22 +73,6 @@ class DatabaseSeeder extends Seeder
             ]);
             $i++;
         }
-        
-        // Add a couple more teachers for variety
-        $teachers[] = User::factory()->create([
-            'name' => $faker->name . ', M.Pd',
-            'email' => 'guru.mtk2@sekolah.test',
-            'password' => Hash::make('password'),
-            'role' => 'guru',
-            'subject_id' => $subjects['Matematika Wajib']->id,
-        ]);
-        $teachers[] = User::factory()->create([
-            'name' => $faker->name . ', S.Pd',
-            'email' => 'guru.bing2@sekolah.test',
-            'password' => Hash::make('password'),
-            'role' => 'guru',
-            'subject_id' => $subjects['Bahasa Inggris']->id,
-        ]);
 
         // 4. Create Classes
         $classNames = ['X MIPA 1', 'X MIPA 2', 'X IPS 1', 'XI MIPA 1', 'XI MIPA 2', 'XII MIPA 1'];
@@ -127,7 +112,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // 6. Generate Realistic Schedules (No Conflicts)
+        // 6. Generate Realistic Schedules — every teacher gets at least 1 slot
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
         $timeSlotsNormal = [
             ['06:30', '08:00'],
@@ -141,7 +126,18 @@ class DatabaseSeeder extends Seeder
             ['09:15', '10:45'],
         ];
 
-        // Ensure teacher doesn't have multiple classes at the same time
+        // Build a map of subject_id => teachers array for round-robin assignment
+        $teachersBySubject = [];
+        foreach ($teachers as $teacher) {
+            $sid = $teacher->subject_id;
+            if (!isset($teachersBySubject[$sid])) {
+                $teachersBySubject[$sid] = [];
+            }
+            $teachersBySubject[$sid][] = $teacher;
+        }
+        $teacherSubjectRoundRobin = []; // subject_id => pointer index
+
+        // Prevent double-booking a teacher at the same day+time
         $teacherSchedule = [];
 
         foreach ($classes as $class) {
@@ -157,18 +153,30 @@ class DatabaseSeeder extends Seeder
                     }
                     
                     $subject = $subjectsList[$subjIdx];
-                    // Find teacher for this subject
-                    $availTeachers = collect($teachers)->where('subject_id', $subject->id)->values();
-                    $teacher = $availTeachers->first(); // fallback
-                    
+                    $sid = $subject->id;
+
+                    // Round-robin through teachers who teach this subject
+                    $availTeachers = $teachersBySubject[$sid] ?? [];
+                    $teacher = null;
+
                     // Try to find a non-conflicting teacher
-                    foreach ($availTeachers as $t) {
+                    $pointer = $teacherSubjectRoundRobin[$sid] ?? 0;
+                    $count = count($availTeachers);
+                    for ($try = 0; $try < $count; $try++) {
+                        $candidate = $availTeachers[$pointer % $count];
+                        $pointer++;
                         $timeKey = $day . '-' . $slot[0];
-                        if (!isset($teacherSchedule[$t->id][$timeKey])) {
-                            $teacher = $t;
-                            $teacherSchedule[$t->id][$timeKey] = true;
+                        if (!isset($teacherSchedule[$candidate->id][$timeKey])) {
+                            $teacher = $candidate;
+                            $teacherSchedule[$candidate->id][$timeKey] = true;
                             break;
                         }
+                    }
+                    $teacherSubjectRoundRobin[$sid] = $pointer;
+
+                    // Fallback: use first teacher even if conflicting
+                    if (!$teacher) {
+                        $teacher = $availTeachers[0];
                     }
 
                     Schedule::create([
@@ -215,6 +223,50 @@ class DatabaseSeeder extends Seeder
             'subject_id' => $teachers[0]->subject_id,
             'date' => Carbon::today()->format('Y-m-d'),
             'status' => 'hadir',
+        ]);
+        // 8. Add Dummy Announcements
+        $admin = User::where('role', 'admin')->first();
+        \App\Models\Announcement::create([
+            'user_id' => $admin->id,
+            'title' => 'Pemberitahuan Penilaian Akhir Semester (PAS)',
+            'content' => 'Diberitahukan kepada seluruh siswa dan guru bahwa Penilaian Akhir Semester (PAS) Ganjil Tahun Ajaran ini akan dilaksanakan mulai tanggal 15 Desember 2026. Harap persiapkan diri dan materi dengan baik.',
+            'target_role' => 'all',
+        ]);
+        
+        \App\Models\Announcement::create([
+            'user_id' => $admin->id,
+            'title' => 'Rapat Evaluasi Guru',
+            'content' => 'Diingatkan kepada seluruh dewan guru untuk menghadiri rapat evaluasi bulanan yang akan diadakan pada hari Jumat pukul 14:00 di ruang guru.',
+            'target_role' => 'guru',
+        ]);
+
+        \App\Models\Announcement::create([
+            'user_id' => $admin->id,
+            'title' => 'Jadwal Ekstrakurikuler Wajib Pramuka',
+            'content' => 'Bagi seluruh siswa kelas X, kegiatan ekstrakurikuler wajib Pramuka akan diadakan setiap hari Sabtu pagi mulai pukul 07:30. Kehadiran wajib dan akan masuk ke dalam nilai rapor.',
+            'target_role' => 'siswa',
+        ]);
+
+        // 9. Add Dummy Materials
+        $guruMtk = collect($teachers)->firstWhere('subject_id', $subjects['Matematika Wajib']->id);
+        $guruFisika = collect($teachers)->firstWhere('subject_id', $subjects['Fisika']->id);
+
+        \App\Models\Material::create([
+            'teacher_id' => $guruMtk->id,
+            'school_class_id' => $classes[0]->id, // X MIPA 1
+            'subject_id' => $guruMtk->subject_id,
+            'title' => 'Modul 1: Persamaan Linear Tiga Variabel',
+            'description' => 'Materi pengantar untuk sistem persamaan linear tiga variabel (SPLTV). Silakan pelajari slide yang dilampirkan.',
+            'link_url' => 'https://www.google.com/search?q=spltv',
+        ]);
+
+        \App\Models\Material::create([
+            'teacher_id' => $guruFisika->id,
+            'school_class_id' => $classes[0]->id, // X MIPA 1
+            'subject_id' => $guruFisika->subject_id,
+            'title' => 'Video Pembelajaran: Hukum Newton',
+            'description' => 'Tonton video ini sebelum kelas besok. Kita akan membahas penerapannya dalam kehidupan sehari-hari.',
+            'link_url' => 'https://www.youtube.com/watch?v=123456',
         ]);
     }
 }

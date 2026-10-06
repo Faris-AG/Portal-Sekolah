@@ -10,14 +10,42 @@ use Inertia\Inertia;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = User::where('role', 'siswa')->with('schoolClass')->orderBy('name')->get();
+        $sortBy = $request->query('sort_by', 'name');
+        $direction = $request->query('direction', 'asc');
+        $perPage = $request->query('per_page', 10);
+
+        // Define allowed sort columns to prevent SQL injection
+        $allowedSorts = ['name', 'email', 'class_id'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'name';
+        }
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'asc';
+        }
+
+        $query = User::where('role', 'siswa')->with('schoolClass');
+        
+        if ($sortBy === 'class_id') {
+            // Sort by relation (simplified by sorting the foreign key)
+            $query->orderBy('class_id', $direction);
+        } else {
+            $query->orderBy($sortBy, $direction);
+        }
+
+        $students = $query->paginate($perPage)->withQueryString();
+        
         $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
 
         return Inertia::render('Admin/Students/Index', [
             'students' => $students,
             'classes' => $classes,
+            'filters' => [
+                'sort_by' => $sortBy,
+                'direction' => $direction,
+                'per_page' => $perPage,
+            ]
         ]);
     }
 

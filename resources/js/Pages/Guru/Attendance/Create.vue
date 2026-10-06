@@ -2,9 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { 
-    Calendar, BookOpen, GraduationCap, Users, CheckCircle, Save
+    Calendar, BookOpen, GraduationCap, Users, CheckCircle, Save, Info
 } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
@@ -73,6 +73,12 @@ const submitAttendance = () => {
         }
     });
 };
+
+// Check if attendance for the current filter already exists in the database
+const isAlreadyFilled = computed(() => {
+    if (!props.filters.school_class_id || !props.filters.subject_id || !props.filters.date) return false;
+    return Object.keys(props.existingAttendances || {}).length > 0;
+});
 
 const statusColors = {
     hadir: 'text-green-700 bg-green-50 border-green-200',
@@ -166,6 +172,14 @@ const statusColors = {
                         </span>
                     </div>
 
+                    <!-- Already Filled Banner -->
+                    <div v-if="isAlreadyFilled" class="mx-6 mt-4 flex items-start gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-800">
+                        <Info size="20" class="shrink-0 mt-0.5 text-blue-500" />
+                        <div class="text-sm">
+                            <span class="font-bold">Info:</span> Presensi untuk kelas dan tanggal ini sudah pernah diisi. Klik simpan jika Anda ingin memperbarui data (Update).
+                        </div>
+                    </div>
+
                     <form @submit.prevent="submitAttendance">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
@@ -223,10 +237,11 @@ const statusColors = {
                             <PrimaryButton 
                                 type="submit" 
                                 class="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2 px-6 py-3"
-                                :class="{ 'opacity-25': attendanceForm.processing }"
+                                :class="{ 'opacity-50 cursor-not-allowed': attendanceForm.processing }"
                                 :disabled="attendanceForm.processing || students.length === 0"
                             >
-                                <Save size="18" /> Simpan Data Presensi
+                                <Save size="18" />
+                                {{ attendanceForm.processing ? 'Menyimpan...' : (isAlreadyFilled ? 'Perbarui Presensi' : 'Simpan Data Presensi') }}
                             </PrimaryButton>
                         </div>
                     </form>

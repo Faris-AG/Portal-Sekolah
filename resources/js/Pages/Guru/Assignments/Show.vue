@@ -14,7 +14,42 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
     assignment: Object,
+    studentsList: Object,
+    filters: Object,
 });
+
+import { router } from '@inertiajs/vue3';
+import { ChevronUp, ChevronDown } from 'lucide-vue-next';
+
+const currentSortBy = ref(props.filters?.sort_by || 'student_name');
+const currentDirection = ref(props.filters?.direction || 'asc');
+const currentPerPage = ref(props.filters?.per_page || 25);
+
+const sortBy = (column) => {
+    if (currentSortBy.value === column) {
+        currentDirection.value = currentDirection.value === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortBy.value = column;
+        currentDirection.value = 'asc';
+    }
+    
+    applyFilters();
+};
+
+const changePerPage = () => {
+    applyFilters();
+};
+
+const applyFilters = () => {
+    router.get(route('guru.assignments.show', props.assignment.id), {
+        sort_by: currentSortBy.value,
+        direction: currentDirection.value,
+        per_page: currentPerPage.value,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -29,12 +64,8 @@ const formatDate = (dateString) => {
     });
 };
 
-const students = props.assignment.school_class?.students || [];
-const submissions = props.assignment.submissions || [];
-
-const getSubmissionForStudent = (studentId) => {
-    return submissions.find(sub => sub.student_id === studentId);
-};
+// Handled by studentsList directly from backend
+// Submissions logic merged into studentsList
 
 // Grading Modal
 const isGradingModalOpen = ref(false);
@@ -85,6 +116,15 @@ const submitGrade = () => {
                     Penilaian Tugas
                 </h2>
             </div>
+            <div class="flex gap-2">
+                <a 
+                    :href="route('guru.assignments.export', assignment.id)"
+                    target="_blank"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm"
+                >
+                    <Download size="16" /> Export CSV
+                </a>
+            </div>
         </template>
 
         <div class="py-12 bg-gray-50 min-h-screen">
@@ -121,22 +161,47 @@ const submitGrade = () => {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50 text-xs uppercase tracking-wider text-gray-500">
-                                    <th class="py-4 px-6 font-semibold w-1/4">Nama Siswa</th>
+                                    <th @click="sortBy('student_name')" class="py-4 px-6 font-semibold w-1/4 cursor-pointer hover:bg-gray-100">
+                                        <div class="flex items-center gap-1">
+                                            Nama Siswa
+                                            <span v-if="currentSortBy === 'student_name'">
+                                                <ChevronUp v-if="currentDirection === 'asc'" size="14" />
+                                                <ChevronDown v-else size="14" />
+                                            </span>
+                                            <span v-else class="text-gray-300 opacity-0 group-hover:opacity-100"><ChevronUp size="14" /></span>
+                                        </div>
+                                    </th>
                                     <th class="py-4 px-6 font-semibold w-1/6">Status</th>
-                                    <th class="py-4 px-6 font-semibold w-1/4">Waktu Kumpul</th>
-                                    <th class="py-4 px-6 font-semibold w-1/12 text-center">Nilai</th>
+                                    <th @click="sortBy('submitted_at')" class="py-4 px-6 font-semibold w-1/4 cursor-pointer hover:bg-gray-100">
+                                        <div class="flex items-center gap-1">
+                                            Waktu Kumpul
+                                            <span v-if="currentSortBy === 'submitted_at'">
+                                                <ChevronUp v-if="currentDirection === 'asc'" size="14" />
+                                                <ChevronDown v-else size="14" />
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th @click="sortBy('grade')" class="py-4 px-6 font-semibold w-1/12 text-center cursor-pointer hover:bg-gray-100">
+                                        <div class="flex items-center justify-center gap-1">
+                                            Nilai
+                                            <span v-if="currentSortBy === 'grade'">
+                                                <ChevronUp v-if="currentDirection === 'asc'" size="14" />
+                                                <ChevronDown v-else size="14" />
+                                            </span>
+                                        </div>
+                                    </th>
                                     <th class="py-4 px-6 font-semibold text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-50">
-                                <tr v-for="student in students" :key="student.id" class="hover:bg-gray-50/50 transition-colors">
+                                <tr v-for="student in studentsList?.data" :key="student.student_id" class="hover:bg-gray-50/50 transition-colors">
                                     <td class="py-4 px-6">
-                                        <div class="font-bold text-gray-900">{{ student.name }}</div>
-                                        <div class="text-xs text-gray-500 mt-0.5">{{ student.email }}</div>
+                                        <div class="font-bold text-gray-900">{{ student.student_name }}</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">{{ student.student_email }}</div>
                                     </td>
                                     
                                     <td class="py-4 px-6">
-                                        <span v-if="getSubmissionForStudent(student.id)" class="inline-flex items-center gap-1.5 text-green-700 bg-green-50 border border-green-200 px-2.5 py-1 rounded-md text-xs font-bold">
+                                        <span v-if="student.submission_id" class="inline-flex items-center gap-1.5 text-green-700 bg-green-50 border border-green-200 px-2.5 py-1 rounded-md text-xs font-bold">
                                             <CheckCircle size="14" /> Sudah Kumpul
                                         </span>
                                         <span v-else class="inline-flex items-center gap-1.5 text-red-700 bg-red-50 border border-red-200 px-2.5 py-1 rounded-md text-xs font-bold">
@@ -145,24 +210,24 @@ const submitGrade = () => {
                                     </td>
 
                                     <td class="py-4 px-6">
-                                        <div v-if="getSubmissionForStudent(student.id)" class="text-sm font-medium text-gray-600 flex items-center gap-1.5">
+                                        <div v-if="student.submission_id" class="text-sm font-medium text-gray-600 flex items-center gap-1.5">
                                             <Clock size="14" class="text-gray-400" />
-                                            {{ formatDate(getSubmissionForStudent(student.id).submitted_at) }}
+                                            {{ formatDate(student.submitted_at) }}
                                         </div>
                                         <span v-else class="text-gray-400 italic text-sm">-</span>
                                     </td>
 
                                     <td class="py-4 px-6 text-center">
-                                        <div v-if="getSubmissionForStudent(student.id)?.grade !== null && getSubmissionForStudent(student.id)?.grade !== undefined" class="font-bold text-lg text-blue-700">
-                                            {{ getSubmissionForStudent(student.id).grade }}
+                                        <div v-if="student.grade !== null && student.grade !== undefined" class="font-bold text-lg text-blue-700">
+                                            {{ student.grade }}
                                         </div>
                                         <span v-else class="text-gray-400 font-medium">-</span>
                                     </td>
 
                                     <td class="py-4 px-6 text-right">
-                                        <div v-if="getSubmissionForStudent(student.id)" class="flex justify-end gap-2">
+                                        <div v-if="student.submission_id" class="flex justify-end gap-2">
                                             <a 
-                                                :href="route('guru.submissions.download', getSubmissionForStudent(student.id).id)" 
+                                                :href="route('guru.submissions.download', student.submission_id)" 
                                                 target="_blank"
                                                 class="flex items-center justify-center p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors"
                                                 title="Unduh File"
@@ -170,7 +235,7 @@ const submitGrade = () => {
                                                 <Download size="18" />
                                             </a>
                                             <button 
-                                                @click="openGradingModal(student, getSubmissionForStudent(student.id))"
+                                                @click="openGradingModal({ name: student.student_name }, { id: student.submission_id, grade: student.grade, feedback: student.feedback, note: student.note })"
                                                 class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                                             >
                                                 <Star size="16" /> Nilai
@@ -181,13 +246,38 @@ const submitGrade = () => {
                                         </div>
                                     </td>
                                 </tr>
-                                <tr v-if="students.length === 0">
+                                <tr v-if="!studentsList?.data || studentsList.data.length === 0">
                                     <td colspan="5" class="py-12 text-center text-gray-400">
                                         Belum ada siswa di kelas ini.
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Pagination & Per Page -->
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between" v-if="studentsList">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500">Tampilkan:</span>
+                            <select v-model="currentPerPage" @change="changePerPage" class="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 pl-2 pr-8">
+                                <option value="10">10 baris</option>
+                                <option value="25">25 baris</option>
+                                <option value="50">50 baris</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex gap-1" v-if="studentsList.links">
+                            <template v-for="(link, i) in studentsList.links" :key="i">
+                                <button
+                                    v-if="link.url"
+                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage }, { preserveState: true, preserveScroll: true })"
+                                    class="px-3 py-1 rounded text-sm font-medium transition-colors"
+                                    :class="link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50'"
+                                    v-html="link.label"
+                                ></button>
+                                <span v-else class="px-3 py-1 text-sm text-gray-400" v-html="link.label"></span>
+                            </template>
+                        </div>
                     </div>
                 </div>
 

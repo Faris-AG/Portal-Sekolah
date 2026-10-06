@@ -54,6 +54,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
     Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
+
+    Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class)->except(['create', 'edit', 'show'])->names('announcements');
 });
 
 Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
@@ -61,6 +63,11 @@ Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru
     Route::get('/assignments/{id}', [\App\Http\Controllers\AssignmentController::class, 'show'])->name('assignments.show');
     Route::post('/assignments', [\App\Http\Controllers\AssignmentController::class, 'store'])->name('assignments.store');
     Route::delete('/assignments/{id}', [\App\Http\Controllers\AssignmentController::class, 'destroy'])->name('assignments.destroy');
+    Route::get('/assignments/{id}/export', [\App\Http\Controllers\AssignmentController::class, 'exportCsv'])->name('assignments.export');
+    
+    Route::get('/materials', [\App\Http\Controllers\TeacherMaterialController::class, 'index'])->name('materials.index');
+    Route::post('/materials', [\App\Http\Controllers\TeacherMaterialController::class, 'store'])->name('materials.store');
+    Route::delete('/materials/{material}', [\App\Http\Controllers\TeacherMaterialController::class, 'destroy'])->name('materials.destroy');
     
     Route::post('/submissions/{id}/grade', [\App\Http\Controllers\SubmissionController::class, 'grade'])->name('submissions.grade');
     Route::get('/submissions/{id}/download', [\App\Http\Controllers\SubmissionController::class, 'download'])->name('submissions.download');
@@ -73,7 +80,10 @@ Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('si
     Route::get('/dashboard', [\App\Http\Controllers\StudentDashboardController::class, 'index'])->name('dashboard');
     Route::get('/schedules', [\App\Http\Controllers\StudentDashboardController::class, 'schedules'])->name('schedules');
     Route::get('/assignments', [\App\Http\Controllers\StudentDashboardController::class, 'assignments'])->name('assignments');
+    Route::get('/assignments/{id}', [\App\Http\Controllers\StudentDashboardController::class, 'showAssignment'])->name('assignments.show');
+    Route::get('/grades', [\App\Http\Controllers\StudentDashboardController::class, 'grades'])->name('grades');
     Route::post('/submissions', [\App\Http\Controllers\SubmissionController::class, 'store'])->name('submissions.store');
+    Route::get('/materials', [\App\Http\Controllers\StudentMaterialController::class, 'index'])->name('materials.index');
 });
 
 Route::middleware('auth')->group(function () {

@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, usePage, useForm } from '@inertiajs/vue3';
+import { Head, usePage, useForm, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { 
     FileText, Clock, CheckCircle, XCircle, 
@@ -177,8 +177,8 @@ const hasSubmitted = (assignment) => {
                                         </div>
                                     </div>
 
-                                    <button 
-                                        @click="openSubmissionModal(tugas)"
+                                    <Link 
+                                        :href="route('siswa.assignments.show', tugas.id)"
                                         class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-sm"
                                         :class="hasSubmitted(tugas) 
                                             ? 'bg-white border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50'
@@ -186,7 +186,7 @@ const hasSubmitted = (assignment) => {
                                     >
                                         <UploadCloud size="18" /> 
                                         {{ hasSubmitted(tugas) ? 'Lihat / Revisi Tugas' : 'Kumpulkan Sekarang' }}
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
