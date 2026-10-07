@@ -177,4 +177,27 @@ class StudentDashboardController extends Controller
             ],
         ]);
     }
+
+    public function attendance(Request $request)
+    {
+        $user = $request->user();
+        
+        $attendances = \App\Models\Attendance::with(['subject', 'teacher'])
+            ->where('student_id', $user->id)
+            ->orderBy('date', 'desc')
+            ->get();
+            
+        $attendanceStats = [
+            'hadir' => $attendances->where('status', 'hadir')->count(),
+            'sakit' => $attendances->where('status', 'sakit')->count(),
+            'izin' => $attendances->where('status', 'izin')->count(),
+            'alpa' => $attendances->where('status', 'alpa')->count(),
+        ];
+
+        return Inertia::render('Siswa/Attendance/Index', [
+            'student' => $user,
+            'attendances' => $attendances,
+            'attendanceStats' => $attendanceStats,
+        ]);
+    }
 }

@@ -20,7 +20,8 @@ import {
     ChevronRight,
     Award,
     Megaphone,
-    Library
+    Library,
+    MessageCircle
 } from 'lucide-vue-next';
 
 const showingSidebar = ref(false);
@@ -66,13 +67,17 @@ if (userRole === 'admin') {
         { name: 'Siswa', href: route('admin.students.index'), current: route().current('admin.students.*'), icon: Users },
         { name: 'Mata Pelajaran', href: route('admin.subjects.index'), current: route().current('admin.subjects.*'), icon: BookOpen },
         { name: 'Jadwal Pelajaran', href: route('admin.schedules.index'), current: route().current('admin.schedules.*'), icon: Calendar },
+        { name: 'Presensi', href: route('admin.attendance.index'), current: route().current('admin.attendance.*'), icon: CheckSquare },
+        { name: 'Forum Diskusi', href: route('admin.forum.index'), current: route().current('admin.forum.*'), icon: MessageCircle },
         { name: 'Pengumuman', href: route('admin.announcements.index'), current: route().current('admin.announcements.*'), icon: Megaphone }
     );
 } else if (userRole === 'guru') {
     navigation.push(
         { name: 'Dashboard', href: route('guru.dashboard'), current: route().current('guru.dashboard'), icon: LayoutDashboard },
         { name: 'Materi Belajar', href: route('guru.materials.index'), current: route().current('guru.materials.*'), icon: Library },
-        { name: 'Presensi Siswa', href: route('guru.attendance.create'), current: route().current('guru.attendance.*'), icon: CheckSquare }
+        { name: 'Presensi Siswa', href: route('guru.attendance.create'), current: route().current('guru.attendance.create'), icon: CheckSquare },
+        { name: 'Laporan Presensi', href: route('guru.attendance.index'), current: route().current('guru.attendance.index'), icon: CheckSquare },
+        { name: 'Forum Diskusi', href: route('guru.forum.index'), current: route().current('guru.forum.*'), icon: MessageCircle }
     );
 } else if (userRole === 'siswa') {
     navigation.push(
@@ -80,7 +85,9 @@ if (userRole === 'admin') {
         { name: 'Jadwal Saya', href: route('siswa.schedules'), current: route().current('siswa.schedules'), icon: Calendar },
         { name: 'Materi Belajar', href: route('siswa.materials.index'), current: route().current('siswa.materials.*'), icon: Library },
         { name: 'Tugas Belajar', href: route('siswa.assignments'), current: route().current('siswa.assignments') || route().current('siswa.assignments.show'), icon: BookOpen },
-        { name: 'Rekap Nilai', href: route('siswa.grades'), current: route().current('siswa.grades'), icon: Award }
+        { name: 'Rekap Nilai', href: route('siswa.grades'), current: route().current('siswa.grades'), icon: Award },
+        { name: 'Riwayat Kehadiran', href: route('siswa.attendance'), current: route().current('siswa.attendance'), icon: CheckSquare },
+        { name: 'Forum Diskusi', href: route('siswa.forum.index'), current: route().current('siswa.forum.*'), icon: MessageCircle }
     );
 }
 </script>
