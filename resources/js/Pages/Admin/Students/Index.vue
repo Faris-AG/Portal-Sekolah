@@ -18,6 +18,21 @@ const props = defineProps({
 const currentSortBy = ref(props.filters.sort_by || 'name');
 const currentDirection = ref(props.filters.direction || 'asc');
 const currentPerPage = ref(props.filters.per_page || 10);
+const searchQuery = ref(props.filters.search || '');
+const currentClassFilter = ref(props.filters.class_id || '');
+
+let searchTimeout = null;
+
+const onSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 300); // debounce 300ms
+};
+
+const onFilterChange = () => {
+    applyFilters();
+};
 
 const sortBy = (column) => {
     if (currentSortBy.value === column) {
@@ -39,6 +54,8 @@ const applyFilters = () => {
         sort_by: currentSortBy.value,
         direction: currentDirection.value,
         per_page: currentPerPage.value,
+        search: searchQuery.value,
+        class_id: currentClassFilter.value,
     }, {
         preserveState: true,
         preserveScroll: true,
@@ -87,7 +104,38 @@ const submit = () => {
         </template>
 
         <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+                <!-- Search & Filter Bar -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="w-full sm:w-1/2 flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Users size="16" class="text-gray-400" />
+                            </div>
+                            <input 
+                                type="text" 
+                                v-model="searchQuery" 
+                                @input="onSearch"
+                                placeholder="Cari nama atau email siswa..." 
+                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
+                        </div>
+                        <div class="w-full sm:w-1/2">
+                            <select 
+                                v-model="currentClassFilter" 
+                                @change="onFilterChange"
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
+                                <option value="">Semua Kelas</option>
+                                <option value="null">Belum Ada Kelas</option>
+                                <option v-for="cls in classes" :key="cls.id" :value="cls.id">
+                                    {{ cls.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Students Table -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="overflow-x-auto">
@@ -175,7 +223,7 @@ const submit = () => {
                             <template v-for="(link, i) in students.links" :key="i">
                                 <button
                                     v-if="link.url"
-                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage }, { preserveState: true, preserveScroll: true })"
+                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage, search: searchQuery, class_id: currentClassFilter }, { preserveState: true, preserveScroll: true })"
                                     class="px-3 py-1 rounded text-sm font-medium transition-colors"
                                     :class="link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50'"
                                     v-html="link.label"
