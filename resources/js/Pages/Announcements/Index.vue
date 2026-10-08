@@ -52,6 +52,7 @@ const markAsRead = (id, isRead) => {
     if (!isRead) {
         router.post(route('announcements.mark_read', id), {}, {
             preserveScroll: true,
+            preserveState: true,
         });
     }
 };
@@ -59,7 +60,11 @@ const markAsRead = (id, isRead) => {
 const markAllAsRead = () => {
     router.post(route('announcements.mark_all_read'), {}, {
         preserveScroll: true,
+        preserveState: true,
     });
+};
+const goBack = () => {
+    window.history.back();
 };
 </script>
 
@@ -69,9 +74,14 @@ const markAllAsRead = () => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <Megaphone size="24" class="text-indigo-600" /> Pengumuman
-                </h2>
+                <div class="flex items-center gap-4">
+                    <button @click="goBack" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors" title="Kembali">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                    </button>
+                    <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                        <Megaphone size="24" class="text-indigo-600" /> Pengumuman
+                    </h2>
+                </div>
                 
                 <div class="flex items-center gap-3">
                     <button 

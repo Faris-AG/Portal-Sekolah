@@ -248,7 +248,7 @@ if (userRole === 'admin') {
                         <template #content>
                             <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 rounded-t-md">
                                 <h3 class="text-sm font-bold text-gray-900">Pengumuman</h3>
-                                <Link v-if="$page.props.auth.unread_announcements_count > 0" :href="route('announcements.mark_all_read')" method="post" as="button" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                                <Link v-if="$page.props.auth.unread_announcements_count > 0" :href="route('announcements.mark_all_read')" method="post" as="button" :preserve-scroll="true" :preserve-state="true" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
                                     Tandai Semua Dibaca
                                 </Link>
                             </div>
