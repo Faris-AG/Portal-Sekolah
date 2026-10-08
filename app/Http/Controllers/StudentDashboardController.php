@@ -50,18 +50,12 @@ class StudentDashboardController extends Controller
             ];
         }
 
-        $announcements = \App\Models\Announcement::whereIn('target_role', ['all', 'siswa'])
-            ->latest()
-            ->take(3)
-            ->get();
-
         return Inertia::render('Siswa/Dashboard', [
             'student' => $user,
             'schoolClass' => $user->schoolClass,
             'todaySchedules' => $todaySchedules,
             'tugasTerdekat' => $tugasTerdekat,
             'attendanceStats' => $attendanceStats,
-            'announcements' => $announcements,
         ]);
     }
 
@@ -99,22 +93,62 @@ class StudentDashboardController extends Controller
         $user->load('schoolClass');
         
         $tugas = [];
+        $search = $request->query('search', '');
+        $status = $request->query('status', 'semua');
+        $subjectId = $request->query('subject_id', '');
 
         if ($user->class_id) {
-            $tugas = \App\Models\Assignment::with(['subject', 'teacher', 'submissions' => function($q) use ($user) {
+            $query = \App\Models\Assignment::with(['subject', 'teacher', 'submissions' => function($q) use ($user) {
                 $q->where('student_id', $user->id);
             }])
-            ->where('school_class_id', $user->class_id)
-            ->orderBy('due_date', 'desc')
-            ->get();
+            ->where('school_class_id', $user->class_id);
+            
+            if (!empty($search)) {
+                $query->where('title', 'like', '%' . $search . '%');
+            }
+            
+            if ($subjectId !== '') {
+                $query->where('subject_id', $subjectId);
+            }
+            
+            if ($status !== 'semua') {
+                if ($status === 'belum') {
+                    $query->whereDoesntHave('submissions', function($q) use ($user) {
+                        $q->where('student_id', $user->id);
+                    });
+                } else if ($status === 'sudah') {
+                    $query->whereHas('submissions', function($q) use ($user) {
+                        $q->where('student_id', $user->id);
+                    });
+                } else if ($status === 'dinilai') {
+                    $query->whereHas('submissions', function($q) use ($user) {
+                        $q->where('student_id', $user->id)->whereNotNull('grade');
+                    });
+                } else if ($status === 'terlambat') {
+                    $query->whereDoesntHave('submissions', function($q) use ($user) {
+                        $q->where('student_id', $user->id);
+                    })->where('due_date', '<', \Carbon\Carbon::now());
+                }
+            }
+
+            $tugas = $query->orderBy('due_date', 'desc')->get();
         }
+        
+        // Dapatkan mapel unik untuk filter dropdown
+        $subjects = collect($tugas)->pluck('subject')->unique('id')->values()->filter();
 
         return Inertia::render('Siswa/Assignments/Index', [
             'tugas' => $tugas,
+            'subjects' => $subjects,
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+                'subject_id' => $subjectId,
+            ]
         ]);
     }
     
-    public function showAssignment(Request $request, $id)
+    public function showAssignment(Request $request, string $id)
     {
         $user = $request->user();
         

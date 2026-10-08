@@ -20,6 +20,29 @@ const props = defineProps({
 const currentSortBy = ref(props.filters.sort_by || 'name');
 const currentDirection = ref(props.filters.direction || 'asc');
 const currentPerPage = ref(props.filters.per_page || 10);
+const searchQuery = ref(props.filters.search || '');
+const currentSubject = ref(props.filters.subject_id || '');
+const currentIsWali = ref(props.filters.is_wali_kelas || '');
+
+let searchTimeout = null;
+
+const onSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 300);
+};
+
+const onFilterChange = () => {
+    applyFilters();
+};
+
+const resetFilters = () => {
+    searchQuery.value = '';
+    currentSubject.value = '';
+    currentIsWali.value = '';
+    applyFilters();
+};
 
 const sortBy = (column) => {
     if (currentSortBy.value === column) {
@@ -41,9 +64,13 @@ const applyFilters = () => {
         sort_by: currentSortBy.value,
         direction: currentDirection.value,
         per_page: currentPerPage.value,
+        search: searchQuery.value,
+        subject_id: currentSubject.value,
+        is_wali_kelas: currentIsWali.value,
     }, {
         preserveState: true,
         preserveScroll: true,
+        replace: true,
     });
 };
 
@@ -135,7 +162,56 @@ const deleteTeacher = () => {
         </template>
 
         <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+                <!-- Search & Filters -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-2">
+                    <div class="w-full sm:w-1/3 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Users size="16" class="text-gray-400" />
+                        </div>
+                        <input 
+                            type="text" 
+                            v-model="searchQuery" 
+                            @input="onSearch"
+                            placeholder="Cari nama atau email..." 
+                            class="pl-10 block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                    </div>
+                    <div class="w-full sm:w-1/4">
+                        <select 
+                            v-model="currentSubject" 
+                            @change="onFilterChange"
+                            class="block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                            <option value="">Semua Mapel</option>
+                            <option value="null">Belum Ditentukan</option>
+                            <option v-for="subject in subjects" :key="subject.id" :value="subject.id">
+                                {{ subject.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="w-full sm:w-1/4">
+                        <select 
+                            v-model="currentIsWali" 
+                            @change="onFilterChange"
+                            class="block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                            <option value="">Status Wali Kelas</option>
+                            <option value="yes">Wali Kelas Saja</option>
+                            <option value="no">Bukan Wali Kelas</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center">
+                        <button 
+                            v-if="searchQuery || currentSubject || currentIsWali" 
+                            @click="resetFilters"
+                            class="text-sm text-indigo-600 hover:text-indigo-800 font-medium px-2 py-1 transition-colors"
+                        >
+                            Reset Filter
+                        </button>
+                    </div>
+                </div>
+
                 <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -241,7 +317,7 @@ const deleteTeacher = () => {
                             <template v-for="(link, i) in teachers.links" :key="i">
                                 <button
                                     v-if="link.url"
-                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage }, { preserveState: true, preserveScroll: true })"
+                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage, search: searchQuery, subject_id: currentSubject, is_wali_kelas: currentIsWali }, { preserveState: true, preserveScroll: true, replace: true })"
                                     class="px-3 py-1 rounded text-sm font-medium transition-colors"
                                     :class="link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50'"
                                     v-html="link.label"

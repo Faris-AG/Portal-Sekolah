@@ -24,6 +24,16 @@ import { ChevronUp, ChevronDown } from 'lucide-vue-next';
 const currentSortBy = ref(props.filters?.sort_by || 'student_name');
 const currentDirection = ref(props.filters?.direction || 'asc');
 const currentPerPage = ref(props.filters?.per_page || 25);
+const searchQuery = ref(props.filters?.search || '');
+
+let searchTimeout = null;
+
+const onSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 300);
+};
 
 const sortBy = (column) => {
     if (currentSortBy.value === column) {
@@ -45,9 +55,11 @@ const applyFilters = () => {
         sort_by: currentSortBy.value,
         direction: currentDirection.value,
         per_page: currentPerPage.value,
+        search: searchQuery.value,
     }, {
         preserveState: true,
         preserveScroll: true,
+        replace: true,
     });
 };
 
@@ -153,9 +165,23 @@ const submitGrade = () => {
 
                 <!-- Students Table -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100 flex items-center gap-2">
-                        <UserCheck class="text-blue-500" size="20" />
-                        <h3 class="text-lg font-bold text-gray-900">Daftar Pengumpulan Siswa</h3>
+                    <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <UserCheck class="text-blue-500" size="20" />
+                            <h3 class="text-lg font-bold text-gray-900">Daftar Pengumpulan Siswa</h3>
+                        </div>
+                        <div class="relative w-full sm:w-64">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <UserCheck size="16" class="text-gray-400" />
+                            </div>
+                            <input 
+                                type="text" 
+                                v-model="searchQuery" 
+                                @input="onSearch"
+                                placeholder="Cari nama siswa..." 
+                                class="pl-10 block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -270,7 +296,7 @@ const submitGrade = () => {
                             <template v-for="(link, i) in studentsList.links" :key="i">
                                 <button
                                     v-if="link.url"
-                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage }, { preserveState: true, preserveScroll: true })"
+                                    @click="router.get(link.url, { sort_by: currentSortBy, direction: currentDirection, per_page: currentPerPage, search: searchQuery }, { preserveState: true, preserveScroll: true, replace: true })"
                                     class="px-3 py-1 rounded text-sm font-medium transition-colors"
                                     :class="link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50'"
                                     v-html="link.label"

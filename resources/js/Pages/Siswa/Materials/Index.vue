@@ -9,30 +9,37 @@ import {
 const props = defineProps({
     materials: Array,
     subjects: Array,
+    filters: Object,
 });
 
-const activeTab = ref('all');
-const searchQuery = ref('');
+import { router } from '@inertiajs/vue3';
 
-const filteredMaterials = computed(() => {
-    let result = props.materials;
-    
-    // Filter by subject
-    if (activeTab.value !== 'all') {
-        result = result.filter(m => m.subject_id === activeTab.value);
-    }
-    
-    // Filter by search
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase();
-        result = result.filter(m => 
-            m.title.toLowerCase().includes(query) || 
-            (m.description && m.description.toLowerCase().includes(query))
-        );
-    }
-    
-    return result;
-});
+const activeTab = ref(props.filters?.subject_id || 'all');
+const searchQuery = ref(props.filters?.search || '');
+let searchTimeout = null;
+
+const onSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 300);
+};
+
+const onTabClick = (tab) => {
+    activeTab.value = tab;
+    applyFilters();
+};
+
+const applyFilters = () => {
+    router.get(route('siswa.materials.index'), {
+        search: searchQuery.value,
+        subject_id: activeTab.value,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+    });
+};
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -60,6 +67,7 @@ const formatDate = (dateString) => {
                     <input 
                         type="text" 
                         v-model="searchQuery"
+                        @input="onSearch"
                         class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-shadow shadow-sm" 
                         placeholder="Cari materi..." 
                     />
@@ -74,7 +82,7 @@ const formatDate = (dateString) => {
                 <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 overflow-x-auto hide-scrollbar">
                     <div class="flex gap-2 min-w-max">
                         <button 
-                            @click="activeTab = 'all'"
+                            @click="onTabClick('all')"
                             :class="[
                                 'px-4 py-2 rounded-xl text-sm font-bold transition-all',
                                 activeTab === 'all' 
@@ -87,7 +95,7 @@ const formatDate = (dateString) => {
                         <button 
                             v-for="subject in subjects" 
                             :key="subject.id"
-                            @click="activeTab = subject.id"
+                            @click="onTabClick(subject.id)"
                             :class="[
                                 'px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2',
                                 activeTab === subject.id 
@@ -102,7 +110,7 @@ const formatDate = (dateString) => {
                 </div>
 
                 <!-- Empty State -->
-                <div v-if="filteredMaterials.length === 0" class="bg-white rounded-3xl p-12 shadow-sm border border-gray-100 text-center flex flex-col items-center justify-center">
+                <div v-if="materials.length === 0" class="bg-white rounded-3xl p-12 shadow-sm border border-gray-100 text-center flex flex-col items-center justify-center">
                     <div class="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
                         <Library class="text-indigo-300" size="48" />
                     </div>
@@ -113,7 +121,7 @@ const formatDate = (dateString) => {
                 <!-- Materials Grid -->
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div 
-                        v-for="material in filteredMaterials" 
+                        v-for="material in materials" 
                         :key="material.id" 
                         class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col relative group"
                     >

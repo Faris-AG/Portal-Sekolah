@@ -16,7 +16,45 @@ const props = defineProps({
     materials: Array,
     classes: Array,
     subjects: Array,
+    filters: Object,
 });
+
+import { router } from '@inertiajs/vue3';
+
+const searchQuery = ref(props.filters?.search || '');
+const currentClass = ref(props.filters?.class_id || '');
+const currentSubject = ref(props.filters?.subject_id || '');
+let searchTimeout = null;
+
+const onSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 300);
+};
+
+const onFilterChange = () => {
+    applyFilters();
+};
+
+const resetFilters = () => {
+    searchQuery.value = '';
+    currentClass.value = '';
+    currentSubject.value = '';
+    applyFilters();
+};
+
+const applyFilters = () => {
+    router.get(route('guru.materials.index'), {
+        search: searchQuery.value,
+        class_id: currentClass.value,
+        subject_id: currentSubject.value,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+    });
+};
 
 const isCreateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
@@ -103,7 +141,55 @@ const formatDate = (dateString) => {
         </template>
 
         <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+                <!-- Search & Filters -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-2">
+                    <div class="w-full sm:w-1/3 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Library size="16" class="text-gray-400" />
+                        </div>
+                        <input 
+                            type="text" 
+                            v-model="searchQuery" 
+                            @input="onSearch"
+                            placeholder="Cari judul materi..." 
+                            class="pl-10 block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                    </div>
+                    <div class="w-full sm:w-1/4">
+                        <select 
+                            v-model="currentClass" 
+                            @change="onFilterChange"
+                            class="block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                            <option value="">Semua Kelas</option>
+                            <option v-for="cls in classes" :key="cls.id" :value="cls.id">
+                                {{ cls.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="w-full sm:w-1/4">
+                        <select 
+                            v-model="currentSubject" 
+                            @change="onFilterChange"
+                            class="block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                            <option value="">Semua Mapel</option>
+                            <option v-for="subject in subjects" :key="subject.id" :value="subject.id">
+                                {{ subject.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex items-center">
+                        <button 
+                            v-if="searchQuery || currentClass || currentSubject" 
+                            @click="resetFilters"
+                            class="text-sm text-indigo-600 hover:text-indigo-800 font-medium px-2 py-1 transition-colors"
+                        >
+                            Reset Filter
+                        </button>
+                    </div>
+                </div>
                 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div v-if="materials.length === 0" class="text-center py-16 px-4">

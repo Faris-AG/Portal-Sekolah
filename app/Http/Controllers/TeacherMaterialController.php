@@ -15,10 +15,29 @@ class TeacherMaterialController extends Controller
     {
         $teacherId = $request->user()->id;
         
-        $materials = Material::with(['schoolClass', 'subject'])
-            ->where('teacher_id', $teacherId)
-            ->latest()
-            ->get();
+        $search = $request->query('search', '');
+        $classId = $request->query('class_id', '');
+        $subjectId = $request->query('subject_id', '');
+
+        $query = Material::with(['schoolClass', 'subject'])
+            ->where('teacher_id', $teacherId);
+            
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+        
+        if ($classId !== '') {
+            $query->where('school_class_id', $classId);
+        }
+        
+        if ($subjectId !== '') {
+            $query->where('subject_id', $subjectId);
+        }
+
+        $materials = $query->latest()->get();
             
         $classes = SchoolClass::whereIn('id', function($query) use ($teacherId) {
             $query->select('school_class_id')
@@ -33,6 +52,11 @@ class TeacherMaterialController extends Controller
             'materials' => $materials,
             'classes' => $classes,
             'subjects' => $subjects,
+            'filters' => [
+                'search' => $search,
+                'class_id' => $classId,
+                'subject_id' => $subjectId,
+            ],
         ]);
     }
 

@@ -14,21 +14,44 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
     tugas: Array,
+    subjects: Array,
+    filters: Object,
 });
 
-const activeTab = ref('semua'); // 'semua', 'belum', 'selesai'
+import { router } from '@inertiajs/vue3';
 
-const filteredTugas = computed(() => {
-    if (!props.tugas) return [];
-    
-    if (activeTab.value === 'belum') {
-        return props.tugas.filter(t => !hasSubmitted(t));
-    }
-    if (activeTab.value === 'selesai') {
-        return props.tugas.filter(t => hasSubmitted(t));
-    }
-    return props.tugas;
-});
+const activeTab = ref(props.filters?.status || 'semua'); // 'semua', 'belum', 'sudah', 'dinilai', 'terlambat'
+const searchQuery = ref(props.filters?.search || '');
+const currentSubject = ref(props.filters?.subject_id || '');
+let searchTimeout = null;
+
+const onSearch = () => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 300);
+};
+
+const onFilterChange = () => {
+    applyFilters();
+};
+
+const onTabClick = (tab) => {
+    activeTab.value = tab;
+    applyFilters();
+};
+
+const applyFilters = () => {
+    router.get(route('siswa.assignments.index'), {
+        search: searchQuery.value,
+        subject_id: currentSubject.value,
+        status: activeTab.value,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+    });
+};
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -97,77 +120,119 @@ const hasSubmitted = (assignment) => {
         <div class="py-12 bg-gray-50 min-h-screen">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 
-                <!-- Filters -->
-                <div class="flex space-x-2 mb-6 overflow-x-auto pb-2">
+                <!-- Search & Filters -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <div class="w-full sm:w-1/2 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <BookOpen size="16" class="text-gray-400" />
+                        </div>
+                        <input 
+                            type="text" 
+                            v-model="searchQuery" 
+                            @input="onSearch"
+                            placeholder="Cari judul tugas..." 
+                            class="pl-10 block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                    </div>
+                    <div class="w-full sm:w-1/4">
+                        <select 
+                            v-model="currentSubject" 
+                            @change="onFilterChange"
+                            class="block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                            <option value="">Semua Mapel</option>
+                            <option v-for="subject in subjects" :key="subject.id" :value="subject.id">
+                                {{ subject.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex space-x-2 mb-6 overflow-x-auto pb-2 hide-scrollbar">
                     <button 
-                        @click="activeTab = 'semua'"
+                        @click="onTabClick('semua')"
                         class="px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors"
                         :class="activeTab === 'semua' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
                     >
                         Semua Tugas
                     </button>
                     <button 
-                        @click="activeTab = 'belum'"
+                        @click="onTabClick('belum')"
                         class="px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-2"
                         :class="activeTab === 'belum' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
                     >
                         <XCircle size="16" :class="activeTab === 'belum' ? 'text-red-200' : 'text-red-500'" /> Belum Dikumpulkan
                     </button>
                     <button 
-                        @click="activeTab = 'selesai'"
+                        @click="onTabClick('sudah')"
                         class="px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-2"
-                        :class="activeTab === 'selesai' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
+                        :class="activeTab === 'sudah' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
                     >
-                        <CheckCircle size="16" :class="activeTab === 'selesai' ? 'text-green-200' : 'text-green-500'" /> Selesai & Dinilai
+                        <CheckCircle size="16" :class="activeTab === 'sudah' ? 'text-green-200' : 'text-green-500'" /> Sudah Dikumpulkan
+                    </button>
+                    <button 
+                        @click="onTabClick('dinilai')"
+                        class="px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-2"
+                        :class="activeTab === 'dinilai' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
+                    >
+                        <Star size="16" :class="activeTab === 'dinilai' ? 'text-yellow-200' : 'text-yellow-500'" /> Sudah Dinilai
+                    </button>
+                    <button 
+                        @click="onTabClick('terlambat')"
+                        class="px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-2"
+                        :class="activeTab === 'terlambat' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
+                    >
+                        <Clock size="16" :class="activeTab === 'terlambat' ? 'text-orange-200' : 'text-orange-500'" /> Terlambat
                     </button>
                 </div>
 
                 <!-- Assignment List -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div v-if="filteredTugas.length === 0" class="text-center py-16 px-4">
+                    <div v-if="tugas.length === 0" class="text-center py-16 px-4">
                         <FileText class="mx-auto h-16 w-16 text-gray-300 mb-4" />
                         <h3 class="text-lg font-bold text-gray-900 mb-1">Tidak ada tugas</h3>
                         <p class="text-gray-500">Belum ada daftar tugas dalam kategori ini.</p>
                     </div>
 
                     <div v-else class="divide-y divide-gray-100">
-                        <div v-for="tugas in filteredTugas" :key="tugas.id" class="p-6 hover:bg-gray-50 transition-colors">
+                        <div v-for="item in tugas" :key="item.id" class="p-6 hover:bg-gray-50 transition-colors">
                             <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-3">
                                         <span class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                            {{ tugas.subject?.name }}
+                                            {{ item.subject?.name }}
                                         </span>
                                         <span class="text-xs font-medium text-gray-500">
-                                            Guru: {{ tugas.teacher?.name }}
+                                            Guru: {{ item.teacher?.name }}
                                         </span>
                                     </div>
-                                    <h4 class="text-xl font-bold text-gray-900 mb-2">{{ tugas.title }}</h4>
-                                    <p class="text-sm text-gray-600 mb-4 whitespace-pre-line">{{ tugas.description }}</p>
+                                    <h4 class="text-xl font-bold text-gray-900 mb-2">{{ item.title }}</h4>
+                                    <p class="text-sm text-gray-600 mb-4 whitespace-pre-line">{{ item.description }}</p>
                                     
                                     <div class="flex flex-wrap items-center gap-4 text-sm font-medium">
                                         <span class="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-100">
-                                            <Clock size="16" /> Deadline: {{ formatDate(tugas.due_date) }}
+                                            <Clock size="16" /> Deadline: {{ formatDate(item.due_date) }}
                                         </span>
                                     </div>
 
                                     <!-- Feedback Block -->
-                                    <div v-if="hasSubmitted(tugas) && tugas.submissions[0].feedback" class="mt-4 p-4 bg-blue-50/50 rounded-xl border border-blue-100 w-full md:w-3/4">
+                                    <div v-if="hasSubmitted(item) && item.submissions[0].feedback" class="mt-4 p-4 bg-blue-50/50 rounded-xl border border-blue-100 w-full md:w-3/4">
                                         <span class="text-xs font-bold uppercase tracking-wider text-blue-700 mb-2 flex items-center gap-1">
                                             <Star size="14" /> Catatan dari Guru
                                         </span>
-                                        <p class="text-sm text-gray-700 italic">"{{ tugas.submissions[0].feedback }}"</p>
+                                        <p class="text-sm text-gray-700 italic">"{{ item.submissions[0].feedback }}"</p>
                                     </div>
                                 </div>
                                 
                                 <div class="flex flex-col items-start lg:items-end gap-3 min-w-[200px] shrink-0">
-                                    <div v-if="hasSubmitted(tugas)" class="w-full">
+                                    <div v-if="hasSubmitted(item)" class="w-full">
                                         <div class="flex items-center justify-start lg:justify-end gap-2 mb-2">
                                             <div class="inline-flex items-center gap-1.5 text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm">
                                                 <CheckCircle size="16" /> Selesai
                                             </div>
-                                            <div v-if="tugas.submissions[0].grade !== null" class="inline-flex items-center gap-1.5 text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg text-sm font-black shadow-sm text-lg">
-                                                {{ tugas.submissions[0].grade }} / 100
+                                            <div v-if="item.submissions[0].grade !== null" class="inline-flex items-center gap-1.5 text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg text-sm font-black shadow-sm text-lg">
+                                                {{ item.submissions[0].grade }} / 100
                                             </div>
                                         </div>
                                     </div>
@@ -178,14 +243,14 @@ const hasSubmitted = (assignment) => {
                                     </div>
 
                                     <Link 
-                                        :href="route('siswa.assignments.show', tugas.id)"
+                                        :href="route('siswa.assignments.show', item.id)"
                                         class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-sm"
-                                        :class="hasSubmitted(tugas) 
+                                        :class="hasSubmitted(item) 
                                             ? 'bg-white border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50'
                                             : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md'"
                                     >
                                         <UploadCloud size="18" /> 
-                                        {{ hasSubmitted(tugas) ? 'Lihat / Revisi Tugas' : 'Kumpulkan Sekarang' }}
+                                        {{ hasSubmitted(item) ? 'Lihat / Revisi Tugas' : 'Kumpulkan Sekarang' }}
                                     </Link>
                                 </div>
                             </div>

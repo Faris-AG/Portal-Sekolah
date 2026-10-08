@@ -19,9 +19,10 @@ import {
     ChevronLeft,
     ChevronRight,
     Award,
-    Megaphone,
     Library,
-    MessageCircle
+    MessageCircle,
+    Bell,
+    Megaphone
 } from 'lucide-vue-next';
 
 const showingSidebar = ref(false);
@@ -231,8 +232,57 @@ if (userRole === 'admin') {
                     </div>
                 </div>
 
-                <!-- Right side (Profile Dropdown) -->
-                <div class="flex items-center">
+                <!-- Right side (Notifications & Profile Dropdown) -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <!-- Notifications Dropdown -->
+                    <Dropdown align="right" width="80" contentClasses="py-0 bg-white" class="shrink-0">
+                        <template #trigger>
+                            <button type="button" class="relative flex items-center justify-center p-2 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors mt-1">
+                                <Bell size="20" />
+                                <span v-if="$page.props.auth.unread_announcements_count > 0" class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
+                                    {{ $page.props.auth.unread_announcements_count }}
+                                </span>
+                            </button>
+                        </template>
+
+                        <template #content>
+                            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 rounded-t-md">
+                                <h3 class="text-sm font-bold text-gray-900">Pengumuman</h3>
+                                <Link v-if="$page.props.auth.unread_announcements_count > 0" :href="route('announcements.mark_all_read')" method="post" as="button" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                                    Tandai Semua Dibaca
+                                </Link>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                <template v-if="$page.props.auth.latest_announcements?.length > 0">
+                                    <Link 
+                                        v-for="ann in $page.props.auth.latest_announcements" 
+                                        :key="ann.id"
+                                        :href="route('announcements.index')" 
+                                        class="block px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <div class="flex items-start justify-between gap-2">
+                                            <p class="text-sm font-semibold" :class="{'text-gray-900': !ann.is_read, 'text-gray-500': ann.is_read}">
+                                                {{ ann.title }}
+                                            </p>
+                                            <span v-if="!ann.is_read" class="shrink-0 inline-block w-2 h-2 rounded-full bg-indigo-600 mt-1.5 shadow-sm shadow-indigo-200"></span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1 line-clamp-1">{{ ann.content }}</p>
+                                        <p class="text-[10px] text-gray-400 mt-1 font-medium">{{ ann.user?.name }}</p>
+                                    </Link>
+                                </template>
+                                <div v-else class="px-4 py-8 text-center flex flex-col items-center justify-center">
+                                    <Bell class="h-8 w-8 text-gray-300 mb-2" />
+                                    <p class="text-sm text-gray-500">Tidak ada pengumuman terbaru.</p>
+                                </div>
+                            </div>
+                            <div class="p-2 border-t border-gray-100">
+                                <Link :href="route('announcements.index')" class="block w-full text-center px-4 py-2.5 text-sm font-bold text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-md transition-colors">
+                                    Lihat Semua Pengumuman
+                                </Link>
+                            </div>
+                        </template>
+                    </Dropdown>
+
                     <Dropdown align="right" width="48">
                         <template #trigger>
                             <button type="button" class="flex items-center gap-2 rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-1 border border-transparent hover:border-gray-200 transition-colors">

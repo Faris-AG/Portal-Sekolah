@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // 2. Create Subjects
+        // 2. Create Subjects (14 Subjects to have 14 Teachers)
         $subjectNames = [
             'Matematika Wajib' => 'MTK',
             'Bahasa Indonesia' => 'BIND',
@@ -41,7 +41,9 @@ class DatabaseSeeder extends Seeder
             'Geografi' => 'GEO',
             'Pendidikan Jasmani (PJOK)' => 'PJK',
             'Pendidikan Agama Islam (PAI)' => 'PAI',
-            'Informatika' => 'INF'
+            'Informatika' => 'INF',
+            'Seni Budaya' => 'SBD',
+            'Prakarya' => 'PRK'
         ];
 
         $subjects = [];
@@ -53,13 +55,12 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 3. Create Teachers — exactly one per subject, no extras
-        // With 12 subjects and 6 classes, each teacher will serve multiple classes
+        // 3. Create Teachers — exactly one per subject, so 14 teachers
         $teachers = [];
         $emails = [
             'guru.mtk', 'guru.bindo', 'guru.bing', 'guru.fisika', 'guru.kimia',
             'guru.biologi', 'guru.sejarah', 'guru.ekonomi', 'guru.geografi',
-            'guru.pjok', 'guru.pai', 'guru.informatika'
+            'guru.pjok', 'guru.pai', 'guru.informatika', 'guru.seni', 'guru.prakarya'
         ];
         
         $i = 0;
@@ -226,26 +227,32 @@ class DatabaseSeeder extends Seeder
         ]);
         // 8. Add Dummy Announcements
         $admin = User::where('role', 'admin')->first();
-        \App\Models\Announcement::create([
+        $announcement1 = \App\Models\Announcement::create([
             'user_id' => $admin->id,
             'title' => 'Pemberitahuan Penilaian Akhir Semester (PAS)',
             'content' => 'Diberitahukan kepada seluruh siswa dan guru bahwa Penilaian Akhir Semester (PAS) Ganjil Tahun Ajaran ini akan dilaksanakan mulai tanggal 15 Desember 2026. Harap persiapkan diri dan materi dengan baik.',
             'target_role' => 'all',
         ]);
         
-        \App\Models\Announcement::create([
+        $announcement2 = \App\Models\Announcement::create([
             'user_id' => $admin->id,
             'title' => 'Rapat Evaluasi Guru',
             'content' => 'Diingatkan kepada seluruh dewan guru untuk menghadiri rapat evaluasi bulanan yang akan diadakan pada hari Jumat pukul 14:00 di ruang guru.',
             'target_role' => 'guru',
         ]);
 
-        \App\Models\Announcement::create([
+        $announcement3 = \App\Models\Announcement::create([
             'user_id' => $admin->id,
             'title' => 'Jadwal Ekstrakurikuler Wajib Pramuka',
             'content' => 'Bagi seluruh siswa kelas X, kegiatan ekstrakurikuler wajib Pramuka akan diadakan setiap hari Sabtu pagi mulai pukul 07:30. Kehadiran wajib dan akan masuk ke dalam nilai rapor.',
             'target_role' => 'siswa',
         ]);
+
+        // Seeding pivot for announcements read_at
+        // Let's mark the first announcement as read by our main test user (Andi Utama)
+        $siswa->readAnnouncements()->attach($announcement1->id, ['read_at' => Carbon::now()]);
+        // Let's mark the second announcement as read by the first teacher
+        $teachers[0]->readAnnouncements()->attach($announcement2->id, ['read_at' => Carbon::now()]);
 
         // 9. Add Dummy Materials
         $guruMtk = collect($teachers)->firstWhere('subject_id', $subjects['Matematika Wajib']->id);

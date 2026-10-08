@@ -12,10 +12,24 @@ class StudentMaterialController extends Controller
     {
         $user = $request->user();
         
-        $materials = Material::with(['subject', 'teacher'])
-            ->where('school_class_id', $user->class_id)
-            ->latest()
-            ->get();
+        $search = $request->query('search', '');
+        $subjectId = $request->query('subject_id', 'all');
+        
+        $query = Material::with(['subject', 'teacher'])
+            ->where('school_class_id', $user->class_id);
+            
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+        
+        if ($subjectId !== 'all' && $subjectId !== '') {
+            $query->where('subject_id', $subjectId);
+        }
+            
+        $materials = $query->latest()->get();
             
         // Group materials by subject for the filter tabs
         $subjects = $materials->map(function ($material) {
@@ -25,6 +39,10 @@ class StudentMaterialController extends Controller
         return Inertia::render('Siswa/Materials/Index', [
             'materials' => $materials,
             'subjects' => $subjects,
+            'filters' => [
+                'search' => $search,
+                'subject_id' => $subjectId,
+            ]
         ]);
     }
 }

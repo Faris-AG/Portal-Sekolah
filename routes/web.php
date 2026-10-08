@@ -109,6 +109,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    Route::get('/announcements', [\App\Http\Controllers\GlobalAnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('/announcements/mark-all-read', [\App\Http\Controllers\GlobalAnnouncementController::class, 'markAllAsRead'])->name('announcements.mark_all_read');
+    Route::post('/announcements/{id}/read', [\App\Http\Controllers\GlobalAnnouncementController::class, 'markAsRead'])->name('announcements.mark_read');
 });
 
 require __DIR__.'/auth.php';

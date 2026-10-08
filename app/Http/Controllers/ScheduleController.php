@@ -14,7 +14,13 @@ class ScheduleController extends Controller
 {
     public function index(Request $request)
     {
+        $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
         $classId = $request->query('class_id');
+        
+        if (!$classId && $classes->isNotEmpty()) {
+            $classId = $classes->first()->id;
+        }
+
         $schedules = [];
 
         if ($classId) {
@@ -33,7 +39,7 @@ class ScheduleController extends Controller
 
         return Inertia::render('Admin/Schedules/Index', [
             'schedules' => $schedules,
-            'classes' => SchoolClass::orderBy('grade_level')->orderBy('name')->get(),
+            'classes' => $classes,
             'subjects' => Subject::orderBy('name')->get(),
             'teachers' => User::where('role', 'guru')->orderBy('name')->get(),
             'selectedClass' => $classId
