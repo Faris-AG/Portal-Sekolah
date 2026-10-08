@@ -9,6 +9,8 @@ use App\Models\Schedule;
 use App\Models\Assignment;
 use App\Models\Submission;
 use App\Models\Attendance;
+use App\Models\ForumTopic;
+use App\Models\ForumReply;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -194,86 +196,180 @@ class DatabaseSeeder extends Seeder
             }
         }
         
-        // 7. Add Some Dummy Assignments & Submissions
-        $assignment = Assignment::create([
+        // 7. Add Dummy Assignments & Submissions
+        $assignmentActive = Assignment::create([
             'teacher_id' => $teachers[0]->id,
             'school_class_id' => $classes[0]->id,
             'subject_id' => $teachers[0]->subject_id,
-            'title' => 'Tugas ' . $teachers[0]->subject->name,
+            'title' => 'Tugas ' . $teachers[0]->subject->name . ' - Bab 1',
             'description' => 'Kerjakan LKS halaman 12-15 bagian A dan B.',
-            'due_date' => Carbon::now()->addDays(2)->format('Y-m-d 23:59:00'),
+            'due_date' => Carbon::now()->addDays(3)->format('Y-m-d 23:59:00'),
         ]);
 
-        $siswa = User::where('email', 'siswa@sekolah.test')->first();
+        $assignmentPast = Assignment::create([
+            'teacher_id' => $teachers[0]->id,
+            'school_class_id' => $classes[0]->id,
+            'subject_id' => $teachers[0]->subject_id,
+            'title' => 'Tugas ' . $teachers[0]->subject->name . ' - Pendahuluan',
+            'description' => 'Buatlah rangkuman materi dari presentasi minggu lalu.',
+            'due_date' => Carbon::now()->subDays(1)->format('Y-m-d 23:59:00'),
+        ]);
+
+        $siswaList = User::where('role', 'siswa')->where('class_id', $classes[0]->id)->get();
+        
+        // Submission for active assignment
         Submission::create([
-            'assignment_id' => $assignment->id,
-            'student_id' => $siswa->id,
-            'file_path' => 'dummy/path.pdf',
-            'file_name' => 'Tugas_Andi.pdf',
+            'assignment_id' => $assignmentActive->id,
+            'student_id' => $siswaList[0]->id, // Andi Utama
+            'file_path' => 'dummy/path1.pdf',
+            'file_name' => 'Tugas_Bab_1_Andi.pdf',
             'note' => 'Ini tugas saya pak',
             'submitted_at' => Carbon::now()->subHours(2),
-            'grade' => 85,
-            'feedback' => 'Sudah cukup baik.',
+            'grade' => null, // Belum dinilai
+            'feedback' => null,
+        ]);
+        
+        // Late submission for past assignment
+        Submission::create([
+            'assignment_id' => $assignmentPast->id,
+            'student_id' => $siswaList[1]->id, 
+            'file_path' => 'dummy/path2.pdf',
+            'file_name' => 'Rangkuman_Siswa2.pdf',
+            'note' => 'Maaf telat pak',
+            'submitted_at' => Carbon::now()->subHours(2), // Submitted after due date
+            'grade' => 75,
+            'feedback' => 'Terlambat, tolong perhatikan tenggat waktu.',
         ]);
 
-        // Attendance
-        Attendance::create([
-            'school_class_id' => $classes[0]->id,
-            'student_id' => $siswa->id,
-            'teacher_id' => $teachers[0]->id,
-            'subject_id' => $teachers[0]->subject_id,
-            'date' => Carbon::today()->format('Y-m-d'),
-            'status' => 'hadir',
+        // Graded submission for past assignment
+        Submission::create([
+            'assignment_id' => $assignmentPast->id,
+            'student_id' => $siswaList[0]->id, // Andi Utama
+            'file_path' => 'dummy/path3.pdf',
+            'file_name' => 'Rangkuman_Andi.pdf',
+            'note' => 'Sudah lengkap beserta sumbernya.',
+            'submitted_at' => Carbon::now()->subDays(2), // Submitted on time
+            'grade' => 95,
+            'feedback' => 'Sangat baik dan komprehensif!',
         ]);
+
+        // Attendance - 7 days history
+        for ($d = 6; $d >= 0; $d--) {
+            $date = Carbon::today()->subDays($d)->format('Y-m-d');
+            
+            foreach ($siswaList as $index => $s) {
+                $status = 'hadir';
+                $note = null;
+                
+                // Randomize a few absences
+                if ($d == 2 && $index == 1) {
+                    $status = 'sakit';
+                    $note = 'Demam, surat dokter terlampir';
+                } elseif ($d == 5 && $index == 2) {
+                    $status = 'izin';
+                    $note = 'Acara keluarga';
+                }
+
+                Attendance::create([
+                    'school_class_id' => $classes[0]->id,
+                    'student_id' => $s->id,
+                    'teacher_id' => $teachers[0]->id,
+                    'subject_id' => $teachers[0]->subject_id,
+                    'date' => $date,
+                    'status' => $status,
+                    'note' => $note,
+                ]);
+            }
+        }
+
         // 8. Add Dummy Announcements
         $admin = User::where('role', 'admin')->first();
         $announcement1 = \App\Models\Announcement::create([
             'user_id' => $admin->id,
-            'title' => 'Pemberitahuan Penilaian Akhir Semester (PAS)',
-            'content' => 'Diberitahukan kepada seluruh siswa dan guru bahwa Penilaian Akhir Semester (PAS) Ganjil Tahun Ajaran ini akan dilaksanakan mulai tanggal 15 Desember 2026. Harap persiapkan diri dan materi dengan baik.',
+            'title' => 'Jadwal Ujian Tengah Semester (UTS)',
+            'content' => 'Diberitahukan kepada seluruh siswa dan guru bahwa Ujian Tengah Semester (UTS) akan dilaksanakan mulai minggu depan. Harap persiapkan diri dan materi dengan baik.',
             'target_role' => 'all',
         ]);
         
         $announcement2 = \App\Models\Announcement::create([
             'user_id' => $admin->id,
-            'title' => 'Rapat Evaluasi Guru',
-            'content' => 'Diingatkan kepada seluruh dewan guru untuk menghadiri rapat evaluasi bulanan yang akan diadakan pada hari Jumat pukul 14:00 di ruang guru.',
-            'target_role' => 'guru',
+            'title' => 'Edaran Libur Nasional',
+            'content' => 'Sehubungan dengan hari libur nasional pada hari Jumat ini, maka seluruh kegiatan belajar mengajar diliburkan.',
+            'target_role' => 'all',
         ]);
 
         $announcement3 = \App\Models\Announcement::create([
             'user_id' => $admin->id,
-            'title' => 'Jadwal Ekstrakurikuler Wajib Pramuka',
-            'content' => 'Bagi seluruh siswa kelas X, kegiatan ekstrakurikuler wajib Pramuka akan diadakan setiap hari Sabtu pagi mulai pukul 07:30. Kehadiran wajib dan akan masuk ke dalam nilai rapor.',
+            'title' => 'Pembaruan Tata Tertib Sekolah',
+            'content' => 'Mohon diperhatikan pembaruan mengenai tata tertib seragam sekolah yang berlaku mulai bulan depan.',
             'target_role' => 'siswa',
         ]);
 
         // Seeding pivot for announcements read_at
-        // Let's mark the first announcement as read by our main test user (Andi Utama)
+        $siswa = User::where('email', 'siswa@sekolah.test')->first();
         $siswa->readAnnouncements()->attach($announcement1->id, ['read_at' => Carbon::now()]);
-        // Let's mark the second announcement as read by the first teacher
         $teachers[0]->readAnnouncements()->attach($announcement2->id, ['read_at' => Carbon::now()]);
 
         // 9. Add Dummy Materials
         $guruMtk = collect($teachers)->firstWhere('subject_id', $subjects['Matematika Wajib']->id);
         $guruFisika = collect($teachers)->firstWhere('subject_id', $subjects['Fisika']->id);
+        $guruBindo = collect($teachers)->firstWhere('subject_id', $subjects['Bahasa Indonesia']->id);
 
-        \App\Models\Material::create([
-            'teacher_id' => $guruMtk->id,
-            'school_class_id' => $classes[0]->id, // X MIPA 1
-            'subject_id' => $guruMtk->subject_id,
-            'title' => 'Modul 1: Persamaan Linear Tiga Variabel',
-            'description' => 'Materi pengantar untuk sistem persamaan linear tiga variabel (SPLTV). Silakan pelajari slide yang dilampirkan.',
-            'link_url' => 'https://www.google.com/search?q=spltv',
+        $matMtk = ['Persamaan Linear Tiga Variabel', 'Fungsi Kuadrat', 'Trigonometri Dasar'];
+        foreach ($matMtk as $idx => $m) {
+            \App\Models\Material::create([
+                'teacher_id' => $guruMtk->id,
+                'school_class_id' => $classes[0]->id,
+                'subject_id' => $guruMtk->subject_id,
+                'title' => 'Modul ' . ($idx + 1) . ': ' . $m,
+                'description' => 'Materi ' . $m . ' silakan dipelajari.',
+                'link_url' => 'https://example.com/mtk-' . ($idx + 1),
+            ]);
+        }
+
+        $matFis = ['Hukum Newton', 'Gerak Parabola', 'Usaha dan Energi'];
+        foreach ($matFis as $idx => $m) {
+            \App\Models\Material::create([
+                'teacher_id' => $guruFisika->id,
+                'school_class_id' => $classes[0]->id,
+                'subject_id' => $guruFisika->subject_id,
+                'title' => 'Materi: ' . $m,
+                'description' => 'Video pembelajaran ' . $m,
+                'link_url' => 'https://youtube.com/watch?v=123456',
+            ]);
+        }
+
+        // 10. Add Dummy Forum Topics & Replies
+        $topic1 = ForumTopic::create([
+            'school_class_id' => $classes[0]->id,
+            'user_id' => $siswaList[1]->id,
+            'title' => 'Tanya soal Tugas Bab 1 (SPLTV)',
+            'content' => 'Permisi pak, untuk soal no 3 di LKS cara eliminasinya bagaimana ya? Saya agak bingung menentukan persamaan mana yang dieliminasi duluan.',
         ]);
 
-        \App\Models\Material::create([
-            'teacher_id' => $guruFisika->id,
-            'school_class_id' => $classes[0]->id, // X MIPA 1
-            'subject_id' => $guruFisika->subject_id,
-            'title' => 'Video Pembelajaran: Hukum Newton',
-            'description' => 'Tonton video ini sebelum kelas besok. Kita akan membahas penerapannya dalam kehidupan sehari-hari.',
-            'link_url' => 'https://www.youtube.com/watch?v=123456',
+        ForumReply::create([
+            'forum_topic_id' => $topic1->id,
+            'user_id' => $guruMtk->id,
+            'content' => 'Halo nak, untuk soal no 3, kamu bisa mulai dengan mengeliminasi variabel Z terlebih dahulu dari persamaan 1 dan 2. Coba perhatikan lagi contoh di modul.',
+        ]);
+
+        ForumReply::create([
+            'forum_topic_id' => $topic1->id,
+            'user_id' => $siswaList[0]->id,
+            'content' => 'Oh pantes, aku juga stuck di situ. Makasih infonya pak!',
+        ]);
+
+        $topic2 = ForumTopic::create([
+            'school_class_id' => $classes[0]->id,
+            'user_id' => $guruFisika->id,
+            'title' => 'Diskusi Hukum Newton (Aplikasi di Dunia Nyata)',
+            'content' => 'Silakan sebutkan satu contoh penerapan Hukum 3 Newton dalam kehidupan sehari-hari kalian ya.',
+        ]);
+
+        ForumReply::create([
+            'forum_topic_id' => $topic2->id,
+            'user_id' => $siswaList[2]->id,
+            'content' => 'Saat kita mendayung perahu pak. Kita mendorong air ke belakang (aksi), dan air mendorong perahu ke depan (reaksi).',
         ]);
     }
 }
