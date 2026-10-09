@@ -16,6 +16,9 @@ class StudentController extends Controller
         $direction = $request->query('direction', 'asc');
         $perPage = $request->query('per_page', 10);
 
+        $search = $request->query('search', '');
+        $classFilter = $request->query('class_id', '');
+
         // Define allowed sort columns to prevent SQL injection
         $allowedSorts = ['name', 'email', 'class_id'];
         if (!in_array($sortBy, $allowedSorts)) {
@@ -26,6 +29,21 @@ class StudentController extends Controller
         }
 
         $query = User::where('role', 'siswa')->with('schoolClass');
+        
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+        
+        if ($classFilter !== '') {
+            if ($classFilter === 'null') {
+                $query->whereNull('class_id');
+            } else {
+                $query->where('class_id', $classFilter);
+            }
+        }
         
         if ($sortBy === 'class_id') {
             // Sort by relation (simplified by sorting the foreign key)
@@ -45,6 +63,8 @@ class StudentController extends Controller
                 'sort_by' => $sortBy,
                 'direction' => $direction,
                 'per_page' => $perPage,
+                'search' => $search,
+                'class_id' => $classFilter,
             ]
         ]);
     }

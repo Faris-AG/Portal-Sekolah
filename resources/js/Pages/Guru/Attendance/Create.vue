@@ -221,7 +221,6 @@ const statusColors = {
                                                 v-model="attendanceForm.attendances[index].note"
                                                 class="block w-full text-sm border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                                 placeholder="Keterangan..."
-                                                :disabled="attendanceForm.attendances[index].status === 'hadir'"
                                             />
                                         </td>
                                     </tr>

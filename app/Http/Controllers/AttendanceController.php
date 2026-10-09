@@ -13,6 +13,62 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
+    public function index(Request $request)
+    {
+        $teacherId = auth()->id();
+        
+        $schedules = Schedule::where('teacher_id', $teacherId)->with(['schoolClass', 'subject'])->get();
+        $classes = $schedules->pluck('schoolClass')->unique('id')->values();
+        $subjects = $schedules->pluck('subject')->unique('id')->values();
+
+        $selectedClassId = $request->query('school_class_id');
+        $selectedSubjectId = $request->query('subject_id');
+        $month = $request->query('month', Carbon::today()->format('Y-m'));
+
+        $attendances = [];
+        $students = [];
+        $report = [];
+
+        if ($selectedClassId) {
+            $students = User::where('role', 'siswa')
+                            ->where('class_id', $selectedClassId)
+                            ->orderBy('name', 'asc')
+                            ->get();
+
+            $query = Attendance::where('school_class_id', $selectedClassId)
+                ->where('date', 'like', $month . '%');
+                
+            if ($selectedSubjectId) {
+                $query->where('subject_id', $selectedSubjectId);
+            }
+
+            $attendances = $query->get();
+            
+            foreach ($students as $student) {
+                $studentAtts = $attendances->where('student_id', $student->id);
+                $report[] = [
+                    'student' => $student,
+                    'hadir' => $studentAtts->where('status', 'hadir')->count(),
+                    'sakit' => $studentAtts->where('status', 'sakit')->count(),
+                    'izin' => $studentAtts->where('status', 'izin')->count(),
+                    'alpa' => $studentAtts->where('status', 'alpa')->count(),
+                    'total' => $studentAtts->count()
+                ];
+            }
+        }
+
+        return Inertia::render('Guru/Attendance/Index', [
+            'classes' => $classes,
+            'subjects' => $subjects,
+            'report' => $report,
+            'filters' => [
+                'school_class_id' => $selectedClassId,
+                'subject_id' => $selectedSubjectId,
+                'month' => $month,
+            ]
+        ]);
+    }
+
     public function create(Request $request)
     {
         $teacherId = auth()->id();

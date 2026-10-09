@@ -29,6 +29,7 @@ class AssignmentController extends Controller
         $sortBy = $request->query('sort_by', 'student_name');
         $direction = $request->query('direction', 'asc');
         $perPage = $request->query('per_page', 25);
+        $search = $request->query('search', '');
 
         $allowedSorts = ['student_name', 'grade', 'submitted_at'];
         if (!in_array($sortBy, $allowedSorts)) {
@@ -52,6 +53,10 @@ class AssignmentController extends Controller
             })
             ->select('users.id as student_id', 'users.name as student_name', 'users.email as student_email', 'submissions.id as submission_id', 'submissions.grade', 'submissions.submitted_at', 'submissions.file_path', 'submissions.file_name', 'submissions.note', 'submissions.feedback');
             
+        if (!empty($search)) {
+            $studentsQuery->where('users.name', 'like', '%' . $search . '%');
+        }
+            
         if ($sortBy === 'student_name') {
             $studentsQuery->orderBy('users.name', $direction);
         } else if ($sortBy === 'grade') {
@@ -69,6 +74,7 @@ class AssignmentController extends Controller
                 'sort_by' => $sortBy,
                 'direction' => $direction,
                 'per_page' => $perPage,
+                'search' => $search,
             ]
         ]);
     }

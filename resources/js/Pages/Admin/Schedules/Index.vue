@@ -19,6 +19,7 @@ const props = defineProps({
 });
 
 const currentClassFilter = ref(props.selectedClass || '');
+const currentDayFilter = ref('Semua'); // 'Semua', 'Senin', 'Selasa', dll.
 const isModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const scheduleToDelete = ref(null);
@@ -41,7 +42,7 @@ const onClassFilterChange = () => {
     router.get(
         route('admin.schedules.index'),
         { class_id: currentClassFilter.value },
-        { preserveState: true }
+        { preserveState: true, replace: true }
     );
 };
 
@@ -90,6 +91,13 @@ const deleteSchedule = () => {
 
 const daysOfWeek = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
+const displayedDays = computed(() => {
+    if (currentDayFilter.value === 'Semua') {
+        return daysOfWeek;
+    }
+    return [currentDayFilter.value];
+});
+
 const formatTime = (timeString) => {
     if (!timeString) return '';
     // timeString is like "07:30:00"
@@ -119,20 +127,42 @@ const formatTime = (timeString) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
                 
                 <!-- Filter Section -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center gap-4 justify-between">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-end gap-6 justify-between">
                     <div class="flex-1 max-w-sm">
-                        <InputLabel for="filter_class" value="Pilih Kelas untuk melihat jadwal:" class="mb-1" />
+                        <InputLabel for="filter_class" value="Pilih Kelas:" class="mb-1" />
                         <select
                             id="filter_class"
                             v-model="currentClassFilter"
                             @change="onClassFilterChange"
-                            class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
                         >
                             <option value="">-- Silakan Pilih Kelas --</option>
                             <option v-for="cls in classes" :key="cls.id" :value="cls.id">
                                 {{ cls.name }} (Tingkat {{ cls.grade_level }})
                             </option>
                         </select>
+                    </div>
+                    
+                    <div v-if="currentClassFilter" class="flex-1 max-w-full overflow-x-auto hide-scrollbar pb-1">
+                        <InputLabel value="Pilih Hari:" class="mb-2" />
+                        <div class="flex gap-2">
+                            <button 
+                                @click="currentDayFilter = 'Semua'"
+                                class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all"
+                                :class="currentDayFilter === 'Semua' ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                            >
+                                Semua Hari
+                            </button>
+                            <button 
+                                v-for="day in daysOfWeek" 
+                                :key="day"
+                                @click="currentDayFilter = day"
+                                class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all"
+                                :class="currentDayFilter === day ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                            >
+                                {{ day }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -158,7 +188,7 @@ const formatTime = (timeString) => {
                 </div>
 
                 <div v-else class="space-y-6">
-                    <div v-for="day in daysOfWeek" :key="day" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div v-for="day in displayedDays" :key="day" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="bg-gray-50/80 border-b border-gray-100 px-6 py-4 flex items-center gap-2">
                             <h3 class="text-lg font-bold text-gray-900">{{ day }}</h3>
                         </div>
@@ -358,3 +388,13 @@ const formatTime = (timeString) => {
         </Modal>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+</style>
