@@ -197,61 +197,9 @@ class DatabaseSeeder extends Seeder
         }
         
         // 7. Add Dummy Assignments & Submissions
-        $assignmentActive = Assignment::create([
-            'teacher_id' => $teachers[0]->id,
-            'school_class_id' => $classes[0]->id,
-            'subject_id' => $teachers[0]->subject_id,
-            'title' => 'Tugas ' . $teachers[0]->subject->name . ' - Bab 1',
-            'description' => 'Kerjakan LKS halaman 12-15 bagian A dan B.',
-            'due_date' => Carbon::now()->addDays(3)->format('Y-m-d 23:59:00'),
-        ]);
-
-        $assignmentPast = Assignment::create([
-            'teacher_id' => $teachers[0]->id,
-            'school_class_id' => $classes[0]->id,
-            'subject_id' => $teachers[0]->subject_id,
-            'title' => 'Tugas ' . $teachers[0]->subject->name . ' - Pendahuluan',
-            'description' => 'Buatlah rangkuman materi dari presentasi minggu lalu.',
-            'due_date' => Carbon::now()->subDays(1)->format('Y-m-d 23:59:00'),
-        ]);
+        $this->call(AssignmentSeeder::class);
 
         $siswaList = User::where('role', 'siswa')->where('class_id', $classes[0]->id)->get();
-        
-        // Submission for active assignment
-        Submission::create([
-            'assignment_id' => $assignmentActive->id,
-            'student_id' => $siswaList[0]->id, // Andi Utama
-            'file_path' => 'dummy/path1.pdf',
-            'file_name' => 'Tugas_Bab_1_Andi.pdf',
-            'note' => 'Ini tugas saya pak',
-            'submitted_at' => Carbon::now()->subHours(2),
-            'grade' => null, // Belum dinilai
-            'feedback' => null,
-        ]);
-        
-        // Late submission for past assignment
-        Submission::create([
-            'assignment_id' => $assignmentPast->id,
-            'student_id' => $siswaList[1]->id, 
-            'file_path' => 'dummy/path2.pdf',
-            'file_name' => 'Rangkuman_Siswa2.pdf',
-            'note' => 'Maaf telat pak',
-            'submitted_at' => Carbon::now()->subHours(2), // Submitted after due date
-            'grade' => 75,
-            'feedback' => 'Terlambat, tolong perhatikan tenggat waktu.',
-        ]);
-
-        // Graded submission for past assignment
-        Submission::create([
-            'assignment_id' => $assignmentPast->id,
-            'student_id' => $siswaList[0]->id, // Andi Utama
-            'file_path' => 'dummy/path3.pdf',
-            'file_name' => 'Rangkuman_Andi.pdf',
-            'note' => 'Sudah lengkap beserta sumbernya.',
-            'submitted_at' => Carbon::now()->subDays(2), // Submitted on time
-            'grade' => 95,
-            'feedback' => 'Sangat baik dan komprehensif!',
-        ]);
 
         // Attendance - 7 days history
         for ($d = 6; $d >= 0; $d--) {
@@ -310,66 +258,10 @@ class DatabaseSeeder extends Seeder
         $siswa->readAnnouncements()->attach($announcement1->id, ['read_at' => Carbon::now()]);
         $teachers[0]->readAnnouncements()->attach($announcement2->id, ['read_at' => Carbon::now()]);
 
-        // 9. Add Dummy Materials
-        $guruMtk = collect($teachers)->firstWhere('subject_id', $subjects['Matematika Wajib']->id);
-        $guruFisika = collect($teachers)->firstWhere('subject_id', $subjects['Fisika']->id);
-        $guruBindo = collect($teachers)->firstWhere('subject_id', $subjects['Bahasa Indonesia']->id);
+        // 9. Add Dummy Materials for all classes and subjects
+        $this->call(MaterialSeeder::class);
 
-        $matMtk = ['Persamaan Linear Tiga Variabel', 'Fungsi Kuadrat', 'Trigonometri Dasar'];
-        foreach ($matMtk as $idx => $m) {
-            \App\Models\Material::create([
-                'teacher_id' => $guruMtk->id,
-                'school_class_id' => $classes[0]->id,
-                'subject_id' => $guruMtk->subject_id,
-                'title' => 'Modul ' . ($idx + 1) . ': ' . $m,
-                'description' => 'Materi ' . $m . ' silakan dipelajari.',
-                'link_url' => 'https://example.com/mtk-' . ($idx + 1),
-            ]);
-        }
-
-        $matFis = ['Hukum Newton', 'Gerak Parabola', 'Usaha dan Energi'];
-        foreach ($matFis as $idx => $m) {
-            \App\Models\Material::create([
-                'teacher_id' => $guruFisika->id,
-                'school_class_id' => $classes[0]->id,
-                'subject_id' => $guruFisika->subject_id,
-                'title' => 'Materi: ' . $m,
-                'description' => 'Video pembelajaran ' . $m,
-                'link_url' => 'https://youtube.com/watch?v=123456',
-            ]);
-        }
-
-        // 10. Add Dummy Forum Topics & Replies
-        $topic1 = ForumTopic::create([
-            'school_class_id' => $classes[0]->id,
-            'user_id' => $siswaList[1]->id,
-            'title' => 'Tanya soal Tugas Bab 1 (SPLTV)',
-            'content' => 'Permisi pak, untuk soal no 3 di LKS cara eliminasinya bagaimana ya? Saya agak bingung menentukan persamaan mana yang dieliminasi duluan.',
-        ]);
-
-        ForumReply::create([
-            'forum_topic_id' => $topic1->id,
-            'user_id' => $guruMtk->id,
-            'content' => 'Halo nak, untuk soal no 3, kamu bisa mulai dengan mengeliminasi variabel Z terlebih dahulu dari persamaan 1 dan 2. Coba perhatikan lagi contoh di modul.',
-        ]);
-
-        ForumReply::create([
-            'forum_topic_id' => $topic1->id,
-            'user_id' => $siswaList[0]->id,
-            'content' => 'Oh pantes, aku juga stuck di situ. Makasih infonya pak!',
-        ]);
-
-        $topic2 = ForumTopic::create([
-            'school_class_id' => $classes[0]->id,
-            'user_id' => $guruFisika->id,
-            'title' => 'Diskusi Hukum Newton (Aplikasi di Dunia Nyata)',
-            'content' => 'Silakan sebutkan satu contoh penerapan Hukum 3 Newton dalam kehidupan sehari-hari kalian ya.',
-        ]);
-
-        ForumReply::create([
-            'forum_topic_id' => $topic2->id,
-            'user_id' => $siswaList[2]->id,
-            'content' => 'Saat kita mendayung perahu pak. Kita mendorong air ke belakang (aksi), dan air mendorong perahu ke depan (reaksi).',
-        ]);
+        // 10. Add Dummy Forum Topics & Replies for all classes
+        $this->call(ForumSeeder::class);
     }
 }
