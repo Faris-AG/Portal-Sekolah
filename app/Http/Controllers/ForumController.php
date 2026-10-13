@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\SchoolClass;
 use App\Models\ForumTopic;
 use App\Models\ForumReply;
+use App\Services\ProfanityFilterService;
 
 class ForumController extends Controller
 {
@@ -78,14 +79,29 @@ class ForumController extends Controller
             abort(403);
         }
 
+        // Sensor kata kasar sebelum disimpan ke database
+        $filter  = new ProfanityFilterService();
+        $rawTitle   = $request->title;
+        $rawContent = $request->content;
+
+        $filteredTitle   = $filter->filter($rawTitle);
+        $filteredContent = $filter->filter($rawContent);
+
+        $wasFiltered = ($filteredTitle !== $rawTitle || $filteredContent !== $rawContent);
+
         ForumTopic::create([
             'school_class_id' => $request->school_class_id,
-            'user_id' => $user->id,
-            'title' => $request->title,
-            'content' => $request->content,
+            'user_id'         => $user->id,
+            'title'           => $filteredTitle,
+            'content'         => $filteredContent,
         ]);
 
-        return back()->with('success', 'Topik diskusi berhasil dibuat.');
+        $flashData = ['success' => 'Topik diskusi berhasil dibuat.'];
+        if ($wasFiltered) {
+            $flashData['profanity_detected'] = 'Beberapa kata dalam postingan Anda telah disensor secara otomatis sesuai aturan komunitas.';
+        }
+
+        return back()->with($flashData);
     }
 
     public function storeReply(Request $request, $id)
@@ -101,15 +117,26 @@ class ForumController extends Controller
             abort(403);
         }
 
+        // Sensor kata kasar sebelum disimpan ke database
+        $filter     = new ProfanityFilterService();
+        $rawContent = $request->content;
+        $filteredContent = $filter->filter($rawContent);
+        $wasFiltered     = ($filteredContent !== $rawContent);
+
         ForumReply::create([
             'forum_topic_id' => $topic->id,
-            'user_id' => $user->id,
-            'content' => $request->content,
+            'user_id'        => $user->id,
+            'content'        => $filteredContent,
         ]);
-        
+
         // Update topic updated_at so it bumps to the top
         $topic->touch();
 
-        return back()->with('success', 'Balasan berhasil dikirim.');
+        $flashData = ['success' => 'Balasan berhasil dikirim.'];
+        if ($wasFiltered) {
+            $flashData['profanity_detected'] = 'Beberapa kata dalam balasan Anda telah disensor secara otomatis sesuai aturan komunitas.';
+        }
+
+        return back()->with($flashData);
     }
 }

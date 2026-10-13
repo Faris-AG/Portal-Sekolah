@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
-import { MessageCircle, Search, Plus, MessageSquare, Clock, User } from 'lucide-vue-next';
+import { MessageCircle, Search, Plus, MessageSquare, Clock, User, AlertTriangle } from 'lucide-vue-next';
 
 const props = defineProps({
     topics: Array,
@@ -11,8 +11,23 @@ const props = defineProps({
     filters: Object,
 });
 
-const userRole = usePage().props.auth.user.role;
+const page = usePage();
+const userRole = page.props.auth.user.role;
 const isStudent = userRole === 'siswa';
+
+// Deteksi flash message profanity_detected dari backend
+const showProfanityAlert = ref(false);
+watch(
+    () => page.props.flash?.profanity_detected,
+    (msg) => {
+        if (msg) {
+            showProfanityAlert.value = true;
+            setTimeout(() => { showProfanityAlert.value = false; }, 6000);
+        }
+    },
+    { immediate: true }
+);
+const profanityMessage = computed(() => page.props.flash?.profanity_detected ?? '');
 
 const filterForm = ref({
     school_class_id: props.filters.school_class_id || '',
@@ -103,6 +118,32 @@ watch(
                         </select>
                     </div>
                 </div>
+
+                <!-- Profanity Alert Banner -->
+                <transition
+                    enter-active-class="transition ease-out duration-300"
+                    enter-from-class="opacity-0 -translate-y-2"
+                    enter-to-class="opacity-100 translate-y-0"
+                    leave-active-class="transition ease-in duration-200"
+                    leave-from-class="opacity-100 translate-y-0"
+                    leave-to-class="opacity-0 -translate-y-2"
+                >
+                    <div
+                        v-if="showProfanityAlert"
+                        class="flex items-start gap-3 bg-amber-50 border border-amber-300 text-amber-800 rounded-xl px-4 py-3 mb-4 shadow-sm"
+                    >
+                        <AlertTriangle size="18" class="shrink-0 mt-0.5 text-amber-500" />
+                        <div class="flex-1 text-sm">
+                            <span class="font-semibold">Konten disensor otomatis.</span>
+                            {{ profanityMessage }}
+                        </div>
+                        <button
+                            @click="showProfanityAlert = false"
+                            class="text-amber-400 hover:text-amber-600 transition-colors ml-2 shrink-0"
+                            title="Tutup"
+                        >&times;</button>
+                    </div>
+                </transition>
 
                 <!-- Forum Topics List -->
                 <div v-if="filterForm.school_class_id" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
