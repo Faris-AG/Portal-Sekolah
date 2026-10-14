@@ -54,7 +54,7 @@ class ForumController extends Controller
 
     public function show(Request $request, $id)
     {
-        $topic = ForumTopic::with(['user', 'schoolClass', 'replies.user'])->findOrFail($id);
+        $topic = ForumTopic::with(['user', 'schoolClass', 'replies.user', 'replies.moderator'])->findOrFail($id);
         
         $user = $request->user();
         if ($user->role === 'siswa' && $topic->school_class_id !== $user->class_id) {
@@ -62,7 +62,9 @@ class ForumController extends Controller
         }
 
         return Inertia::render('Forum/Show', [
-            'topic' => $topic,
+            'topic'      => $topic,
+            'authUserId' => $user->id,
+            'authRole'   => $user->role,
         ]);
     }
 

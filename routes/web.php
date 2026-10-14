@@ -63,6 +63,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
     Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    // Moderasi
+    Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
+    Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
+    Route::get('/forum/reports/list', [\App\Http\Controllers\ForumModerationController::class, 'reportedReplies'])->name('forum.reports');
+    Route::match(['put', 'patch', 'delete'], '/forum/reports/{reportId}/status', [\App\Http\Controllers\ForumModerationController::class, 'updateReportStatus'])->name('forum.reports.status');
+    Route::delete('/forum/reports/{reportId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReport'])->name('forum.reports.destroy');
 });
 
 Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
@@ -87,6 +93,12 @@ Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru
     Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
     Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    // Moderasi
+    Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
+    Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
+    Route::get('/forum/reports/list', [\App\Http\Controllers\ForumModerationController::class, 'reportedReplies'])->name('forum.reports');
+    Route::match(['put', 'patch', 'delete'], '/forum/reports/{reportId}/status', [\App\Http\Controllers\ForumModerationController::class, 'updateReportStatus'])->name('forum.reports.status');
+    Route::delete('/forum/reports/{reportId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReport'])->name('forum.reports.destroy');
 });
 
 Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
@@ -103,6 +115,10 @@ Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('si
     Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
     Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    // Moderasi — siswa hanya bisa hapus & laporkan
+    Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
+    Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
+    Route::post('/forum/reply/{replyId}/report', [\App\Http\Controllers\ForumModerationController::class, 'reportReply'])->name('forum.reply.report');
 });
 
 Route::middleware('auth')->group(function () {

@@ -14,7 +14,7 @@ const props = defineProps({
 
 import { router } from '@inertiajs/vue3';
 
-const activeTab = ref(props.filters?.subject_id || 'all');
+const activeTab = ref(props.filters?.subject_id ?? 'all');
 const searchQuery = ref(props.filters?.search || '');
 let searchTimeout = null;
 
@@ -79,12 +79,12 @@ const formatDate = (dateString) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
                 
                 <!-- Filter Tabs -->
-                <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 overflow-x-auto hide-scrollbar">
-                    <div class="flex gap-2 min-w-max">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex flex-wrap gap-2">
                         <button 
                             @click="onTabClick('all')"
                             :class="[
-                                'px-4 py-2 rounded-xl text-sm font-bold transition-all',
+                                'px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap',
                                 activeTab === 'all' 
                                     ? 'bg-indigo-600 text-white shadow-md' 
                                     : 'text-gray-600 hover:bg-gray-100'
@@ -97,8 +97,8 @@ const formatDate = (dateString) => {
                             :key="subject.id"
                             @click="onTabClick(subject.id)"
                             :class="[
-                                'px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2',
-                                activeTab === subject.id 
+                                'px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap',
+                                String(activeTab) === String(subject.id)
                                     ? 'bg-indigo-600 text-white shadow-md' 
                                     : 'text-gray-600 hover:bg-gray-100'
                             ]"

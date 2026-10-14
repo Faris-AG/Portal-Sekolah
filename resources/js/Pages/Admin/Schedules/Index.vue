@@ -15,7 +15,7 @@ const props = defineProps({
     classes: Array,
     subjects: Array,
     teachers: Array,
-    selectedClass: String,
+    selectedClass: [String, Number],
 });
 
 const currentClassFilter = ref(props.selectedClass || '');

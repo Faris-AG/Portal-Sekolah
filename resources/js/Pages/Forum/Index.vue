@@ -2,13 +2,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
-import { MessageCircle, Search, Plus, MessageSquare, Clock, User, AlertTriangle } from 'lucide-vue-next';
+import { MessageCircle, Search, Plus, MessageSquare, Clock, User, AlertTriangle, Flag } from 'lucide-vue-next';
 
 const props = defineProps({
     topics: Array,
     classes: Array,
     currentClass: Object,
     filters: Object,
+    selectedClass: [String, Number],
 });
 
 const page = usePage();
@@ -88,13 +89,29 @@ watch(
                 <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
                     <MessageCircle size="24" class="text-indigo-600" /> Forum Diskusi
                 </h2>
-                <button 
-                    v-if="filterForm.school_class_id"
-                    @click="showNewTopicModal = true" 
-                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-sm"
-                >
-                    <Plus size="18" /> Buat Topik
-                </button>
+                <div class="flex items-center gap-3">
+                    <Link 
+                        v-if="!isStudent"
+                        :href="route(userRole + '.forum.reports')" 
+                        class="bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 px-3.5 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm"
+                    >
+                        <Flag size="16" class="text-amber-600" />
+                        <span>Laporan Pesan</span>
+                        <span 
+                            v-if="$page.props.auth?.pending_reports_count > 0" 
+                            class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"
+                        >
+                            {{ $page.props.auth.pending_reports_count }}
+                        </span>
+                    </Link>
+                    <button 
+                        v-if="filterForm.school_class_id"
+                        @click="showNewTopicModal = true" 
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-sm"
+                    >
+                        <Plus size="18" /> Buat Topik
+                    </button>
+                </div>
             </div>
         </template>
 
