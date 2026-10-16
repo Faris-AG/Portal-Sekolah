@@ -77,6 +77,7 @@ if (userRole === 'admin') {
 } else if (userRole === 'guru') {
     navigation.push(
         { name: 'Dashboard', href: route('guru.dashboard'), current: route().current('guru.dashboard'), icon: LayoutDashboard },
+        { name: 'Tugas Belajar', href: route('guru.assignments.index'), current: route().current('guru.assignments.*'), icon: BookOpen },
         { name: 'Materi Belajar', href: route('guru.materials.index'), current: route().current('guru.materials.*'), icon: Library },
         { name: 'Presensi Siswa', href: route('guru.attendance.create'), current: route().current('guru.attendance.create'), icon: CheckSquare },
         { name: 'Laporan Presensi', href: route('guru.attendance.index'), current: route().current('guru.attendance.index'), icon: CheckSquare },

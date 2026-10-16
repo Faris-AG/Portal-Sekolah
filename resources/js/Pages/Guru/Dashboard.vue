@@ -68,13 +68,14 @@ const assignmentToDelete = ref(null);
 const form = useForm({
     title: '',
     school_class_id: '',
-    subject_id: '',
+    subject_id: props.subjects && props.subjects.length === 1 ? props.subjects[0].id : '',
     due_date: '',
     description: '',
 });
 
 const openCreateModal = () => {
     form.reset();
+    form.subject_id = props.subjects && props.subjects.length === 1 ? props.subjects[0].id : '';
     form.clearErrors();
     isCreateModalOpen.value = true;
 };
@@ -277,7 +278,7 @@ const deleteAssignment = () => {
                         <InputError class="mt-2" :message="form.errors.title" />
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4" :class="{ 'md:grid-cols-2': subjects && subjects.length > 1 }">
                         <div>
                             <InputLabel for="school_class_id" value="Tugaskan ke Kelas" />
                             <select
@@ -293,7 +294,7 @@ const deleteAssignment = () => {
                             </select>
                             <InputError class="mt-2" :message="form.errors.school_class_id" />
                         </div>
-                        <div>
+                        <div v-if="subjects && subjects.length > 1">
                             <InputLabel for="subject_id" value="Mata Pelajaran" />
                             <select
                                 id="subject_id"

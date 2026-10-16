@@ -53,7 +53,7 @@ watch(
                     <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <Search size="20" class="text-gray-400" /> Filter Laporan
                     </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 gap-6" :class="subjects && subjects.length > 1 ? 'md:grid-cols-3' : 'md:grid-cols-2'">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
                             <select 
@@ -67,7 +67,7 @@ watch(
                             </select>
                         </div>
                         
-                        <div>
+                        <div v-if="subjects && subjects.length > 1">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran (Opsional)</label>
                             <select 
                                 v-model="form.subject_id" 

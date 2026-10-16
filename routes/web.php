@@ -73,6 +73,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
 Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\TeacherDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/assignments', [\App\Http\Controllers\AssignmentController::class, 'index'])->name('assignments.index');
     Route::get('/assignments/{id}', [\App\Http\Controllers\AssignmentController::class, 'show'])->name('assignments.show');
     Route::post('/assignments', [\App\Http\Controllers\AssignmentController::class, 'store'])->name('assignments.store');
     Route::delete('/assignments/{id}', [\App\Http\Controllers\AssignmentController::class, 'destroy'])->name('assignments.destroy');

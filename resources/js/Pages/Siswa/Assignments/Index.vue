@@ -122,7 +122,7 @@ const hasSubmitted = (assignment) => {
                 
                 <!-- Search & Filters -->
                 <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                    <div class="w-full sm:w-1/2 relative">
+                    <div class="w-full relative" :class="subjects && subjects.length > 1 ? 'sm:w-1/2' : 'sm:w-full'">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <BookOpen size="16" class="text-gray-400" />
                         </div>
@@ -134,7 +134,7 @@ const hasSubmitted = (assignment) => {
                             class="pl-10 block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         >
                     </div>
-                    <div class="w-full sm:w-1/4">
+                    <div v-if="subjects && subjects.length > 1" class="w-full sm:w-1/4">
                         <select 
                             v-model="currentSubject" 
                             @change="onFilterChange"
