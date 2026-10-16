@@ -129,11 +129,9 @@ if (userRole === 'admin') {
         >
             <!-- Logo & Portal Name -->
             <div class="flex items-center gap-3 px-6 py-5 h-16 bg-slate-950/50 border-b border-slate-800 shrink-0 relative overflow-hidden transition-all duration-300" :class="isSidebarCollapsed ? 'px-0 justify-center' : ''">
-                <div class="flex items-center justify-center w-8 h-8 rounded bg-indigo-500 text-white shrink-0">
-                    <School size="20" />
-                </div>
+                <img src="/images/logo-skanic.png" alt="Logo SKANIC" class="w-8 h-8 object-contain shrink-0" />
                 <div class="flex-1 overflow-hidden transition-opacity duration-300" :class="isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'">
-                    <h1 class="text-sm font-bold text-white tracking-wider truncate uppercase">Portal Akademik</h1>
+                    <h1 class="text-sm font-bold text-white tracking-wider truncate uppercase">SMKN 1 CIOMAS</h1>
                 </div>
                 <button @click="showingSidebar = false" class="lg:hidden text-slate-400 hover:text-white shrink-0">
                     <X size="20" />

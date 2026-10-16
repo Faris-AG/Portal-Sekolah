@@ -175,9 +175,11 @@ const submit = () => {
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 <tr v-if="students.data.length === 0">
-                                    <td colspan="4" class="py-8 text-center text-gray-500 flex flex-col items-center justify-center">
-                                        <AlertCircle size="32" class="text-gray-400 mb-2" />
-                                        Belum ada data siswa yang terdaftar.
+                                    <td :colspan="4" class="text-center py-12">
+                                        <div class="flex flex-col items-center justify-center text-center mx-auto text-gray-500">
+                                            <AlertCircle size="36" class="text-gray-400 mb-2" />
+                                            <span>Belum ada data siswa yang terdaftar.</span>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr v-for="student in students.data" :key="student.id" class="hover:bg-gray-50/50 transition-colors group">

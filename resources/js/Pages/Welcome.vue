@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import { 
-    School, BookOpen, CalendarCheck, CheckSquare, 
+    BookOpen, CalendarCheck, CheckSquare, 
     ArrowRight, User, ShieldCheck, Mail
 } from 'lucide-vue-next';
 
@@ -46,18 +46,16 @@ const demoCredentials = [
 </script>
 
 <template>
-    <Head title="Selamat Datang di Portal Akademik" />
+    <Head title="Selamat Datang di SKANIC Portal Akademik" />
 
     <div class="bg-slate-50 min-h-screen font-sans selection:bg-indigo-500 selection:text-white flex flex-col">
         
         <!-- Navigation -->
         <nav class="absolute top-0 w-full z-50 px-6 py-4 lg:px-8">
             <div class="max-w-7xl mx-auto flex justify-between items-center bg-white/80 backdrop-blur-md px-6 py-3 rounded-full border border-white/50 shadow-sm">
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-md">
-                        <School size="24" />
-                    </div>
-                    <span class="text-xl font-black text-slate-900 tracking-tight uppercase">Portal Akademik</span>
+                <div class="flex items-center gap-3">
+                    <img src="/images/logo-skanic.png" alt="Logo SKANIC" class="w-10 h-10 object-contain drop-shadow" />
+                    <span class="text-xl font-black text-slate-900 tracking-tight uppercase">SKANIC PORTAL</span>
                 </div>
 
                 <div v-if="canLogin" class="flex gap-4">
@@ -94,7 +92,7 @@ const demoCredentials = [
                 <h1 class="text-5xl lg:text-7xl font-black text-slate-900 tracking-tight leading-tight mb-6 max-w-4xl mx-auto">
                     Masa Depan Pendidikan <br class="hidden sm:block" />
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">
-                        Dimulai Dari Sini.
+                        Dimulai Dari Sini
                     </span>
                 </h1>
 
@@ -172,12 +170,12 @@ const demoCredentials = [
         <!-- Footer -->
         <footer class="border-t border-slate-200 bg-white mt-auto">
             <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-2">
-                    <School class="text-indigo-600" size="20" />
-                    <span class="font-bold text-slate-800">PORTAL AKADEMIK</span>
+                <div class="flex items-center gap-2.5">
+                    <img src="/images/logo-skanic.png" alt="Logo SKANIC" class="w-6 h-6 object-contain" />
+                    <span class="font-bold text-slate-800 tracking-wide">SMKN 1 CIOMAS</span>
                 </div>
                 <p class="text-sm text-slate-500 font-medium">
-                    &copy; {{ new Date().getFullYear() }} Sistem Informasi Sekolah. All rights reserved.
+                    &copy; {{ new Date().getFullYear() }} SMKN 1 Ciomas. All rights reserved.
                 </p>
             </div>
         </footer>

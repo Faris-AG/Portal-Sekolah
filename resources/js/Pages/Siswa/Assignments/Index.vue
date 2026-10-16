@@ -42,7 +42,7 @@ const onTabClick = (tab) => {
 };
 
 const applyFilters = () => {
-    router.get(route('siswa.assignments.index'), {
+    router.get(route('siswa.assignments'), {
         search: searchQuery.value,
         subject_id: currentSubject.value,
         status: activeTab.value,
