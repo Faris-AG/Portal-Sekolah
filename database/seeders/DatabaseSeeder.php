@@ -90,152 +90,20 @@ class DatabaseSeeder extends Seeder
         $teachers[0]->update(['email' => 'guru@sekolah.test']);
 
         // ============================================================
-        // 4. Create SMK Classes
-        // Jurusan & rombel:
-        //   PPLG   : 3 rombel per tingkat
-        //   BCF    : 2 rombel per tingkat
-        //   Animasi: 2 rombel per tingkat
-        //   TKR    : 3 rombel per tingkat
-        //   TPFL   : 2 rombel per tingkat
+        // 4. Create SMK Classes (5 Kelas Fokus Tingkat X via SchoolClassSeeder)
         // ============================================================
-        $jurusanRombel = [
-            'PPLG'    => 3,
-            'BCF'     => 2,
-            'Animasi' => 2,
-            'TKR'     => 3,
-            'TPFL'    => 2,
-        ];
-
-        $tingkats = [
-            10 => 'X',
-            11 => 'XI',
-            12 => 'XII',
-        ];
-
-        $classes      = [];
-        $teacherIndex = 0;
-        $totalTeachers = count($teachers);
-
-        foreach ($tingkats as $level => $prefix) {
-            foreach ($jurusanRombel as $jurusan => $rombelCount) {
-                for ($r = 1; $r <= $rombelCount; $r++) {
-                    $className  = "{$prefix} {$jurusan} {$r}";
-                    $waliKelas  = $teachers[$teacherIndex % $totalTeachers];
-                    $classes[]  = SchoolClass::create([
-                        'name'        => $className,
-                        'grade_level' => $level,
-                        'teacher_id'  => $waliKelas->id,
-                        'wali_kelas'  => $waliKelas->name,
-                    ]);
-                    $teacherIndex++;
-                }
-            }
-        }
+        $this->call(SchoolClassSeeder::class);
+        $classes = SchoolClass::all();
 
         // ============================================================
-        // 5. Create Students (30 per class)
-        //    Siswa demo 'siswa@sekolah.test' ditempatkan di kelas pertama (X PPLG 1)
+        // 5. Create Students (150 Siswa Proporsional via UserSeeder)
         // ============================================================
-        $studentCounter = 1;
-        foreach ($classes as $classIndex => $class) {
-            for ($s = 1; $s <= 30; $s++) {
-                $email = 'siswa' . $studentCounter . '@sekolah.test';
-                if ($classIndex === 0 && $s === 1) {
-                    $email = 'siswa@sekolah.test';
-                    $name  = 'Andi Utama';
-                } else {
-                    $name = $faker->name;
-                }
-
-                User::factory()->create([
-                    'name'     => $name,
-                    'email'    => $email,
-                    'password' => Hash::make('password'),
-                    'role'     => 'siswa',
-                    'class_id' => $class->id,
-                ]);
-                $studentCounter++;
-            }
-        }
+        $this->call(UserSeeder::class);
 
         // ============================================================
-        // 6. Generate Schedules — every class gets a full timetable
+        // 6. Generate Schedules (Filter Mapel Produktif via ScheduleSeeder)
         // ============================================================
-        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-        $timeSlotsNormal = [
-            ['06:30', '08:00'],
-            ['08:00', '09:30'],
-            ['10:00', '11:30'],
-            ['12:30', '13:45'],
-            ['13:45', '15:00'],
-        ];
-        $timeSlotsFriday = [
-            ['07:30', '09:00'],
-            ['09:15', '10:45'],
-        ];
-
-        $teachersBySubject = [];
-        foreach ($teachers as $teacher) {
-            $sid = $teacher->subject_id;
-            if (!isset($teachersBySubject[$sid])) {
-                $teachersBySubject[$sid] = [];
-            }
-            $teachersBySubject[$sid][] = $teacher;
-        }
-        $teacherSubjectRoundRobin = [];
-        $teacherSchedule          = [];
-
-        foreach ($classes as $class) {
-            $subjectsList = collect($subjects)->values()->shuffle();
-            $subjIdx = 0;
-
-            foreach ($days as $day) {
-                $slots = ($day === 'Jumat') ? $timeSlotsFriday : $timeSlotsNormal;
-
-                foreach ($slots as $slot) {
-                    if ($subjIdx >= $subjectsList->count()) {
-                        $subjIdx = 0;
-                    }
-
-                    $subject = $subjectsList[$subjIdx];
-                    $sid     = $subject->id;
-
-                    $availTeachers = $teachersBySubject[$sid] ?? [];
-                    $teacher       = null;
-
-                    $pointer = $teacherSubjectRoundRobin[$sid] ?? 0;
-                    $count   = count($availTeachers);
-                    for ($try = 0; $try < $count; $try++) {
-                        $candidate = $availTeachers[$pointer % $count];
-                        $pointer++;
-                        $timeKey = $day . '-' . $slot[0];
-                        if (!isset($teacherSchedule[$candidate->id][$timeKey])) {
-                            $teacher = $candidate;
-                            $teacherSchedule[$candidate->id][$timeKey] = true;
-                            break;
-                        }
-                    }
-                    $teacherSubjectRoundRobin[$sid] = $pointer;
-
-                    if (!$teacher && count($availTeachers) > 0) {
-                        $teacher = $availTeachers[0];
-                    } elseif (!$teacher) {
-                        $teacher = $teachers[0];
-                    }
-
-                    Schedule::create([
-                        'school_class_id' => $class->id,
-                        'subject_id'      => $subject->id,
-                        'teacher_id'      => $teacher->id,
-                        'day'             => $day,
-                        'start_time'      => $slot[0],
-                        'end_time'        => $slot[1],
-                    ]);
-
-                    $subjIdx++;
-                }
-            }
-        }
+        $this->call(ScheduleSeeder::class);
 
         // ============================================================
         // 7. Dummy Assignments & Submissions
