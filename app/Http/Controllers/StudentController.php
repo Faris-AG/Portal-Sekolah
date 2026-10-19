@@ -56,15 +56,23 @@ class StudentController extends Controller
         
         $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
 
+        // Build a map of class_id -> [student list] for Mass Promotion modal (instant filtering)
+        $studentsByClass = User::where('role', 'siswa')
+            ->whereNotNull('class_id')
+            ->orderBy('name')
+            ->get(['id', 'name', 'class_id'])
+            ->groupBy('class_id');
+
         return Inertia::render('Admin/Students/Index', [
-            'students' => $students,
-            'classes' => $classes,
+            'students'       => $students,
+            'classes'        => $classes,
+            'studentsByClass' => $studentsByClass,
             'filters' => [
-                'sort_by' => $sortBy,
+                'sort_by'   => $sortBy,
                 'direction' => $direction,
-                'per_page' => $perPage,
-                'search' => $search,
-                'class_id' => $classFilter,
+                'per_page'  => $perPage,
+                'search'    => $search,
+                'class_id'  => $classFilter,
             ]
         ]);
     }
@@ -82,5 +90,27 @@ class StudentController extends Controller
         $user->update(['class_id' => $validated['class_id']]);
 
         return redirect()->back()->with('success', 'Kelas siswa berhasil diperbarui.');
+    }
+
+    /**
+     * Bulk update class for multiple students at once.
+     * Used by both: (1) Checkbox bulk select in table, (2) Mass Promotion modal.
+     */
+    public function bulkUpdateClass(Request $request)
+    {
+        $validated = $request->validate([
+            'student_ids'     => 'required|array|min:1',
+            'student_ids.*'   => 'integer|exists:users,id',
+            'school_class_id' => 'required|exists:school_classes,id',
+        ]);
+
+        $count = User::where('role', 'siswa')
+            ->whereIn('id', $validated['student_ids'])
+            ->update(['class_id' => $validated['school_class_id']]);
+
+        return redirect()->back()->with(
+            'success',
+            $count . ' siswa berhasil dipindahkan ke kelas baru.'
+        );
     }
 }

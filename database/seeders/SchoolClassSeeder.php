@@ -13,13 +13,16 @@ class SchoolClassSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Daftar persis 5 kelas fokus SMK tingkat X (1 kelas per jurusan)
+        // 1. Daftar kelas SMK tingkat X dan XI (XI kosong, siap sebagai kelas tujuan kenaikan)
         $classes = [
             ['name' => 'X PPLG 1',    'grade_level' => 10],
             ['name' => 'X BCF 1',     'grade_level' => 10],
             ['name' => 'X Animasi 1', 'grade_level' => 10],
             ['name' => 'X TKR 1',     'grade_level' => 10],
             ['name' => 'X TPFL 1',    'grade_level' => 10],
+            // Kelas XI – kosong, siap sebagai tujuan kenaikan kelas dari X
+            ['name' => 'XI PPLG 1',   'grade_level' => 11],
+            ['name' => 'XI BCF 1',    'grade_level' => 11],
         ];
 
         // 2. Hapus data kelas lama atau kelas di luar 5 kelas fokus ini

@@ -49,7 +49,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::delete('/subjects/{id}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
 
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+    Route::post('/students/bulk-update-class', [StudentController::class, 'bulkUpdateClass'])->name('students.bulk-update-class');
     Route::patch('/students/{user}/assign-class', [StudentController::class, 'updateClass'])->name('students.update-class');
+
 
     Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
