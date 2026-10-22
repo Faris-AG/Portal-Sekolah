@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, usePage, router } from '@inertiajs/vue3';
-import { MessageCircle, ArrowLeft, Clock, Send, AlertTriangle, MoreVertical, Flag, Pencil, Trash2, Check, X, Ban } from 'lucide-vue-next';
+import { MessageCircle, ArrowLeft, Clock, Send, AlertTriangle, MoreVertical, Flag, Pencil, Trash2, Check, X, Ban, Lock, Pin, LockOpen } from 'lucide-vue-next';
 import { ref, onMounted, nextTick, computed, watch, onUnmounted } from 'vue';
 
 const props = defineProps({
@@ -11,6 +11,7 @@ const props = defineProps({
 });
 
 const page = usePage();
+const isModeratorOrAdmin = props.authRole === 'guru' || props.authRole === 'admin';
 
 // ─── Flash Profanity Alert ───────────────────────────
 const showProfanityAlert = ref(false);
@@ -132,7 +133,7 @@ const editSecondsLeft = (reply) => {
     return Math.max(0, Math.ceil((limit - nowTick.value) / 1000));
 };
 
-// ─── Delete Confirm ───────────────────────────────────
+// ─── Delete Reply Confirm ─────────────────────────────
 const deletingReplyId = ref(null);
 const deleteForm      = useForm({});
 
@@ -145,6 +146,46 @@ const submitDelete  = () => {
     deleteForm.delete(route(props.authRole + '.forum.reply.destroy', deletingReplyId.value), {
         preserveScroll: true,
         onSuccess: () => { deletingReplyId.value = null; },
+    });
+};
+
+// ─── Delete Topic Modal ────────────────────────────────
+const showDeleteTopicModal = ref(false);
+const deleteTopicForm      = useForm({});
+
+const canDeleteTopic = computed(() => {
+    if (props.authRole === 'admin') return true;
+    if (props.authRole === 'guru') {
+        if (props.topic.user_id === props.authUserId) return true;
+        return props.topic.user?.role === 'siswa';
+    }
+    if (props.authRole === 'siswa') {
+        return props.topic.user_id === props.authUserId;
+    }
+    return false;
+});
+
+const submitDeleteTopic = () => {
+    deleteTopicForm.delete(route(props.authRole + '.forum.topic.destroy', props.topic.id), {
+        onSuccess: () => {
+            showDeleteTopicModal.value = false;
+        },
+    });
+};
+
+// ─── Toggle Pin / Lock ────────────────────────────────
+const pinForm  = useForm({});
+const lockForm = useForm({});
+
+const togglePin = () => {
+    pinForm.patch(route(props.authRole + '.forum.topic.toggle-pin', props.topic.id), {
+        preserveScroll: true,
+    });
+};
+
+const toggleLock = () => {
+    lockForm.patch(route(props.authRole + '.forum.topic.toggle-lock', props.topic.id), {
+        preserveScroll: true,
     });
 };
 
@@ -188,9 +229,66 @@ const reportReasons = [
                 >
                     <ArrowLeft size="20" />
                 </Link>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 truncate">
-                    {{ topic.title }}
-                </h2>
+                <div class="flex-1 min-w-0 flex items-center gap-3">
+                    <!-- Badge Pinned -->
+                    <span
+                        v-if="topic.is_pinned"
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wider shrink-0"
+                    >
+                        <Pin size="10" /> Disematkan
+                    </span>
+                    <!-- Badge Locked -->
+                    <span
+                        v-if="topic.is_locked"
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase tracking-wider shrink-0"
+                    >
+                        <Lock size="10" /> Dikunci
+                    </span>
+                    <h2 class="text-xl font-semibold leading-tight text-gray-800 truncate">
+                        {{ topic.title }}
+                    </h2>
+                </div>
+                <!-- Action Buttons (Guru/Admin) -->
+                <div v-if="isModeratorOrAdmin || canDeleteTopic" class="flex items-center gap-2 shrink-0">
+                    <button
+                        v-if="isModeratorOrAdmin"
+                        @click="togglePin"
+                        :disabled="pinForm.processing"
+                        :title="topic.is_pinned ? 'Lepas Sematan' : 'Sematkan Topik'"
+                        class="p-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                        :class="topic.is_pinned
+                            ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                            : 'bg-gray-100 text-gray-600 hover:bg-indigo-100 hover:text-indigo-700'"
+                    >
+                        <Pin size="16" />
+                        <span class="hidden sm:inline text-xs">{{ topic.is_pinned ? 'Lepas Sematan' : 'Sematkan' }}</span>
+                    </button>
+
+                    <button
+                        v-if="isModeratorOrAdmin"
+                        @click="toggleLock"
+                        :disabled="lockForm.processing"
+                        :title="topic.is_locked ? 'Buka Kunci Topik' : 'Kunci Topik'"
+                        class="p-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                        :class="topic.is_locked
+                            ? 'bg-rose-100 text-rose-700 hover:bg-rose-200'
+                            : 'bg-gray-100 text-gray-600 hover:bg-rose-100 hover:text-rose-700'"
+                    >
+                        <LockOpen v-if="topic.is_locked" size="16" />
+                        <Lock v-else size="16" />
+                        <span class="hidden sm:inline text-xs">{{ topic.is_locked ? 'Buka Kunci' : 'Kunci' }}</span>
+                    </button>
+
+                    <button
+                        v-if="canDeleteTopic"
+                        @click="showDeleteTopicModal = true"
+                        title="Hapus Topik"
+                        class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700 transition-colors flex items-center gap-1.5 text-sm font-medium"
+                    >
+                        <Trash2 size="16" />
+                        <span class="hidden sm:inline text-xs">Hapus</span>
+                    </button>
+                </div>
             </div>
         </template>
 
@@ -211,6 +309,7 @@ const reportReasons = [
                                     <h3 class="font-bold text-gray-900 flex items-center gap-2">
                                         {{ topic.user.name }}
                                         <span v-if="topic.user.role === 'guru'" class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-xs uppercase tracking-wider">Guru</span>
+                                        <span v-else-if="topic.user.role === 'admin'" class="px-2 py-0.5 rounded bg-purple-100 text-purple-700 text-xs uppercase tracking-wider">Admin</span>
                                         <span v-else class="text-xs text-gray-500 font-normal">Siswa</span>
                                     </h3>
                                     <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
@@ -379,8 +478,22 @@ const reportReasons = [
                     </div>
                 </transition>
 
-                <!-- Reply Form -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 shrink-0">
+                <!-- ── TOPIK DIKUNCI — Banner & disable form ── -->
+                <div v-if="topic.is_locked" class="bg-rose-50 border border-rose-200 rounded-2xl px-5 py-4 mb-2 shrink-0">
+                    <div class="flex items-start gap-3">
+                        <Lock size="20" class="text-rose-500 shrink-0 mt-0.5" />
+                        <div>
+                            <p class="text-sm font-bold text-rose-700">Topik diskusi ini telah dikunci oleh Guru/Admin.</p>
+                            <p class="text-sm text-rose-600 mt-0.5">Anda tidak dapat menambahkan balasan baru.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reply Form (disabled if locked) -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 shrink-0"
+                    :class="{ 'opacity-60': topic.is_locked }"
+                >
                     <form @submit.prevent="submitReply" class="flex items-end gap-4">
                         <div class="flex-1">
                             <label class="sr-only">Balasan Anda</label>
@@ -388,14 +501,17 @@ const reportReasons = [
                                 v-model="replyForm.content"
                                 rows="2"
                                 class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 resize-none"
-                                placeholder="Tulis balasan Anda..."
-                                required
+                                :class="{ 'cursor-not-allowed bg-gray-50': topic.is_locked }"
+                                :placeholder="topic.is_locked ? 'Topik ini telah dikunci...' : 'Tulis balasan Anda...'"
+                                :disabled="topic.is_locked"
+                                :required="!topic.is_locked"
                             ></textarea>
                         </div>
                         <button
                             type="submit"
-                            :disabled="replyForm.processing"
+                            :disabled="replyForm.processing || topic.is_locked"
                             class="h-12 px-6 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50 shrink-0"
+                            :class="{ 'cursor-not-allowed': topic.is_locked }"
                         >
                             <Send size="18" />
                             <span class="hidden sm:inline">{{ replyForm.processing ? 'Mengirim...' : 'Kirim' }}</span>
@@ -406,6 +522,78 @@ const reportReasons = [
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <!-- ════════ MODAL KONFIRMASI HAPUS TOPIK ════════ -->
+    <teleport to="body">
+        <transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition ease-in duration-150"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+            <div
+                v-if="showDeleteTopicModal"
+                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm"
+            >
+                <transition
+                    enter-active-class="transition ease-out duration-200"
+                    enter-from-class="opacity-0 scale-95 translate-y-2"
+                    enter-to-class="opacity-100 scale-100 translate-y-0"
+                >
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-red-50">
+                            <h3 class="text-base font-bold text-red-700 flex items-center gap-2">
+                                <Trash2 size="18" class="text-red-500" />
+                                Hapus Topik Diskusi
+                            </h3>
+                            <button @click="showDeleteTopicModal = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+                                <X size="20" />
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-start gap-4 mb-5">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                    <Trash2 size="18" class="text-red-500" />
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900 mb-1">
+                                        Apakah Anda yakin ingin menghapus topik ini?
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        Seluruh balasan diskusi di dalamnya juga akan terhapus secara permanen.
+                                        Tindakan ini <span class="font-semibold text-red-600">tidak dapat dibatalkan</span>.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-5">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Topik yang akan dihapus:</p>
+                                <p class="text-sm font-bold text-gray-800 line-clamp-2">{{ topic.title }}</p>
+                            </div>
+                            <div class="flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    @click="showDeleteTopicModal = false"
+                                    class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors text-sm"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    @click="submitDeleteTopic"
+                                    :disabled="deleteTopicForm.processing"
+                                    class="flex items-center gap-2 px-5 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm disabled:opacity-50"
+                                >
+                                    <Trash2 size="15" />
+                                    {{ deleteTopicForm.processing ? 'Menghapus...' : 'Ya, Hapus Topik' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+    </teleport>
 
     <!-- ════════ MODAL EDIT ════════ -->
     <teleport to="body">

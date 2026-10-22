@@ -93,8 +93,9 @@ class ForumModerationController extends Controller
 
         // Sensor kata kasar
         $filter          = new ProfanityFilterService();
-        $filteredContent = $filter->filter($request->content);
-        $wasFiltered     = ($filteredContent !== $request->content);
+        $rawContent      = $request->input('content');
+        $filteredContent = $filter->filter($rawContent);
+        $wasFiltered     = ($filteredContent !== $rawContent);
 
         $reply->update([
             'content'   => $filteredContent,

@@ -14,6 +14,13 @@ class ForumTopic extends Model
         'user_id',
         'title',
         'content',
+        'is_pinned',
+        'is_locked',
+    ];
+
+    protected $casts = [
+        'is_pinned' => 'boolean',
+        'is_locked' => 'boolean',
     ];
 
     public function schoolClass()

@@ -65,6 +65,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
     Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::delete('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
+    Route::patch('/forum/{id}/toggle-pin', [\App\Http\Controllers\ForumController::class, 'togglePin'])->name('forum.topic.toggle-pin');
+    Route::patch('/forum/{id}/toggle-lock', [\App\Http\Controllers\ForumController::class, 'toggleLock'])->name('forum.topic.toggle-lock');
     // Moderasi
     Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
     Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
@@ -96,6 +99,9 @@ Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru
     Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
     Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::delete('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
+    Route::patch('/forum/{id}/toggle-pin', [\App\Http\Controllers\ForumController::class, 'togglePin'])->name('forum.topic.toggle-pin');
+    Route::patch('/forum/{id}/toggle-lock', [\App\Http\Controllers\ForumController::class, 'toggleLock'])->name('forum.topic.toggle-lock');
     // Moderasi
     Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
     Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
@@ -118,6 +124,7 @@ Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('si
     Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
     Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::delete('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
     // Moderasi — siswa hanya bisa hapus & laporkan
     Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
     Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');

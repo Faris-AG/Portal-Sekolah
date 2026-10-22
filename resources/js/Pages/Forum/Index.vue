@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
-import { MessageCircle, Search, Plus, MessageSquare, Clock, User, AlertTriangle, Flag } from 'lucide-vue-next';
+import { MessageCircle, Search, Plus, MessageSquare, Clock, User, AlertTriangle, Flag, Pin, Lock, Trash2, X } from 'lucide-vue-next';
 
 const props = defineProps({
     topics: Array,
@@ -13,8 +13,10 @@ const props = defineProps({
 });
 
 const page = usePage();
-const userRole = page.props.auth.user.role;
+const auth = page.props.auth.user;
+const userRole = auth.role;
 const isStudent = userRole === 'siswa';
+const isModeratorOrAdmin = userRole === 'guru' || userRole === 'admin';
 
 // Deteksi flash message profanity_detected dari backend
 const showProfanityAlert = ref(false);
@@ -78,6 +80,58 @@ watch(
     }
 );
 
+// ─── Hak akses hapus topik ──────────────────────────
+const canDeleteTopic = (topic) => {
+    if (userRole === 'admin') return true;
+    if (userRole === 'guru') {
+        // Guru bisa hapus milik sendiri dan milik siswa
+        if (topic.user_id === auth.id) return true;
+        return topic.user?.role === 'siswa';
+    }
+    if (userRole === 'siswa') {
+        return topic.user_id === auth.id;
+    }
+    return false;
+};
+
+// ─── Modal Konfirmasi Hapus Topik ───────────────────
+const deletingTopic = ref(null);
+const deleteTopicForm = useForm({});
+
+const openDeleteTopicModal = (topic, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    deletingTopic.value = topic;
+};
+const closeDeleteTopicModal = () => {
+    deletingTopic.value = null;
+};
+const submitDeleteTopic = () => {
+    deleteTopicForm.delete(route(userRole + '.forum.topic.destroy', deletingTopic.value.id), {
+        preserveScroll: true,
+        onSuccess: () => { deletingTopic.value = null; },
+    });
+};
+
+// ─── Toggle Pin & Lock ──────────────────────────────
+const pinForm  = useForm({});
+const lockForm = useForm({});
+
+const togglePin = (topic, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    pinForm.patch(route(userRole + '.forum.topic.toggle-pin', topic.id), {
+        preserveScroll: true,
+    });
+};
+
+const toggleLock = (topic, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    lockForm.patch(route(userRole + '.forum.topic.toggle-lock', topic.id), {
+        preserveScroll: true,
+    });
+};
 </script>
 
 <template>
@@ -182,46 +236,117 @@ watch(
                     </div>
 
                     <div v-else class="divide-y divide-gray-100">
-                        <Link 
-                            v-for="topic in topics" 
-                            :key="topic.id" 
-                            :href="route(userRole + '.forum.show', topic.id)"
-                            class="block p-6 hover:bg-gray-50 transition-colors group"
+                        <div
+                            v-for="topic in topics"
+                            :key="topic.id"
+                            class="relative group"
+                            :class="{ 'bg-indigo-50/40': topic.is_pinned }"
                         >
-                            <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg shrink-0">
-                                    {{ topic.user.name.substring(0, 2).toUpperCase() }}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between gap-4 mb-1">
-                                        <h4 class="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
-                                            {{ topic.title }}
-                                        </h4>
-                                        <div class="flex items-center gap-1 text-sm text-gray-500 shrink-0">
-                                            <MessageCircle size="16" />
-                                            <span>{{ topic.replies_count }}</span>
+                            <Link
+                                :href="route(userRole + '.forum.show', topic.id)"
+                                class="block p-6 hover:bg-gray-50/80 transition-colors"
+                                :class="{ 'hover:bg-indigo-50/60': topic.is_pinned }"
+                            >
+                                <div class="flex items-start gap-4">
+                                    <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg shrink-0">
+                                        {{ topic.user.name.substring(0, 2).toUpperCase() }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between gap-4 mb-1">
+                                            <div class="flex items-center gap-2 flex-wrap min-w-0">
+                                                <!-- Badge Pinned -->
+                                                <span
+                                                    v-if="topic.is_pinned"
+                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wider shrink-0"
+                                                >
+                                                    <Pin size="10" class="shrink-0" />
+                                                    Disematkan
+                                                </span>
+                                                <!-- Badge Locked -->
+                                                <span
+                                                    v-if="topic.is_locked"
+                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase tracking-wider shrink-0"
+                                                >
+                                                    <Lock size="10" class="shrink-0" />
+                                                    Dikunci
+                                                </span>
+                                                <h4 class="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
+                                                    {{ topic.title }}
+                                                </h4>
+                                            </div>
+                                            <div class="flex items-center gap-1 text-sm text-gray-500 shrink-0">
+                                                <MessageCircle size="16" />
+                                                <span>{{ topic.replies_count }}</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-600 line-clamp-2 mb-3">
+                                            {{ topic.content }}
+                                        </p>
+                                        <div class="flex items-center gap-4 text-xs font-medium text-gray-500">
+                                            <div class="flex items-center gap-1.5">
+                                                <User size="14" />
+                                                {{ topic.user.name }}
+                                                <span 
+                                                    v-if="topic.user.role === 'guru'" 
+                                                    class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] uppercase tracking-wider"
+                                                >Guru</span>
+                                                <span
+                                                    v-else-if="topic.user.role === 'admin'"
+                                                    class="px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 text-[10px] uppercase tracking-wider"
+                                                >Admin</span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5">
+                                                <Clock size="14" />
+                                                {{ formatDate(topic.updated_at) }}
+                                            </div>
                                         </div>
                                     </div>
-                                    <p class="text-sm text-gray-600 line-clamp-2 mb-3">
-                                        {{ topic.content }}
-                                    </p>
-                                    <div class="flex items-center gap-4 text-xs font-medium text-gray-500">
-                                        <div class="flex items-center gap-1.5">
-                                            <User size="14" />
-                                            {{ topic.user.name }}
-                                            <span 
-                                                v-if="topic.user.role === 'guru'" 
-                                                class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] uppercase tracking-wider"
-                                            >Guru</span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5">
-                                            <Clock size="14" />
-                                            {{ formatDate(topic.updated_at) }}
-                                        </div>
-                                    </div>
                                 </div>
+                            </Link>
+
+                            <!-- Action Buttons (Pin, Lock, Delete) — shown on hover -->
+                            <div
+                                class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                            >
+                                <!-- Toggle Pin (Guru / Admin only) -->
+                                <button
+                                    v-if="isModeratorOrAdmin"
+                                    @click="togglePin(topic, $event)"
+                                    :disabled="pinForm.processing"
+                                    :title="topic.is_pinned ? 'Lepas Sematan' : 'Sematkan Topik'"
+                                    class="p-2 rounded-lg transition-colors disabled:opacity-50"
+                                    :class="topic.is_pinned
+                                        ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'
+                                        : 'bg-gray-100 text-gray-500 hover:bg-indigo-100 hover:text-indigo-600'"
+                                >
+                                    <Pin size="15" />
+                                </button>
+
+                                <!-- Toggle Lock (Guru / Admin only) -->
+                                <button
+                                    v-if="isModeratorOrAdmin"
+                                    @click="toggleLock(topic, $event)"
+                                    :disabled="lockForm.processing"
+                                    :title="topic.is_locked ? 'Buka Kunci' : 'Kunci Topik'"
+                                    class="p-2 rounded-lg transition-colors disabled:opacity-50"
+                                    :class="topic.is_locked
+                                        ? 'bg-rose-100 text-rose-600 hover:bg-rose-200'
+                                        : 'bg-gray-100 text-gray-500 hover:bg-rose-100 hover:text-rose-600'"
+                                >
+                                    <Lock size="15" />
+                                </button>
+
+                                <!-- Delete Topic -->
+                                <button
+                                    v-if="canDeleteTopic(topic)"
+                                    @click="openDeleteTopicModal(topic, $event)"
+                                    title="Hapus Topik"
+                                    class="p-2 rounded-lg bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600 transition-colors"
+                                >
+                                    <Trash2 size="15" />
+                                </button>
                             </div>
-                        </Link>
+                        </div>
                     </div>
                 </div>
                 
@@ -286,4 +411,86 @@ watch(
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <!-- ════════ MODAL KONFIRMASI HAPUS TOPIK ════════ -->
+    <teleport to="body">
+        <transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition ease-in duration-150"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+            <div
+                v-if="deletingTopic"
+                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm"
+            >
+                <transition
+                    enter-active-class="transition ease-out duration-200"
+                    enter-from-class="opacity-0 scale-95 translate-y-2"
+                    enter-to-class="opacity-100 scale-100 translate-y-0"
+                    leave-active-class="transition ease-in duration-150"
+                    leave-from-class="opacity-100 scale-100 translate-y-0"
+                    leave-to-class="opacity-0 scale-95 translate-y-2"
+                >
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                        <!-- Header -->
+                        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-red-50">
+                            <h3 class="text-base font-bold text-red-700 flex items-center gap-2">
+                                <Trash2 size="18" class="text-red-500" />
+                                Hapus Topik Diskusi
+                            </h3>
+                            <button @click="closeDeleteTopicModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                                <X size="20" />
+                            </button>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="p-6">
+                            <div class="flex items-start gap-4 mb-5">
+                                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                    <Trash2 size="18" class="text-red-500" />
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900 mb-1">
+                                        Apakah Anda yakin ingin menghapus topik ini?
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        Seluruh balasan diskusi di dalamnya juga akan terhapus secara permanen.
+                                        Tindakan ini <span class="font-semibold text-red-600">tidak dapat dibatalkan</span>.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Topic preview -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-5">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Topik yang akan dihapus:</p>
+                                <p class="text-sm font-bold text-gray-800 line-clamp-2">{{ deletingTopic?.title }}</p>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    @click="closeDeleteTopicModal"
+                                    class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors text-sm"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    @click="submitDeleteTopic"
+                                    :disabled="deleteTopicForm.processing"
+                                    class="flex items-center gap-2 px-5 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm disabled:opacity-50"
+                                >
+                                    <Trash2 size="15" />
+                                    {{ deleteTopicForm.processing ? 'Menghapus...' : 'Ya, Hapus Topik' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+    </teleport>
 </template>
