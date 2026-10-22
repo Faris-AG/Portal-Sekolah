@@ -264,54 +264,54 @@ const submit = () => {
                 </div>
 
                 <!-- ── FITUR 1: Action Bar (muncul jika ada yang dipilih) ── -->
-                <teleport to="body">
-                    <transition
-                        enter-active-class="transition-all duration-300 ease-out"
-                        enter-from-class="opacity-0 translate-y-4"
-                        enter-to-class="opacity-100 translate-y-0"
-                        leave-active-class="transition-all duration-200 ease-in"
-                        leave-from-class="opacity-100 translate-y-0"
-                        leave-to-class="opacity-0 translate-y-4"
+                <transition
+                    enter-active-class="transition-all duration-300 ease-out"
+                    enter-from-class="opacity-0 -translate-y-2"
+                    enter-to-class="opacity-100 translate-y-0"
+                    leave-active-class="transition-all duration-200 ease-in"
+                    leave-from-class="opacity-100 translate-y-0"
+                    leave-to-class="opacity-0 -translate-y-2"
+                >
+                    <div
+                        v-if="selectedStudentIds.length > 0"
+                        class="sticky top-4 z-40 mb-4 w-full flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 bg-indigo-600 text-white rounded-xl shadow-lg transition-all duration-200"
                     >
-                        <div
-                            v-if="selectedStudentIds.length > 0"
-                            class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-wrap items-center gap-3 px-5 py-3.5 bg-indigo-600 text-white rounded-2xl shadow-2xl w-max max-w-[calc(100vw-2rem)]"
-                        >
+                        <div class="flex items-center gap-2">
                             <CheckSquare size="18" class="shrink-0" />
                             <span class="font-semibold text-sm">
                                 {{ selectedStudentIds.length }} siswa dipilih
                             </span>
-
-                            <div class="flex items-center gap-2 ml-auto">
-                                <select
-                                    v-model="bulkTargetClassId"
-                                    class="text-sm border-0 rounded-lg bg-white/20 text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 py-1.5 pl-3 pr-8 font-medium min-w-[180px]"
-                                >
-                                    <option value="" class="text-gray-700">-- Pilih Kelas Tujuan --</option>
-                                    <option v-for="cls in classes" :key="cls.id" :value="cls.id" class="text-gray-800">
-                                        {{ cls.name }}
-                                    </option>
-                                </select>
-
-                                <button
-                                    @click="submitBulkMove"
-                                    :disabled="!bulkTargetClassId || bulkForm.processing"
-                                    class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white text-indigo-700 rounded-lg text-sm font-bold hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <Zap size="14" />
-                                    Pindahkan Kelas
-                                </button>
-
-                                <button
-                                    @click="clearSelection"
-                                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
-                                >
-                                    <X size="14" /> Batal
-                                </button>
-                            </div>
                         </div>
-                    </transition>
-                </teleport>
+
+                        <div class="flex items-center gap-2 ml-auto">
+                            <select
+                                v-model="bulkTargetClassId"
+                                class="text-sm border-0 rounded-lg bg-white/20 text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 py-1.5 pl-3 pr-8 font-medium min-w-[180px]"
+                            >
+                                <option value="" class="text-gray-700">-- Pilih Kelas Tujuan --</option>
+                                <option v-for="cls in classes" :key="cls.id" :value="cls.id" class="text-gray-800">
+                                    {{ cls.name }}
+                                </option>
+                            </select>
+
+                            <button
+                                @click="submitBulkMove"
+                                :disabled="!bulkTargetClassId || bulkForm.processing"
+                                class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white text-indigo-700 rounded-lg text-sm font-bold hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <Zap size="14" />
+                                Pindahkan Kelas
+                            </button>
+
+                            <button
+                                @click="clearSelection"
+                                class="inline-flex items-center gap-1 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                <X size="14" /> Batal
+                            </button>
+                        </div>
+                    </div>
+                </transition>
 
                 <!-- Students Table -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
