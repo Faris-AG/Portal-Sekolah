@@ -478,8 +478,8 @@ const reportReasons = [
                     </div>
                 </transition>
 
-                <!-- ── TOPIK DIKUNCI — Banner & disable form ── -->
-                <div v-if="topic.is_locked" class="bg-rose-50 border border-rose-200 rounded-2xl px-5 py-4 mb-2 shrink-0">
+                <!-- ── TOPIK DIKUNCI — Banner untuk Siswa (merah) ── -->
+                <div v-if="topic.is_locked && authRole === 'siswa'" class="bg-rose-50 border border-rose-200 rounded-2xl px-5 py-4 mb-2 shrink-0">
                     <div class="flex items-start gap-3">
                         <Lock size="20" class="text-rose-500 shrink-0 mt-0.5" />
                         <div>
@@ -489,10 +489,21 @@ const reportReasons = [
                     </div>
                 </div>
 
-                <!-- Reply Form (disabled if locked) -->
+                <!-- ── TOPIK DIKUNCI — Banner untuk Guru/Admin (kuning/amber) ── -->
+                <div v-if="topic.is_locked && (authRole === 'guru' || authRole === 'admin')" class="bg-amber-50 border border-amber-300 rounded-2xl px-5 py-4 mb-2 shrink-0">
+                    <div class="flex items-start gap-3">
+                        <Lock size="20" class="text-amber-500 shrink-0 mt-0.5" />
+                        <div>
+                            <p class="text-sm font-bold text-amber-700">Topik ini sedang dikunci untuk Siswa.</p>
+                            <p class="text-sm text-amber-600 mt-0.5">Sebagai {{ authRole === 'admin' ? 'Admin' : 'Guru' }}, Anda tetap dapat mengirim balasan atau pengumuman di bawah ini.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reply Form (disabled for siswa if locked; always enabled for guru/admin) -->
                 <div
                     class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 shrink-0"
-                    :class="{ 'opacity-60': topic.is_locked }"
+                    :class="{ 'opacity-60': topic.is_locked && authRole === 'siswa' }"
                 >
                     <form @submit.prevent="submitReply" class="flex items-end gap-4">
                         <div class="flex-1">
@@ -501,17 +512,17 @@ const reportReasons = [
                                 v-model="replyForm.content"
                                 rows="2"
                                 class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 resize-none"
-                                :class="{ 'cursor-not-allowed bg-gray-50': topic.is_locked }"
-                                :placeholder="topic.is_locked ? 'Topik ini telah dikunci...' : 'Tulis balasan Anda...'"
-                                :disabled="topic.is_locked"
-                                :required="!topic.is_locked"
+                                :class="{ 'cursor-not-allowed bg-gray-50': topic.is_locked && authRole === 'siswa' }"
+                                :placeholder="(topic.is_locked && authRole === 'siswa') ? 'Topik ini telah dikunci...' : 'Tulis balasan Anda...'"
+                                :disabled="topic.is_locked && authRole === 'siswa'"
+                                :required="!(topic.is_locked && authRole === 'siswa')"
                             ></textarea>
                         </div>
                         <button
                             type="submit"
-                            :disabled="replyForm.processing || topic.is_locked"
+                            :disabled="replyForm.processing || (topic.is_locked && authRole === 'siswa')"
                             class="h-12 px-6 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50 shrink-0"
-                            :class="{ 'cursor-not-allowed': topic.is_locked }"
+                            :class="{ 'cursor-not-allowed': topic.is_locked && authRole === 'siswa' }"
                         >
                             <Send size="18" />
                             <span class="hidden sm:inline">{{ replyForm.processing ? 'Mengirim...' : 'Kirim' }}</span>

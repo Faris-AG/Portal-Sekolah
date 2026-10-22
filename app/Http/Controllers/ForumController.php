@@ -122,8 +122,9 @@ class ForumController extends Controller
             abort(403);
         }
 
-        // Cegah balasan jika topik dikunci
-        if ($topic->is_locked) {
+        // Cegah balasan jika topik dikunci — hanya berlaku untuk siswa
+        // Guru dan Admin tetap dapat mengirim balasan/pengumuman meskipun topik dikunci
+        if ($topic->is_locked && $user->role === 'siswa') {
             abort(403, 'Topik ini telah dikunci. Anda tidak dapat menambahkan balasan baru.');
         }
 
