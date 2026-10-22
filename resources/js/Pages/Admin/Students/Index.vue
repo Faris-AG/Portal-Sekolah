@@ -299,7 +299,6 @@ const submit = () => {
                                 :disabled="!bulkTargetClassId || bulkForm.processing"
                                 class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white text-indigo-700 rounded-lg text-sm font-bold hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                <Zap size="14" />
                                 Pindahkan Kelas
                             </button>
 
