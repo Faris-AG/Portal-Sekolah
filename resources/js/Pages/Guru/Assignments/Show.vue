@@ -121,7 +121,7 @@ const submitGrade = () => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center gap-4">
-                <Link :href="route('guru.dashboard')" class="text-gray-500 hover:text-gray-900 transition-colors">
+                <Link :href="route('guru.assignments.index')" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
                     <ArrowLeft size="20" />
                 </Link>
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
