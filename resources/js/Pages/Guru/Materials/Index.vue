@@ -144,7 +144,7 @@ const formatDate = (dateString) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
                 <!-- Search & Filters -->
                 <div class="flex flex-col sm:flex-row gap-4 mb-2">
-                    <div class="w-full sm:w-1/3 relative">
+                    <div class="w-full relative" :class="subjects && subjects.length > 1 ? 'sm:w-1/3' : 'sm:w-1/2'">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <Library size="16" class="text-gray-400" />
                         </div>
@@ -156,7 +156,7 @@ const formatDate = (dateString) => {
                             class="pl-10 block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                         >
                     </div>
-                    <div class="w-full sm:w-1/4">
+                    <div class="w-full" :class="subjects && subjects.length > 1 ? 'sm:w-1/4' : 'sm:w-1/3'">
                         <select 
                             v-model="currentClass" 
                             @change="onFilterChange"
@@ -168,7 +168,7 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                     </div>
-                    <div class="w-full sm:w-1/4">
+                    <div v-if="subjects && subjects.length > 1" class="w-full sm:w-1/4">
                         <select 
                             v-model="currentSubject" 
                             @change="onFilterChange"
@@ -182,7 +182,7 @@ const formatDate = (dateString) => {
                     </div>
                     <div class="flex items-center">
                         <button 
-                            v-if="searchQuery || currentClass || currentSubject" 
+                            v-if="searchQuery || currentClass || (subjects && subjects.length > 1 && currentSubject)" 
                             @click="resetFilters"
                             class="text-sm text-indigo-600 hover:text-indigo-800 font-medium px-2 py-1 transition-colors"
                         >
@@ -271,7 +271,7 @@ const formatDate = (dateString) => {
                         <InputError class="mt-2" :message="form.errors.title" />
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4" :class="{ 'md:grid-cols-2': subjects && subjects.length > 1 }">
                         <div>
                             <InputLabel for="school_class_id" value="Untuk Kelas" />
                             <select
@@ -287,7 +287,7 @@ const formatDate = (dateString) => {
                             </select>
                             <InputError class="mt-2" :message="form.errors.school_class_id" />
                         </div>
-                        <div>
+                        <div v-if="subjects && subjects.length > 1">
                             <InputLabel for="subject_id" value="Mata Pelajaran" />
                             <select
                                 id="subject_id"

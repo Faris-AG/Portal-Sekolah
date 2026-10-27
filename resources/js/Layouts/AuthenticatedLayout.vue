@@ -22,7 +22,8 @@ import {
     Library,
     MessageCircle,
     Bell,
-    Megaphone
+    Megaphone,
+    Flag
 } from 'lucide-vue-next';
 
 const showingSidebar = ref(false);
@@ -69,16 +70,19 @@ if (userRole === 'admin') {
         { name: 'Mata Pelajaran', href: route('admin.subjects.index'), current: route().current('admin.subjects.*'), icon: BookOpen },
         { name: 'Jadwal Pelajaran', href: route('admin.schedules.index'), current: route().current('admin.schedules.*'), icon: Calendar },
         { name: 'Presensi', href: route('admin.attendance.index'), current: route().current('admin.attendance.*'), icon: CheckSquare },
-        { name: 'Forum Diskusi', href: route('admin.forum.index'), current: route().current('admin.forum.*'), icon: MessageCircle },
+        { name: 'Forum Diskusi', href: route('admin.forum.index'), current: route().current('admin.forum.index') || route().current('admin.forum.show'), icon: MessageCircle },
+        { name: 'Laporan Forum', href: route('admin.forum.reports'), current: route().current('admin.forum.reports*'), icon: Flag, badge: 'reports' },
         { name: 'Pengumuman', href: route('admin.announcements.index'), current: route().current('admin.announcements.*'), icon: Megaphone }
     );
 } else if (userRole === 'guru') {
     navigation.push(
         { name: 'Dashboard', href: route('guru.dashboard'), current: route().current('guru.dashboard'), icon: LayoutDashboard },
+        { name: 'Tugas Belajar', href: route('guru.assignments.index'), current: route().current('guru.assignments.*'), icon: BookOpen },
         { name: 'Materi Belajar', href: route('guru.materials.index'), current: route().current('guru.materials.*'), icon: Library },
         { name: 'Presensi Siswa', href: route('guru.attendance.create'), current: route().current('guru.attendance.create'), icon: CheckSquare },
         { name: 'Laporan Presensi', href: route('guru.attendance.index'), current: route().current('guru.attendance.index'), icon: CheckSquare },
-        { name: 'Forum Diskusi', href: route('guru.forum.index'), current: route().current('guru.forum.*'), icon: MessageCircle }
+        { name: 'Forum Diskusi', href: route('guru.forum.index'), current: route().current('guru.forum.index') || route().current('guru.forum.show'), icon: MessageCircle },
+        { name: 'Laporan Forum', href: route('guru.forum.reports'), current: route().current('guru.forum.reports*'), icon: Flag, badge: 'reports' }
     );
 } else if (userRole === 'siswa') {
     navigation.push(
@@ -126,11 +130,9 @@ if (userRole === 'admin') {
         >
             <!-- Logo & Portal Name -->
             <div class="flex items-center gap-3 px-6 py-5 h-16 bg-slate-950/50 border-b border-slate-800 shrink-0 relative overflow-hidden transition-all duration-300" :class="isSidebarCollapsed ? 'px-0 justify-center' : ''">
-                <div class="flex items-center justify-center w-8 h-8 rounded bg-indigo-500 text-white shrink-0">
-                    <School size="20" />
-                </div>
+                <img src="/images/logo-skanic.png" alt="Logo SKANIC" class="w-8 h-8 object-contain shrink-0" />
                 <div class="flex-1 overflow-hidden transition-opacity duration-300" :class="isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'">
-                    <h1 class="text-sm font-bold text-white tracking-wider truncate uppercase">Portal Akademik</h1>
+                    <h1 class="text-sm font-bold text-white tracking-wider truncate uppercase">SMKN 1 CIOMAS</h1>
                 </div>
                 <button @click="showingSidebar = false" class="lg:hidden text-slate-400 hover:text-white shrink-0">
                     <X size="20" />
@@ -171,17 +173,26 @@ if (userRole === 'admin') {
                     ]"
                     :title="isSidebarCollapsed ? item.name : ''"
                 >
-                    <component 
-                        :is="item.icon" 
-                        class="flex-shrink-0 h-5 w-5 transition-colors duration-200" 
-                        :class="[
-                            item.current ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300',
-                            !isSidebarCollapsed ? 'mr-3' : ''
-                        ]"
-                        aria-hidden="true" 
-                    />
-                    <span class="truncate transition-opacity duration-300" :class="isSidebarCollapsed ? 'hidden opacity-0' : 'opacity-100'">
+                    <div class="relative flex items-center shrink-0" :class="!isSidebarCollapsed ? 'mr-3' : ''">
+                        <component 
+                            :is="item.icon" 
+                            class="h-5 w-5 transition-colors duration-200" 
+                            :class="item.current ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300'"
+                            aria-hidden="true" 
+                        />
+                        <span 
+                            v-if="isSidebarCollapsed && (item.badge === 'reports' || item.name === 'Laporan Forum') && $page.props.auth.pending_reports_count > 0"
+                            class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-slate-900"
+                        ></span>
+                    </div>
+                    <span class="truncate transition-opacity duration-300 flex-1" :class="isSidebarCollapsed ? 'hidden opacity-0' : 'opacity-100'">
                         {{ item.name }}
+                    </span>
+                    <span 
+                        v-if="!isSidebarCollapsed && (item.badge === 'reports' || item.name === 'Laporan Forum') && $page.props.auth.pending_reports_count > 0"
+                        class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"
+                    >
+                        {{ $page.props.auth.pending_reports_count }}
                     </span>
                 </Link>
             </nav>

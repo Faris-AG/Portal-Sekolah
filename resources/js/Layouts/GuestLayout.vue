@@ -1,6 +1,5 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { School } from 'lucide-vue-next';
 </script>
 
 <template>
@@ -14,12 +13,10 @@ import { School } from 'lucide-vue-next';
             <!-- Header / Logo -->
             <div class="flex flex-col items-center mb-8">
                 <Link href="/" class="group flex flex-col items-center gap-3">
-                    <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:-translate-y-1 transition-transform">
-                        <School size="36" stroke-width="1.5" />
-                    </div>
+                    <img src="/images/logo-skanic.png" alt="Logo SKANIC" class="w-16 h-16 object-contain group-hover:-translate-y-1 transition-transform drop-shadow-md" />
                     <div class="text-center">
-                        <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">Portal Akademik</h1>
-                        <p class="text-sm font-medium text-slate-500 mt-1">Sistem Informasi Sekolah</p>
+                        <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">SMKN 1 CIOMAS</h1>
+                        <p class="text-sm font-medium text-slate-500 mt-1">SKANIC Portal Akademik</p>
                     </div>
                 </Link>
             </div>
@@ -33,7 +30,7 @@ import { School } from 'lucide-vue-next';
             
             <div class="mt-8 text-center">
                 <p class="text-xs font-medium text-slate-400">
-                    &copy; {{ new Date().getFullYear() }} Portal Akademik Sekolah. All rights reserved.
+                    &copy; {{ new Date().getFullYear() }} SMKN 1 Ciomas. All rights reserved.
                 </p>
             </div>
         </div>

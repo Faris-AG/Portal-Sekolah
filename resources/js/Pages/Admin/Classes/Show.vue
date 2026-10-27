@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { 
-    School, ChevronLeft, Users, Calendar, Clock, BookOpen, User as UserIcon 
+    School, ArrowLeft, Users, Calendar, Clock, BookOpen, User as UserIcon 
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -29,9 +29,9 @@ const formatTime = (timeString) => {
             <div class="flex items-center gap-4 w-full">
                 <Link 
                     :href="route('admin.classes.index')"
-                    class="p-2 bg-white text-gray-500 hover:text-indigo-600 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all"
+                    class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
                 >
-                    <ChevronLeft size="20" />
+                    <ArrowLeft size="20" />
                 </Link>
                 <div>
                     <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">

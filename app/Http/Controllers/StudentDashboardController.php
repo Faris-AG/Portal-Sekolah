@@ -215,23 +215,83 @@ class StudentDashboardController extends Controller
     public function attendance(Request $request)
     {
         $user = $request->user();
-        
-        $attendances = \App\Models\Attendance::with(['subject', 'teacher'])
-            ->where('student_id', $user->id)
-            ->orderBy('date', 'desc')
+        $selectedMonth = $request->query('month', '');
+
+        // Hitung batas tanggal semester aktif
+        $now = Carbon::now();
+        if ($now->month >= 7) {
+            $semesterStart = Carbon::create($now->year, 7, 1)->startOfDay()->format('Y-m-d');
+            $semesterEnd = Carbon::create($now->year, 12, 31)->endOfDay()->format('Y-m-d');
+            $semesterName = 'Semester Ganjil ' . $now->year . '/' . ($now->year + 1);
+        } else {
+            $semesterStart = Carbon::create($now->year, 1, 1)->startOfDay()->format('Y-m-d');
+            $semesterEnd = Carbon::create($now->year, 6, 30)->endOfDay()->format('Y-m-d');
+            $semesterName = 'Semester Genap ' . ($now->year - 1) . '/' . $now->year;
+        }
+
+        // Metrik kehadiran semester ini
+        $semesterAttendances = \App\Models\Attendance::where('student_id', $user->id)
+            ->whereBetween('date', [$semesterStart, $semesterEnd])
             ->get();
-            
+
+        // Fallback jika belum ada data di semester ini agar tetap menampilkan statistik dari data yang ada
+        $statsData = $semesterAttendances->isNotEmpty() 
+            ? $semesterAttendances 
+            : \App\Models\Attendance::where('student_id', $user->id)->get();
+
         $attendanceStats = [
-            'hadir' => $attendances->where('status', 'hadir')->count(),
-            'sakit' => $attendances->where('status', 'sakit')->count(),
-            'izin' => $attendances->where('status', 'izin')->count(),
-            'alpa' => $attendances->where('status', 'alpa')->count(),
+            'hadir' => $statsData->where('status', 'hadir')->count(),
+            'sakit' => $statsData->where('status', 'sakit')->count(),
+            'izin' => $statsData->where('status', 'izin')->count(),
+            'alpa' => $statsData->where('status', 'alpa')->count(),
+            'total' => $statsData->count(),
+            'semester' => $semesterName,
         ];
+
+        // Query data kehadiran dengan filter bulan & paginasi
+        $query = \App\Models\Attendance::with(['subject', 'teacher'])
+            ->where('student_id', $user->id);
+
+        if (!empty($selectedMonth)) {
+            $query->where('date', 'like', $selectedMonth . '%');
+        }
+
+        $attendances = $query->orderBy('date', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Ambil daftar bulan untuk dropdown filter
+        $dates = \App\Models\Attendance::where('student_id', $user->id)
+            ->pluck('date');
+
+        $bulanIndo = [
+            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        ];
+
+        $monthValues = $dates->map(function ($date) {
+            return Carbon::parse($date)->format('Y-m');
+        })->push($now->format('Y-m'))->unique()->sortDesc()->values();
+
+        $monthOptions = $monthValues->map(function ($ym) use ($bulanIndo) {
+            $parts = explode('-', $ym);
+            $monthName = $bulanIndo[$parts[1]] ?? $parts[1];
+            return [
+                'value' => $ym,
+                'label' => "{$monthName} {$parts[0]}",
+            ];
+        });
 
         return Inertia::render('Siswa/Attendance/Index', [
             'student' => $user,
             'attendances' => $attendances,
             'attendanceStats' => $attendanceStats,
+            'monthOptions' => $monthOptions,
+            'filters' => [
+                'month' => $selectedMonth,
+            ],
         ]);
     }
 }

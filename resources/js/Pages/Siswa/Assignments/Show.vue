@@ -62,10 +62,15 @@ const submitTask = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center gap-4">
-                <Link :href="route('siswa.assignments')" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                    <ArrowLeft size="18" /> Kembali ke Tugas Belajar
+            <div class="flex items-center gap-4 w-full">
+                <Link :href="route('siswa.assignments')" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
+                    <ArrowLeft size="20" />
                 </Link>
+                <div>
+                    <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                        Detail Tugas
+                    </h2>
+                </div>
             </div>
         </template>
 

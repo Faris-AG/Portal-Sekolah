@@ -4,9 +4,69 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Assignment;
+use App\Models\SchoolClass;
+use App\Models\Subject;
+use App\Models\Schedule;
+use Inertia\Inertia;
 
 class AssignmentController extends Controller
 {
+    public function index(Request $request)
+    {
+        $teacherId = $request->user()->id;
+        
+        $search = $request->query('search', '');
+        $classId = $request->query('class_id', '');
+        $subjectId = $request->query('subject_id', '');
+
+        $query = Assignment::with(['schoolClass', 'subject'])
+            ->withCount('submissions')
+            ->where('teacher_id', $teacherId);
+            
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+        
+        if ($classId !== '') {
+            $query->where('school_class_id', $classId);
+        }
+        
+        if ($subjectId !== '') {
+            $query->where('subject_id', $subjectId);
+        }
+
+        $assignments = $query->latest()->get();
+            
+        $classes = SchoolClass::whereIn('id', function($query) use ($teacherId) {
+            $query->select('school_class_id')
+                ->from('schedules')
+                ->where('teacher_id', $teacherId);
+        })->orderBy('grade_level')->orderBy('name')->get();
+
+        if ($classes->isEmpty()) {
+            $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
+        }
+
+        $subjectIds = Schedule::where('teacher_id', $teacherId)->pluck('subject_id')
+            ->push($request->user()->subject_id)
+            ->filter()
+            ->unique();
+        $subjects = Subject::whereIn('id', $subjectIds)->orderBy('name')->get();
+
+        return Inertia::render('Guru/Assignments/Index', [
+            'assignments' => $assignments,
+            'classes' => $classes,
+            'subjects' => $subjects,
+            'filters' => [
+                'search' => $search,
+                'class_id' => $classId,
+                'subject_id' => $subjectId,
+            ],
+        ]);
+    }
     public function store(Request $request)
     {
         $validated = $request->validate([

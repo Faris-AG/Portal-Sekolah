@@ -33,6 +33,26 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'pending_reports_count' => function () use ($request) {
+                    $user = $request->user();
+                    if (!$user) return 0;
+
+                    if ($user->role === 'admin') {
+                        return \App\Models\ReportedReply::where('status', 'pending')->count();
+                    }
+
+                    if ($user->role === 'guru') {
+                        $classIds = \App\Models\Schedule::where('teacher_id', $user->id)
+                            ->pluck('school_class_id');
+
+                        return \App\Models\ReportedReply::where('status', 'pending')
+                            ->whereHas('reply.topic', function ($q) use ($classIds) {
+                                $q->whereIn('school_class_id', $classIds);
+                            })->count();
+                    }
+
+                    return 0;
+                },
                 'unread_announcements_count' => function () use ($request) {
                     if (!$request->user()) return 0;
                     return \App\Models\Announcement::whereIn('target_role', ['all', $request->user()->role])
@@ -60,8 +80,9 @@ class HandleInertiaRequests extends Middleware
                 },
             ],
             'flash' => [
-                'success' => $request->session()->get('success'),
-                'error' => $request->session()->get('error'),
+                'success'            => $request->session()->get('success'),
+                'error'              => $request->session()->get('error'),
+                'profanity_detected' => $request->session()->get('profanity_detected'),
             ],
         ];
     }

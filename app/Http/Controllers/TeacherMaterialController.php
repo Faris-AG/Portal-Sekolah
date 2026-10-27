@@ -45,8 +45,11 @@ class TeacherMaterialController extends Controller
                 ->where('teacher_id', $teacherId);
         })->orderBy('grade_level')->orderBy('name')->get();
 
-        // Optional: only fetch subjects they teach, but we can stick to their subject_id
-        $subjects = Subject::where('id', $request->user()->subject_id)->get();
+        $subjectIds = \App\Models\Schedule::where('teacher_id', $teacherId)->pluck('subject_id')
+            ->push($request->user()->subject_id)
+            ->filter()
+            ->unique();
+        $subjects = Subject::whereIn('id', $subjectIds)->orderBy('name')->get();
 
         return Inertia::render('Guru/Materials/Index', [
             'materials' => $materials,

@@ -32,8 +32,21 @@ class TeacherDashboardController extends Controller
             ->latest()
             ->get();
             
-        $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
-        $subjects = Subject::orderBy('name')->get();
+        $classes = SchoolClass::whereIn('id', function($query) use ($teacherId) {
+            $query->select('school_class_id')
+                ->from('schedules')
+                ->where('teacher_id', $teacherId);
+        })->orderBy('grade_level')->orderBy('name')->get();
+
+        if ($classes->isEmpty()) {
+            $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
+        }
+
+        $subjectIds = Schedule::where('teacher_id', $teacherId)->pluck('subject_id')
+            ->push($request->user()->subject_id)
+            ->filter()
+            ->unique();
+        $subjects = Subject::whereIn('id', $subjectIds)->orderBy('name')->get();
 
         return Inertia::render('Guru/Dashboard', [
             'schedules' => $schedules,
