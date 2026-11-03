@@ -26,10 +26,11 @@ class DatabaseSeeder extends Seeder
         // 1. Create Admin
         // ============================================================
         User::factory()->create([
-            'name'     => 'Admin Utama',
-            'email'    => 'admin@sekolah.test',
-            'password' => Hash::make('password'),
-            'role'     => 'admin',
+            'name'              => 'Admin Utama',
+            'email'             => 'admin@sekolah.test',
+            'password'          => Hash::make('password'),
+            'role'              => 'admin',
+            'email_verified_at' => now(),
         ]);
 
         // ============================================================
@@ -77,11 +78,12 @@ class DatabaseSeeder extends Seeder
         $i = 0;
         foreach ($subjects as $subjectName => $subject) {
             $teachers[] = User::factory()->create([
-                'name'       => $faker->name . ', S.Pd',
-                'email'      => $teacherEmails[$i] . '@sekolah.test',
-                'password'   => Hash::make('password'),
-                'role'       => 'guru',
-                'subject_id' => $subject->id,
+                'name'              => $faker->name . ', S.Pd',
+                'email'             => $teacherEmails[$i] . '@sekolah.test',
+                'password'          => Hash::make('password'),
+                'role'              => 'guru',
+                'subject_id'        => $subject->id,
+                'email_verified_at' => now(),
             ]);
             $i++;
         }

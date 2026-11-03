@@ -58,8 +58,12 @@ const submit = () => {
                     v-model="form.email"
                     required
                     autocomplete="username"
-                    placeholder="nama@sekolah.test"
+                    placeholder="nama@gmail.com"
                 />
+
+                <p class="mt-1.5 text-xs text-slate-400">
+                    Gunakan email resmi: @gmail.com, @yahoo.com, @outlook.com, @icloud.com, @belajar.id, atau domain sekolah (.sch.id / .ac.id). Email sementara (temp mail) tidak diterima.
+                </p>
 
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>

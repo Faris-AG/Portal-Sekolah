@@ -33,10 +33,11 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'siswa@sekolah.test'],
             [
-                'name'     => 'Andi Utama',
-                'password' => $defaultPassword,
-                'role'     => 'siswa',
-                'class_id' => $demoClass->id,
+                'name'              => 'Andi Utama',
+                'password'          => $defaultPassword,
+                'role'              => 'siswa',
+                'class_id'          => $demoClass->id,
+                'email_verified_at' => now(),
             ]
         );
 
@@ -51,10 +52,11 @@ class UserSeeder extends Seeder
             User::updateOrCreate(
                 ['email' => 'siswa' . $s . '@sekolah.test'],
                 [
-                    'name'     => $faker->name,
-                    'password' => $defaultPassword,
-                    'role'     => 'siswa',
-                    'class_id' => $randomClass->id,
+                    'name'              => $faker->name,
+                    'password'          => $defaultPassword,
+                    'role'              => 'siswa',
+                    'class_id'          => $randomClass->id,
+                    'email_verified_at' => now(),
                 ]
             );
         }
