@@ -18,7 +18,8 @@ class EmailVerificationNotificationController extends Controller
             return redirect()->intended(route('dashboard', absolute: false));
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        $user = $request->user();
+        defer(fn () => $user->sendEmailVerificationNotification());
 
         return back()->with('status', 'verification-link-sent');
     }
@@ -49,7 +50,7 @@ class EmailVerificationNotificationController extends Controller
         $user->email_verified_at = null;
         $user->save();
 
-        $user->sendEmailVerificationNotification();
+        defer(fn () => $user->sendEmailVerificationNotification());
 
         return back()->with('status', 'email-updated-and-sent');
     }

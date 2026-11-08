@@ -6,8 +6,9 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { Mail, Clock, Eye, EyeOff, Pencil, CheckCircle2, Send } from 'lucide-vue-next';
+import axios from 'axios';
 
 const props = defineProps({
     status: {
@@ -68,6 +69,29 @@ const startCooldown = (seconds = 60) => {
     }, 1000);
 };
 
+// Auto-polling status verifikasi (dukungan lintas tab / browser / perangkat)
+const isAutoRedirecting = ref(false);
+let pollInterval = null;
+
+const checkVerificationStatus = async () => {
+    try {
+        const url = typeof route === 'function' ? route('verification.status') : '/email/verification-status';
+        const response = await axios.get(url);
+        if (response.data && response.data.verified) {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+            isAutoRedirecting.value = true;
+            setTimeout(() => {
+                router.visit(route('dashboard'));
+            }, 1000);
+        }
+    } catch (error) {
+        // Abaikan error jaringan sementara saat polling di latar belakang
+    }
+};
+
 onMounted(() => {
     try {
         const storedExpire = localStorage.getItem('verification_cooldown_until');
@@ -80,10 +104,17 @@ onMounted(() => {
             }
         }
     } catch (e) {}
+
+    // Jalankan pengecekan setiap 3 detik
+    pollInterval = setInterval(checkVerificationStatus, 3000);
 });
 
 onUnmounted(() => {
     if (timer) clearInterval(timer);
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
 });
 
 // Form kirim ulang verifikasi
@@ -154,7 +185,18 @@ const emailUpdatedAndSent = computed(
 
         <!-- Notifikasi Status -->
         <div
-            v-if="emailUpdatedAndSent"
+            v-if="isAutoRedirecting"
+            class="mb-5 rounded-2xl bg-emerald-50 border border-emerald-300 p-4 text-sm text-emerald-800 flex items-center gap-3 shadow-md animate-pulse"
+        >
+            <CheckCircle2 class="w-6 h-6 text-emerald-600 flex-shrink-0" />
+            <div>
+                <p class="font-bold text-emerald-900">Email terverifikasi!</p>
+                <p class="text-xs text-emerald-700 mt-0.5">Mengalihkan ke Dashboard...</p>
+            </div>
+        </div>
+
+        <div
+            v-else-if="emailUpdatedAndSent"
             class="mb-5 rounded-2xl bg-emerald-50 border border-emerald-200/80 p-4 text-sm text-emerald-800 flex items-start gap-3 shadow-sm"
         >
             <CheckCircle2 class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -254,10 +296,16 @@ const emailUpdatedAndSent = computed(
         </div>
 
         <!-- Deskripsi Informasi -->
-        <div class="mb-5 text-sm text-slate-600 leading-relaxed">
+        <div class="mb-4 text-sm text-slate-600 leading-relaxed">
             Terima kasih telah mendaftar! Sebelum memulai, silakan verifikasi alamat email Anda
             dengan mengklik tautan yang baru saja kami kirimkan ke email Anda.
             <span class="font-medium text-slate-700">Akun Anda belum aktif sebelum dikonfirmasi.</span>
+        </div>
+
+        <!-- Info Masa Berlaku 15 Menit -->
+        <div class="mb-5 rounded-xl bg-amber-50/90 border border-amber-200/80 p-3 text-xs text-amber-900 flex items-start sm:items-center gap-2.5">
+            <Clock class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5 sm:mt-0" />
+            <span>Tautan verifikasi hanya berlaku selama <strong>15 menit</strong>. Akun yang belum terverifikasi setelah 15 menit akan dibersihkan otomatis demi keamanan.</span>
         </div>
 
         <!-- Tombol Aksi Utama -->
@@ -266,8 +314,8 @@ const emailUpdatedAndSent = computed(
                 <PrimaryButton
                     type="submit"
                     class="w-full sm:w-auto flex-1 justify-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-all text-sm font-semibold flex items-center gap-2"
-                    :class="{ 'opacity-50 cursor-not-allowed': resendForm.processing || cooldownSeconds > 0 }"
-                    :disabled="resendForm.processing || cooldownSeconds > 0"
+                    :class="{ 'opacity-50 cursor-not-allowed': resendForm.processing || cooldownSeconds > 0 || isAutoRedirecting }"
+                    :disabled="resendForm.processing || cooldownSeconds > 0 || isAutoRedirecting"
                 >
                     <Send class="w-4 h-4" />
                     <span>

@@ -3,25 +3,41 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class VerifyEmailController extends Controller
 {
     /**
-     * Mark the authenticated user's email address as verified.
+     * Mark the user's email address as verified and render Discord-style verification confirmation page.
      */
-    public function __invoke(EmailVerificationRequest $request): RedirectResponse
+    public function __invoke(Request $request, $id = null, $hash = null): Response|RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        $id = $id ?? $request->route('id');
+        $hash = $hash ?? $request->route('hash');
+
+        $user = User::find($id);
+
+        if (! $user) {
+            return redirect()->route('register')->with('error', 'Link verifikasi telah kadaluarsa atau akun telah dihapus. Silakan daftar ulang.');
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            abort(403, 'Tautan verifikasi tidak valid atau telah dimodifikasi.');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        if (! $user->hasVerifiedEmail()) {
+            if ($user->markEmailAsVerified()) {
+                event(new Verified($user));
+            }
+        }
+
+        return Inertia::render('Auth/VerifiedSuccess', [
+            'email' => $user->email,
+        ]);
     }
 }

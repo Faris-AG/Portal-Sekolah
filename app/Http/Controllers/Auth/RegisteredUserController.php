@@ -22,6 +22,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
+        // Bersihkan otomatis akun yang belum verifikasi email dan sudah lewat dari 15 menit
+        $this->pruneUnverifiedAccounts();
+
         return Inertia::render('Auth/Register');
     }
 
@@ -32,6 +35,17 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Bersihkan otomatis akun gantung yang sudah lewat dari 15 menit
+        $this->pruneUnverifiedAccounts();
+
+        // Sebelum validasi unique, jika email ini pernah didaftarkan tetapi belum diverifikasi,
+        // hapus data akun gantung tersebut agar pendaftar bisa langsung mendaftar ulang tanpa tertahan error "Email sudah terdaftar".
+        if ($request->filled('email')) {
+            User::where('email', $request->email)
+                ->whereNull('email_verified_at')
+                ->delete();
+        }
+
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => [
@@ -52,10 +66,21 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
+        // Optimasi: kirim email verifikasi di latar belakang setelah response dikirim agar registrasi instan tanpa delay SMTP
+        defer(fn () => event(new Registered($user)));
 
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
+    }
+
+    /**
+     * Bersihkan akun yang belum verifikasi email dan sudah lebih dari 15 menit.
+     */
+    private function pruneUnverifiedAccounts(): void
+    {
+        User::whereNull('email_verified_at')
+            ->where('updated_at', '<', now()->subMinutes(15))
+            ->delete();
     }
 }

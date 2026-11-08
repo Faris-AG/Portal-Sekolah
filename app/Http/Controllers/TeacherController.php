@@ -29,7 +29,8 @@ class TeacherController extends Controller
         }
 
         $query = User::with(['subject', 'waliClass'])
-            ->where('role', 'guru');
+            ->where('role', 'guru')
+            ->whereNotNull('email_verified_at');
             
         if (!empty($search)) {
             $query->where(function($q) use ($search) {
@@ -88,11 +89,12 @@ class TeacherController extends Controller
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'guru',
-            'subject_id' => $request->subject_id,
+            'name'               => $request->name,
+            'email'              => $request->email,
+            'password'           => Hash::make($request->password),
+            'role'               => 'guru',
+            'subject_id'         => $request->subject_id,
+            'email_verified_at'  => now(), // Akun dibuat manual oleh Admin, langsung aktif
         ]);
 
         return redirect()->back()->with('success', 'Akun Guru berhasil ditambahkan.');

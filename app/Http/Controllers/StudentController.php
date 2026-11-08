@@ -12,6 +12,11 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
+        // Bersihkan akun siswa yang belum verifikasi dan sudah > 15 menit
+        User::whereNull('email_verified_at')
+            ->where('updated_at', '<', now()->subMinutes(15))
+            ->delete();
+
         $sortBy = $request->query('sort_by', 'name');
         $direction = $request->query('direction', 'asc');
         $perPage = $request->query('per_page', 10);
@@ -28,7 +33,7 @@ class StudentController extends Controller
             $direction = 'asc';
         }
 
-        $query = User::where('role', 'siswa')->with('schoolClass');
+        $query = User::where('role', 'siswa')->verified()->with('schoolClass');
         
         if (!empty($search)) {
             $query->where(function($q) use ($search) {
@@ -58,6 +63,7 @@ class StudentController extends Controller
 
         // Build a map of class_id -> [student list] for Mass Promotion modal (instant filtering)
         $studentsByClass = User::where('role', 'siswa')
+            ->verified()
             ->whereNotNull('class_id')
             ->orderBy('name')
             ->get(['id', 'name', 'class_id'])
@@ -105,6 +111,7 @@ class StudentController extends Controller
         ]);
 
         $count = User::where('role', 'siswa')
+            ->verified()
             ->whereIn('id', $validated['student_ids'])
             ->update(['class_id' => $validated['school_class_id']]);
 

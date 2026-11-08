@@ -27,6 +27,7 @@ class AdminAttendanceController extends Controller
 
         if ($selectedClassId) {
             $students = User::where('role', 'siswa')
+                            ->whereNotNull('email_verified_at')
                             ->where('class_id', $selectedClassId)
                             ->orderBy('name', 'asc')
                             ->get();

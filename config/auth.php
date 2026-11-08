@@ -114,4 +114,18 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification Timeout
+    |--------------------------------------------------------------------------
+    |
+    | Here you may define the number of minutes that a signed verification URL
+    | should be considered valid.
+    |
+    */
+
+    'verification' => [
+        'expire' => 15,
+    ],
+
 ];

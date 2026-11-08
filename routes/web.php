@@ -1,11 +1,27 @@
 <?php
 
+use App\Http\Controllers\AdminAttendanceController;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ForumController;
+use App\Http\Controllers\ForumModerationController;
+use App\Http\Controllers\GlobalAnnouncementController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SchoolClassController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SchoolClassController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentMaterialController;
+use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\TeacherMaterialController;
+use App\Models\SchoolClass;
+use App\Models\User;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,20 +34,21 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
-    $role = $request->user()->role;
-    if ($role === 'admin') return redirect()->route('admin.dashboard');
-    if ($role === 'guru') return redirect()->route('guru.dashboard');
+Route::get('/dashboard', function (Request $request) {
+    /** @var User $user */
+    $user = $request->user();
+    if ($user->isAdmin()) return redirect()->route('admin.dashboard');
+    if ($user->isGuru()) return redirect()->route('guru.dashboard');
     return redirect()->route('siswa.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard', [
-            'totalStudents' => \App\Models\User::where('role', 'siswa')->count(),
-            'totalTeachers' => \App\Models\User::where('role', 'guru')->count(),
-            'totalClasses' => \App\Models\SchoolClass::count(),
-            'recentClasses' => \App\Models\SchoolClass::latest()->take(5)->get()
+            'totalStudents' => User::where('role', 'siswa')->verified()->count(),
+            'totalTeachers' => User::where('role', 'guru')->verified()->count(),
+            'totalClasses'  => SchoolClass::count(),
+            'recentClasses' => SchoolClass::latest()->take(5)->get(),
         ]);
     })->name('dashboard');
 
@@ -41,7 +58,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::put('/classes/{id}', [SchoolClassController::class, 'update'])->name('classes.update');
     Route::delete('/classes/{id}', [SchoolClassController::class, 'destroy'])->name('classes.destroy');
 
-    Route::resource('teachers', \App\Http\Controllers\TeacherController::class)->except(['create', 'edit', 'show'])->names('teachers');
+    Route::resource('teachers', TeacherController::class)->except(['create', 'edit', 'show'])->names('teachers');
 
     Route::get('/subjects', [SubjectController::class, 'index'])->name('subjects.index');
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
@@ -57,78 +74,78 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
     Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 
-    Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class)->except(['create', 'edit', 'show'])->names('announcements');
+    Route::resource('announcements', AnnouncementController::class)->except(['create', 'edit', 'show'])->names('announcements');
     
-    Route::get('/attendance', [\App\Http\Controllers\AdminAttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('attendance.index');
     
-    Route::get('/forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');
-    Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
-    Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
-    Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
-    Route::delete('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
-    Route::patch('/forum/{id}/toggle-pin', [\App\Http\Controllers\ForumController::class, 'togglePin'])->name('forum.topic.toggle-pin');
-    Route::patch('/forum/{id}/toggle-lock', [\App\Http\Controllers\ForumController::class, 'toggleLock'])->name('forum.topic.toggle-lock');
+    Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+    Route::get('/forum/{id}', [ForumController::class, 'show'])->name('forum.show');
+    Route::post('/forum', [ForumController::class, 'storeTopic'])->name('forum.store');
+    Route::post('/forum/{id}/reply', [ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::delete('/forum/{id}', [ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
+    Route::patch('/forum/{id}/toggle-pin', [ForumController::class, 'togglePin'])->name('forum.topic.toggle-pin');
+    Route::patch('/forum/{id}/toggle-lock', [ForumController::class, 'toggleLock'])->name('forum.topic.toggle-lock');
     // Moderasi
-    Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
-    Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
-    Route::get('/forum/reports/list', [\App\Http\Controllers\ForumModerationController::class, 'reportedReplies'])->name('forum.reports');
-    Route::match(['put', 'patch', 'delete'], '/forum/reports/{reportId}/status', [\App\Http\Controllers\ForumModerationController::class, 'updateReportStatus'])->name('forum.reports.status');
-    Route::delete('/forum/reports/{reportId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReport'])->name('forum.reports.destroy');
+    Route::delete('/forum/reply/{replyId}', [ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
+    Route::patch('/forum/reply/{replyId}', [ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
+    Route::get('/forum/reports/list', [ForumModerationController::class, 'reportedReplies'])->name('forum.reports');
+    Route::match(['put', 'patch', 'delete'], '/forum/reports/{reportId}/status', [ForumModerationController::class, 'updateReportStatus'])->name('forum.reports.status');
+    Route::delete('/forum/reports/{reportId}', [ForumModerationController::class, 'destroyReport'])->name('forum.reports.destroy');
 });
 
 Route::middleware(['auth', 'verified', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\TeacherDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/assignments', [\App\Http\Controllers\AssignmentController::class, 'index'])->name('assignments.index');
-    Route::get('/assignments/{id}', [\App\Http\Controllers\AssignmentController::class, 'show'])->name('assignments.show');
-    Route::post('/assignments', [\App\Http\Controllers\AssignmentController::class, 'store'])->name('assignments.store');
-    Route::delete('/assignments/{id}', [\App\Http\Controllers\AssignmentController::class, 'destroy'])->name('assignments.destroy');
-    Route::get('/assignments/{id}/export', [\App\Http\Controllers\AssignmentController::class, 'exportCsv'])->name('assignments.export');
+    Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+    Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
+    Route::post('/assignments', [AssignmentController::class, 'store'])->name('assignments.store');
+    Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy'])->name('assignments.destroy');
+    Route::get('/assignments/{id}/export', [AssignmentController::class, 'exportCsv'])->name('assignments.export');
     
-    Route::get('/materials', [\App\Http\Controllers\TeacherMaterialController::class, 'index'])->name('materials.index');
-    Route::post('/materials', [\App\Http\Controllers\TeacherMaterialController::class, 'store'])->name('materials.store');
-    Route::delete('/materials/{material}', [\App\Http\Controllers\TeacherMaterialController::class, 'destroy'])->name('materials.destroy');
+    Route::get('/materials', [TeacherMaterialController::class, 'index'])->name('materials.index');
+    Route::post('/materials', [TeacherMaterialController::class, 'store'])->name('materials.store');
+    Route::delete('/materials/{material}', [TeacherMaterialController::class, 'destroy'])->name('materials.destroy');
     
-    Route::post('/submissions/{id}/grade', [\App\Http\Controllers\SubmissionController::class, 'grade'])->name('submissions.grade');
-    Route::get('/submissions/{id}/download', [\App\Http\Controllers\SubmissionController::class, 'download'])->name('submissions.download');
+    Route::post('/submissions/{id}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+    Route::get('/submissions/{id}/download', [SubmissionController::class, 'download'])->name('submissions.download');
 
-    Route::get('/attendance/report', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('attendance.index');
-    Route::get('/attendance', [\App\Http\Controllers\AttendanceController::class, 'create'])->name('attendance.create');
-    Route::post('/attendance', [\App\Http\Controllers\AttendanceController::class, 'store'])->name('attendance.store');
+    Route::get('/attendance/report', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
+    Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     
-    Route::get('/forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');
-    Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
-    Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
-    Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
-    Route::delete('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
-    Route::patch('/forum/{id}/toggle-pin', [\App\Http\Controllers\ForumController::class, 'togglePin'])->name('forum.topic.toggle-pin');
-    Route::patch('/forum/{id}/toggle-lock', [\App\Http\Controllers\ForumController::class, 'toggleLock'])->name('forum.topic.toggle-lock');
+    Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+    Route::get('/forum/{id}', [ForumController::class, 'show'])->name('forum.show');
+    Route::post('/forum', [ForumController::class, 'storeTopic'])->name('forum.store');
+    Route::post('/forum/{id}/reply', [ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::delete('/forum/{id}', [ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
+    Route::patch('/forum/{id}/toggle-pin', [ForumController::class, 'togglePin'])->name('forum.topic.toggle-pin');
+    Route::patch('/forum/{id}/toggle-lock', [ForumController::class, 'toggleLock'])->name('forum.topic.toggle-lock');
     // Moderasi
-    Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
-    Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
-    Route::get('/forum/reports/list', [\App\Http\Controllers\ForumModerationController::class, 'reportedReplies'])->name('forum.reports');
-    Route::match(['put', 'patch', 'delete'], '/forum/reports/{reportId}/status', [\App\Http\Controllers\ForumModerationController::class, 'updateReportStatus'])->name('forum.reports.status');
-    Route::delete('/forum/reports/{reportId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReport'])->name('forum.reports.destroy');
+    Route::delete('/forum/reply/{replyId}', [ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
+    Route::patch('/forum/reply/{replyId}', [ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
+    Route::get('/forum/reports/list', [ForumModerationController::class, 'reportedReplies'])->name('forum.reports');
+    Route::match(['put', 'patch', 'delete'], '/forum/reports/{reportId}/status', [ForumModerationController::class, 'updateReportStatus'])->name('forum.reports.status');
+    Route::delete('/forum/reports/{reportId}', [ForumModerationController::class, 'destroyReport'])->name('forum.reports.destroy');
 });
 
 Route::middleware(['auth', 'verified', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\StudentDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/schedules', [\App\Http\Controllers\StudentDashboardController::class, 'schedules'])->name('schedules');
-    Route::get('/assignments', [\App\Http\Controllers\StudentDashboardController::class, 'assignments'])->name('assignments');
-    Route::get('/assignments/{id}', [\App\Http\Controllers\StudentDashboardController::class, 'showAssignment'])->name('assignments.show');
-    Route::get('/grades', [\App\Http\Controllers\StudentDashboardController::class, 'grades'])->name('grades');
-    Route::get('/attendance', [\App\Http\Controllers\StudentDashboardController::class, 'attendance'])->name('attendance');
-    Route::post('/submissions', [\App\Http\Controllers\SubmissionController::class, 'store'])->name('submissions.store');
-    Route::get('/materials', [\App\Http\Controllers\StudentMaterialController::class, 'index'])->name('materials.index');
+    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/schedules', [StudentDashboardController::class, 'schedules'])->name('schedules');
+    Route::get('/assignments', [StudentDashboardController::class, 'assignments'])->name('assignments');
+    Route::get('/assignments/{id}', [StudentDashboardController::class, 'showAssignment'])->name('assignments.show');
+    Route::get('/grades', [StudentDashboardController::class, 'grades'])->name('grades');
+    Route::get('/attendance', [StudentDashboardController::class, 'attendance'])->name('attendance');
+    Route::post('/submissions', [SubmissionController::class, 'store'])->name('submissions.store');
+    Route::get('/materials', [StudentMaterialController::class, 'index'])->name('materials.index');
     
-    Route::get('/forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');
-    Route::get('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
-    Route::post('/forum', [\App\Http\Controllers\ForumController::class, 'storeTopic'])->name('forum.store');
-    Route::post('/forum/{id}/reply', [\App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
-    Route::delete('/forum/{id}', [\App\Http\Controllers\ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
+    Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+    Route::get('/forum/{id}', [ForumController::class, 'show'])->name('forum.show');
+    Route::post('/forum', [ForumController::class, 'storeTopic'])->name('forum.store');
+    Route::post('/forum/{id}/reply', [ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::delete('/forum/{id}', [ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
     // Moderasi — siswa hanya bisa hapus & laporkan
-    Route::delete('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
-    Route::patch('/forum/reply/{replyId}', [\App\Http\Controllers\ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
-    Route::post('/forum/reply/{replyId}/report', [\App\Http\Controllers\ForumModerationController::class, 'reportReply'])->name('forum.reply.report');
+    Route::delete('/forum/reply/{replyId}', [ForumModerationController::class, 'destroyReply'])->name('forum.reply.destroy');
+    Route::patch('/forum/reply/{replyId}', [ForumModerationController::class, 'updateReply'])->name('forum.reply.update');
+    Route::post('/forum/reply/{replyId}/report', [ForumModerationController::class, 'reportReply'])->name('forum.reply.report');
 });
 
 Route::middleware('auth')->group(function () {
@@ -136,9 +153,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    Route::get('/announcements', [\App\Http\Controllers\GlobalAnnouncementController::class, 'index'])->name('announcements.index');
-    Route::post('/announcements/mark-all-read', [\App\Http\Controllers\GlobalAnnouncementController::class, 'markAllAsRead'])->name('announcements.mark_all_read');
-    Route::post('/announcements/{id}/read', [\App\Http\Controllers\GlobalAnnouncementController::class, 'markAsRead'])->name('announcements.mark_read');
+    Route::get('/announcements', [GlobalAnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('/announcements/mark-all-read', [GlobalAnnouncementController::class, 'markAllAsRead'])->name('announcements.mark_all_read');
+    Route::post('/announcements/{id}/read', [GlobalAnnouncementController::class, 'markAsRead'])->name('announcements.mark_read');
 });
 
 require __DIR__.'/auth.php';
