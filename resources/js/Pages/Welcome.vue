@@ -175,7 +175,7 @@ const guideSteps = [
         <header class="fixed top-0 left-0 right-0 z-50 px-3 sm:px-6 py-3 sm:py-4">
             <div class="max-w-6xl mx-auto flex justify-between items-center bg-white/90 backdrop-blur-md px-4 sm:px-5 py-2.5 sm:py-3 rounded-full border border-slate-200/80 shadow-sm shadow-slate-200/50">
                 <div class="flex items-center gap-2.5 sm:gap-3">
-                    <img src="/images/logo-skanic.png" alt="Logo SMKN 1 Ciomas" class="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow" />
+                    <img src="/images/logo-skanic.png" alt="Logo SMKN 1 Ciomas" class="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow" width="36" height="36" fetchpriority="high" />
                     <div class="flex flex-col">
                         <span class="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-none">SKANIC PORTAL</span>
                         <span class="text-[9px] sm:text-[10px] font-semibold tracking-wider text-slate-500 uppercase mt-0.5">SMKN 1 Ciomas</span>

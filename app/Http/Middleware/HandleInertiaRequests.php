@@ -32,7 +32,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()?->only(['id', 'name', 'email', 'role', 'email_verified_at', 'class_id', 'subject_id']),
                 'pending_reports_count' => function () use ($request) {
                     $user = $request->user();
                     if (!$user) return 0;
@@ -62,7 +62,8 @@ class HandleInertiaRequests extends Middleware
                 },
                 'latest_announcements' => function () use ($request) {
                     if (!$request->user()) return [];
-                    $announcements = \App\Models\Announcement::whereIn('target_role', ['all', $request->user()->role])
+                    $announcements = \App\Models\Announcement::select(['id', 'title', 'content', 'target_role', 'user_id', 'created_at'])
+                        ->whereIn('target_role', ['all', $request->user()->role])
                         ->with(['user' => function($q) { $q->select('id', 'name'); }])
                         ->with(['readByUsers' => function($q) use ($request) {
                             $q->where('user_id', $request->user()->id);

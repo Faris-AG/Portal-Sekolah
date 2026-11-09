@@ -37,7 +37,7 @@ class ForumController extends Controller
 
         if ($classId) {
             $currentClass = SchoolClass::find($classId);
-            $topics = ForumTopic::with(['user', 'replies'])
+            $topics = ForumTopic::with(['user' => function($q) { $q->select('id', 'name', 'role'); }])
                 ->withCount('replies')
                 ->where('school_class_id', $classId)
                 ->orderByDesc('is_pinned')
@@ -57,7 +57,13 @@ class ForumController extends Controller
 
     public function show(Request $request, int|string $id)
     {
-        $topic = ForumTopic::with(['user', 'schoolClass', 'replies.user', 'replies.moderator'])->findOrFail($id);
+        $topic = ForumTopic::with([
+            'user:id,name,role',
+            'schoolClass:id,name',
+            'replies' => function($q) { $q->orderBy('created_at', 'asc'); },
+            'replies.user:id,name,role',
+            'replies.moderator:id,name',
+        ])->findOrFail($id);
         
         $user = $request->user();
         if ($user->role === 'siswa' && $topic->school_class_id !== $user->class_id) {

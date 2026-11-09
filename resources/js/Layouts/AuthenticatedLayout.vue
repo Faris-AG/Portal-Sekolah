@@ -130,11 +130,11 @@ if (userRole === 'admin') {
         >
             <!-- Logo & Portal Name -->
             <div class="flex items-center gap-3 px-6 py-5 h-16 bg-slate-950/50 border-b border-slate-800 shrink-0 relative overflow-hidden transition-all duration-300" :class="isSidebarCollapsed ? 'px-0 justify-center' : ''">
-                <img src="/images/logo-skanic.png" alt="Logo SKANIC" class="w-8 h-8 object-contain shrink-0" />
+                <img src="/images/logo-skanic.png" alt="Logo SKANIC" class="w-8 h-8 object-contain shrink-0" width="32" height="32" />
                 <div class="flex-1 overflow-hidden transition-opacity duration-300" :class="isSidebarCollapsed ? 'opacity-0 w-0 hidden' : 'opacity-100'">
                     <h1 class="text-sm font-bold text-white tracking-wider truncate uppercase">SMKN 1 CIOMAS</h1>
                 </div>
-                <button @click="showingSidebar = false" class="lg:hidden text-slate-400 hover:text-white shrink-0">
+                <button @click="showingSidebar = false" class="lg:hidden text-slate-400 hover:text-white shrink-0" aria-label="Tutup menu navigasi">
                     <X size="20" />
                 </button>
             </div>
@@ -225,6 +225,7 @@ if (userRole === 'admin') {
                     <button 
                         @click="showingSidebar = true"
                         class="lg:hidden text-gray-500 hover:text-gray-700 focus:outline-none p-1 rounded-md hover:bg-gray-100 shrink-0"
+                        aria-label="Buka menu navigasi"
                     >
                         <Menu size="24" />
                     </button>
@@ -232,6 +233,7 @@ if (userRole === 'admin') {
                     <button 
                         @click="isSidebarCollapsed = !isSidebarCollapsed"
                         class="hidden lg:flex text-gray-500 hover:text-gray-700 focus:outline-none p-1 rounded-md hover:bg-gray-100 shrink-0"
+                        :aria-label="isSidebarCollapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'"
                     >
                         <ChevronRight v-if="isSidebarCollapsed" size="24" />
                         <ChevronLeft v-else size="24" />
@@ -248,7 +250,7 @@ if (userRole === 'admin') {
                     <!-- Notifications Dropdown -->
                     <Dropdown align="right" width="80" contentClasses="py-0 bg-white" class="shrink-0">
                         <template #trigger>
-                            <button type="button" class="relative flex items-center justify-center p-2 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors mt-1">
+                            <button type="button" class="relative flex items-center justify-center p-2 rounded-full text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors mt-1" :aria-label="'Notifikasi pengumuman' + ($page.props.auth.unread_announcements_count > 0 ? ' (' + $page.props.auth.unread_announcements_count + ' belum dibaca)' : '')">
                                 <Bell size="20" />
                                 <span v-if="$page.props.auth.unread_announcements_count > 0" class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
                                     {{ $page.props.auth.unread_announcements_count }}

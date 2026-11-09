@@ -230,21 +230,36 @@ class StudentDashboardController extends Controller
         }
 
         // Metrik kehadiran semester ini
-        $semesterAttendances = \App\Models\Attendance::where('student_id', $user->id)
+        $semesterStats = \App\Models\Attendance::where('student_id', $user->id)
             ->whereBetween('date', [$semesterStart, $semesterEnd])
-            ->get();
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'hadir' THEN 1 ELSE 0 END) as hadir,
+                SUM(CASE WHEN status = 'sakit' THEN 1 ELSE 0 END) as sakit,
+                SUM(CASE WHEN status = 'izin' THEN 1 ELSE 0 END) as izin,
+                SUM(CASE WHEN status = 'alpa' THEN 1 ELSE 0 END) as alpa
+            ")
+            ->first();
 
-        // Fallback jika belum ada data di semester ini agar tetap menampilkan statistik dari data yang ada
-        $statsData = $semesterAttendances->isNotEmpty() 
-            ? $semesterAttendances 
-            : \App\Models\Attendance::where('student_id', $user->id)->get();
+        // Fallback ke semua data jika semester kosong
+        if (!$semesterStats || $semesterStats->total == 0) {
+            $semesterStats = \App\Models\Attendance::where('student_id', $user->id)
+                ->selectRaw("
+                    COUNT(*) as total,
+                    SUM(CASE WHEN status = 'hadir' THEN 1 ELSE 0 END) as hadir,
+                    SUM(CASE WHEN status = 'sakit' THEN 1 ELSE 0 END) as sakit,
+                    SUM(CASE WHEN status = 'izin' THEN 1 ELSE 0 END) as izin,
+                    SUM(CASE WHEN status = 'alpa' THEN 1 ELSE 0 END) as alpa
+                ")
+                ->first();
+        }
 
         $attendanceStats = [
-            'hadir' => $statsData->where('status', 'hadir')->count(),
-            'sakit' => $statsData->where('status', 'sakit')->count(),
-            'izin' => $statsData->where('status', 'izin')->count(),
-            'alpa' => $statsData->where('status', 'alpa')->count(),
-            'total' => $statsData->count(),
+            'hadir'    => (int) ($semesterStats->hadir ?? 0),
+            'sakit'    => (int) ($semesterStats->sakit ?? 0),
+            'izin'     => (int) ($semesterStats->izin ?? 0),
+            'alpa'     => (int) ($semesterStats->alpa ?? 0),
+            'total'    => (int) ($semesterStats->total ?? 0),
             'semester' => $semesterName,
         ];
 
