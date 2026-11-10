@@ -17,6 +17,9 @@ export default defineConfig({
             },
         }),
     ],
+    optimizeDeps: {
+        include: ['vue', '@inertiajs/vue3', 'axios', 'lucide-vue-next'],
+    },
     build: {
         rollupOptions: {
             output: {

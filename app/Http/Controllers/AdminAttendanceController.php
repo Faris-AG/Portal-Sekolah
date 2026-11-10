@@ -14,8 +14,8 @@ class AdminAttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        $classes = SchoolClass::orderBy('name')->get();
-        $subjects = Subject::orderBy('name')->get();
+        $classes = SchoolClass::select(['id', 'name', 'grade_level'])->orderBy('name')->get();
+        $subjects = Subject::select(['id', 'name'])->orderBy('name')->get();
 
         $selectedClassId = $request->query('school_class_id');
         $selectedSubjectId = $request->query('subject_id');
@@ -26,7 +26,8 @@ class AdminAttendanceController extends Controller
         $report = [];
 
         if ($selectedClassId) {
-            $students = User::where('role', 'siswa')
+            $students = User::select(['id', 'name', 'email', 'class_id'])
+                            ->where('role', 'siswa')
                             ->whereNotNull('email_verified_at')
                             ->where('class_id', $selectedClassId)
                             ->orderBy('name', 'asc')

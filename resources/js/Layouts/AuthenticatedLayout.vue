@@ -164,6 +164,7 @@ if (userRole === 'admin') {
                     v-for="item in navigation"
                     :key="item.name"
                     :href="item.href"
+                    prefetch
                     class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200"
                     :class="[
                         item.current 
@@ -289,7 +290,7 @@ if (userRole === 'admin') {
                                 </div>
                             </div>
                             <div class="p-2 border-t border-gray-100">
-                                <Link :href="route('announcements.index')" class="block w-full text-center px-4 py-2.5 text-sm font-bold text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-md transition-colors">
+                                <Link :href="route('announcements.index')" prefetch class="block w-full text-center px-4 py-2.5 text-sm font-bold text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-md transition-colors">
                                     Lihat Semua Pengumuman
                                 </Link>
                             </div>

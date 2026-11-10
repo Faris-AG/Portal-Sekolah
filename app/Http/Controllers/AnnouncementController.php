@@ -10,7 +10,7 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $announcements = Announcement::with('user')->latest()->get();
+        $announcements = Announcement::with('user:id,name')->latest()->get();
         return Inertia::render('Admin/Announcements/Index', [
             'announcements' => $announcements,
         ]);

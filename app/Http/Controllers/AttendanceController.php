@@ -17,7 +17,7 @@ class AttendanceController extends Controller
     {
         $teacherId = auth()->id();
         
-        $schedules = Schedule::where('teacher_id', $teacherId)->with(['schoolClass', 'subject'])->get();
+        $schedules = Schedule::where('teacher_id', $teacherId)->with(['schoolClass:id,name,grade_level', 'subject:id,name'])->get();
         $classes = $schedules->pluck('schoolClass')->unique('id')->values();
         $subjects = $schedules->pluck('subject')->unique('id')->values();
 
@@ -30,7 +30,8 @@ class AttendanceController extends Controller
         $report = [];
 
         if ($selectedClassId) {
-            $students = User::where('role', 'siswa')
+            $students = User::select(['id', 'name', 'email', 'class_id'])
+                            ->where('role', 'siswa')
                             ->whereNotNull('email_verified_at')
                             ->where('class_id', $selectedClassId)
                             ->orderBy('name', 'asc')
@@ -75,7 +76,7 @@ class AttendanceController extends Controller
         $teacherId = auth()->id();
         
         // Get unique classes and subjects the teacher teaches
-        $schedules = Schedule::where('teacher_id', $teacherId)->with(['schoolClass', 'subject'])->get();
+        $schedules = Schedule::where('teacher_id', $teacherId)->with(['schoolClass:id,name,grade_level', 'subject:id,name'])->get();
         $classes = $schedules->pluck('schoolClass')->unique('id')->values();
         $subjects = $schedules->pluck('subject')->unique('id')->values();
 
@@ -87,7 +88,8 @@ class AttendanceController extends Controller
         $existingAttendances = [];
 
         if ($selectedClassId) {
-            $students = User::where('role', 'siswa')
+            $students = User::select(['id', 'name', 'email', 'class_id'])
+                            ->where('role', 'siswa')
                             ->whereNotNull('email_verified_at')
                             ->where('class_id', $selectedClassId)
                             ->orderBy('name', 'asc')

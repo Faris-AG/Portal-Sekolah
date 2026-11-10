@@ -21,7 +21,11 @@ createInertiaApp({
             .use(ZiggyVue)
             .mount(el);
     },
+    // Progress bar responsif: tampil cepat (delay 50ms) dengan warna tema indigo
     progress: {
-        color: '#4B5563',
+        delay: 50,
+        color: '#6366f1',
+        includeCSS: true,
+        showSpinner: false,
     },
 });

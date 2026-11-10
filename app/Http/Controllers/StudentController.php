@@ -12,11 +12,6 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        // Bersihkan akun siswa yang belum verifikasi dan sudah > 15 menit
-        User::whereNull('email_verified_at')
-            ->where('updated_at', '<', now()->subMinutes(15))
-            ->delete();
-
         $sortBy = $request->query('sort_by', 'name');
         $direction = $request->query('direction', 'asc');
         $perPage = $request->query('per_page', 10);
@@ -33,7 +28,10 @@ class StudentController extends Controller
             $direction = 'asc';
         }
 
-        $query = User::where('role', 'siswa')->verified()->with('schoolClass');
+        $query = User::select(['id', 'name', 'email', 'class_id', 'created_at'])
+            ->where('role', 'siswa')
+            ->verified()
+            ->with(['schoolClass:id,name,grade_level']);
         
         if (!empty($search)) {
             $query->where(function($q) use ($search) {

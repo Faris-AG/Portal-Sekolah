@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Announcement;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class GlobalAnnouncementController extends Controller
 {
@@ -36,7 +37,7 @@ class GlobalAnnouncementController extends Controller
             });
         }
         
-        $announcements = $query->get()->map(function(\App\Models\Announcement $ann) {
+        $announcements = $query->get()->map(function ($ann) {
             $isRead = $ann->readByUsers->isNotEmpty() && $ann->readByUsers->first()->pivot->read_at !== null;
             $ann->is_read = $isRead;
             $ann->unsetRelation('readByUsers');
@@ -70,6 +71,9 @@ class GlobalAnnouncementController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            Cache::forget("shared_unread_{$user->id}");
+            Cache::forget("shared_announcements_{$user->id}");
         }
         
         return redirect()->back();
@@ -95,6 +99,9 @@ class GlobalAnnouncementController extends Controller
             })->toArray();
             
             DB::table('announcement_user')->insert($data);
+
+            Cache::forget("shared_unread_{$user->id}");
+            Cache::forget("shared_announcements_{$user->id}");
         }
         
         return redirect()->back()->with('success', 'Semua pengumuman telah ditandai sebagai dibaca.');

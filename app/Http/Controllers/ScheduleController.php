@@ -14,7 +14,7 @@ class ScheduleController extends Controller
 {
     public function index(Request $request)
     {
-        $classes = SchoolClass::orderBy('grade_level')->orderBy('name')->get();
+        $classes = SchoolClass::select(['id', 'name', 'grade_level'])->orderBy('grade_level')->orderBy('name')->get();
         $classId = $request->query('class_id');
         
         if (!$classId && $classes->isNotEmpty()) {
@@ -24,7 +24,7 @@ class ScheduleController extends Controller
         $schedules = [];
 
         if ($classId) {
-            $schedules = Schedule::with(['schoolClass', 'subject', 'teacher'])
+            $schedules = Schedule::with(['schoolClass:id,name', 'subject:id,name', 'teacher:id,name'])
                 ->where('school_class_id', $classId)
                 ->orderByRaw("CASE day 
                     WHEN 'Senin' THEN 1 
@@ -40,8 +40,8 @@ class ScheduleController extends Controller
         return Inertia::render('Admin/Schedules/Index', [
             'schedules' => $schedules,
             'classes' => $classes,
-            'subjects' => Subject::orderBy('name')->get(),
-            'teachers' => User::where('role', 'guru')->orderBy('name')->get(),
+            'subjects' => Subject::select(['id', 'name'])->orderBy('name')->get(),
+            'teachers' => User::select(['id', 'name'])->where('role', 'guru')->orderBy('name')->get(),
             'selectedClass' => $classId
         ]);
     }

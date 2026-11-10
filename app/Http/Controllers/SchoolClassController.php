@@ -22,12 +22,13 @@ class SchoolClassController extends Controller
     {
         $schoolClass = SchoolClass::findOrFail($id);
         
-        $students = \App\Models\User::where('role', 'siswa')
+        $students = \App\Models\User::select(['id', 'name', 'email', 'class_id'])
+            ->where('role', 'siswa')
             ->where('class_id', $id)
             ->orderBy('name')
             ->get();
             
-        $schedules = \App\Models\Schedule::with(['subject', 'teacher'])
+        $schedules = \App\Models\Schedule::with(['subject:id,name', 'teacher:id,name'])
             ->where('school_class_id', $id)
             ->orderByRaw("CASE day 
                 WHEN 'Senin' THEN 1 

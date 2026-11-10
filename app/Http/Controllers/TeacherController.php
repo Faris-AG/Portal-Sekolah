@@ -28,7 +28,8 @@ class TeacherController extends Controller
             $direction = 'asc';
         }
 
-        $query = User::with(['subject', 'waliClass'])
+        $query = User::select(['id', 'name', 'email', 'role', 'subject_id', 'created_at'])
+            ->with(['subject:id,name', 'waliClass:id,name,teacher_id'])
             ->where('role', 'guru')
             ->whereNotNull('email_verified_at');
             

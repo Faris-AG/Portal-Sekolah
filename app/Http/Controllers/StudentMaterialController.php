@@ -15,7 +15,7 @@ class StudentMaterialController extends Controller
         $search = $request->query('search', '');
         $subjectId = $request->query('subject_id', 'all');
         
-        $query = Material::with(['subject', 'teacher'])
+        $query = Material::with(['subject:id,name', 'teacher:id,name'])
             ->where('school_class_id', $user->class_id);
             
         if (!empty($search)) {
