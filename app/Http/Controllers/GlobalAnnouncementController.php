@@ -37,12 +37,14 @@ class GlobalAnnouncementController extends Controller
             });
         }
         
-        $announcements = $query->get()->map(function ($ann) {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Announcement> $announcements */
+        $announcements = $query->get();
+
+        foreach ($announcements as $ann) {
             $isRead = $ann->readByUsers->isNotEmpty() && $ann->readByUsers->first()->pivot->read_at !== null;
             $ann->is_read = $isRead;
             $ann->unsetRelation('readByUsers');
-            return $ann;
-        });
+        }
         
         return Inertia::render('Announcements/Index', [
             'announcements' => $announcements,

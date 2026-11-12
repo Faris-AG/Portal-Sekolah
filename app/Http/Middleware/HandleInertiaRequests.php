@@ -93,6 +93,7 @@ class HandleInertiaRequests extends Middleware
                     $cacheKey = "shared_announcements_{$user->id}";
 
                     return Cache::remember($cacheKey, 30, function () use ($user) {
+                        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Announcement> $announcements */
                         $announcements = \App\Models\Announcement::select([
                                 'id', 'title', 'content', 'target_role', 'user_id', 'created_at',
                             ])
@@ -103,12 +104,13 @@ class HandleInertiaRequests extends Middleware
                             ->take(4)
                             ->get();
 
-                        return $announcements->map(function ($ann) {
+                        foreach ($announcements as $ann) {
                             $ann->is_read = $ann->readByUsers->isNotEmpty()
                                 && $ann->readByUsers->first()->pivot->read_at !== null;
                             $ann->unsetRelation('readByUsers');
-                            return $ann;
-                        });
+                        }
+
+                        return $announcements;
                     });
                 },
             ],
