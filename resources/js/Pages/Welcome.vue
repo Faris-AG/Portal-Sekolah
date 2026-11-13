@@ -18,7 +18,7 @@ defineProps({
     },
 });
 
-// --- State Showcase 3D Tilt & Interaksi ---
+// State interaksi 3D tilt & dynamic specular glare
 const containerRef = ref(null);
 const rotX = ref(0);
 const rotY = ref(0);
@@ -36,7 +36,7 @@ const handleMouseMove = (e) => {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    // Kemiringan maksimal 7 derajat
+    // Batas rotasi kemiringan maksimal
     const deltaX = (x - centerX) / centerX;
     const deltaY = (y - centerY) / centerY;
     
@@ -56,7 +56,7 @@ const handleMouseLeave = () => {
     isHovered.value = false;
 };
 
-// --- Live Interactive Tabs (Default: 'materi') ---
+// Navigasi tab simulasi antarmuka
 const activeTab = ref('materi'); // 'materi' | 'presensi' | 'diskusi'
 const bouncingBadge = ref(null);
 
@@ -68,7 +68,7 @@ const selectTab = (tabName) => {
     }, 600);
 };
 
-// --- Interaktivitas Tab Materi (Simulasi Download) ---
+// Simulasi unduhan berkas materi
 const downloadToast = ref('');
 const triggerDownload = (fileName) => {
     downloadToast.value = `Mengunduh "${fileName}"...`;
@@ -80,7 +80,7 @@ const triggerDownload = (fileName) => {
     }, 1000);
 };
 
-// --- Interaktivitas Tab Diskusi (Simulasi Kirim Komentar) ---
+// Simulasi thread forum diskusi
 const discussionInput = ref('');
 const discussionPosts = ref([
     {
@@ -115,7 +115,7 @@ const sendDiscussion = () => {
     discussionInput.value = '';
 };
 
-// --- Data Fitur Ringkas Siswa (3 Bagian) ---
+// Highlight fitur utama platform
 const studentFeatures = [
     {
         name: 'Materi & Modul Belajar',
@@ -143,7 +143,7 @@ const studentFeatures = [
     }
 ];
 
-// --- Langkah Memulai ---
+// Alur aktivasi akun dan pembelajaran
 const guideSteps = [
     {
         step: '01',
@@ -171,7 +171,7 @@ const guideSteps = [
 
     <div class="bg-slate-50 min-h-screen font-sans selection:bg-indigo-500 selection:text-white flex flex-col text-slate-800">
         
-        <!-- Header & Navbar (Melayang / Floating, HANYA Satu Tombol "Masuk") -->
+        <!-- Floating Navbar -->
         <header class="fixed top-0 left-0 right-0 z-50 px-3 sm:px-6 py-3 sm:py-4">
             <div class="max-w-6xl mx-auto flex justify-between items-center bg-white/90 backdrop-blur-md px-4 sm:px-5 py-2.5 sm:py-3 rounded-full border border-slate-200/80 shadow-sm shadow-slate-200/50">
                 <div class="flex items-center gap-2.5 sm:gap-3">
@@ -203,11 +203,11 @@ const guideSteps = [
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- Hero Section -->
         <main class="flex-grow pt-24 pb-16 sm:pt-28 lg:pt-36 lg:pb-24">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 
-                <!-- Badge Atas -->
+                <!-- Badge status portal -->
                 <div class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 font-semibold text-xs sm:text-sm shadow-sm mb-4 sm:mb-5">
                     <span class="relative flex h-2 w-2">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -216,7 +216,7 @@ const guideSteps = [
                     <span>Portal Akademik Siswa</span>
                 </div>
 
-                <!-- Judul Utama -->
+                <!-- Headline -->
                 <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight max-w-4xl mx-auto mb-4 sm:mb-5">
                     Pusat Informasi Akademik & <br class="hidden sm:inline" />
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-700">
@@ -224,12 +224,12 @@ const guideSteps = [
                     </span>
                 </h1>
 
-                <!-- Sub-judul Lugas Sesuai Spesifikasi -->
+                <!-- Sub-headline -->
                 <p class="text-sm sm:text-base lg:text-lg text-slate-600 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2">
                     Unduh materi pembelajaran dari guru, pantau catatan kehadiran, dan berdiskusi bersama teman sekelas dalam satu tempat.
                 </p>
 
-                <!-- Tombol Utama Hero -->
+                <!-- Call to action -->
                 <div class="flex justify-center mb-10 sm:mb-14">
                     <Link
                         :href="$page.props.auth?.user ? route('dashboard') : route('login')"
@@ -240,12 +240,10 @@ const guideSteps = [
                     </Link>
                 </div>
 
-                <!-- ======================================================== -->
-                <!-- KOMPONEN UTAMA: 3D TILT + 3 LIVE TABS + FLOATING PARALLAX -->
-                <!-- ======================================================== -->
+                <!-- Showcase antarmuka: 3D tilt card & live preview tabs -->
                 <div class="relative max-w-4xl mx-auto pt-2 sm:pt-6 pb-6 sm:pb-8">
                     
-                    <!-- Floating Parallax Badge 1: MATERI BARU (Hanya tampil di Desktop lg:flex agar tidak menumpuk di HP) -->
+                    <!-- Floating badge: Materi baru (desktop only) -->
                     <button
                         type="button"
                         @click="selectTab('materi')"
@@ -273,7 +271,7 @@ const guideSteps = [
                         </div>
                     </button>
 
-                    <!-- Floating Parallax Badge 2: KEHADIRAN 98.5% (Desktop lg:flex) -->
+                    <!-- Floating badge: Kehadiran (desktop only) -->
                     <button
                         type="button"
                         @click="selectTab('presensi')"
@@ -300,7 +298,7 @@ const guideSteps = [
                         </div>
                     </button>
 
-                    <!-- Floating Parallax Badge 3: DISKUSI AKTIF (Desktop lg:flex) -->
+                    <!-- Floating badge: Diskusi aktif (desktop only) -->
                     <button
                         type="button"
                         @click="selectTab('diskusi')"
@@ -328,21 +326,21 @@ const guideSteps = [
                         </div>
                     </button>
 
-                    <!-- 3D Tilt Container Wrapper -->
+                    <!-- Wrapper 3D tilt -->
                     <div 
                         ref="containerRef"
                         @mousemove="handleMouseMove"
                         @mouseleave="handleMouseLeave"
                         class="relative perspective-1000 transition-transform duration-200 ease-out"
                     >
-                        <!-- Main Showcase Card -->
+                        <!-- Kartu preview utama -->
                         <div 
                             class="relative bg-white/95 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-4 sm:p-7 lg:p-8 shadow-2xl shadow-indigo-500/10 text-left overflow-hidden transition-transform duration-150 ease-out"
                             :style="{
                                 transform: `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`,
                             }"
                         >
-                            <!-- Specular Light Glare Effect -->
+                            <!-- Efek pencahayaan (glare overlay) -->
                             <div 
                                 class="absolute inset-0 pointer-events-none rounded-3xl transition-opacity duration-300"
                                 :style="{
@@ -351,7 +349,7 @@ const guideSteps = [
                                 }"
                             ></div>
 
-                            <!-- Mock Window Header -->
+                            <!-- Header jendela preview -->
                             <div class="flex flex-wrap items-center justify-between gap-2.5 pb-4 mb-4 sm:pb-5 sm:mb-5 border-b border-slate-100">
                                 <div class="flex items-center gap-2">
                                     <div class="flex gap-1.5">
@@ -367,7 +365,7 @@ const guideSteps = [
                                 </div>
                             </div>
 
-                            <!-- 3 Live Tabs (Grid 3 Kolom Responsif - Pas 1 Baris di Layar HP) -->
+                            <!-- Navigasi tab simulasi -->
                             <div class="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-100/80 rounded-2xl mb-5 sm:mb-6 border border-slate-200/60">
                                 <button
                                     type="button"
@@ -400,10 +398,10 @@ const guideSteps = [
                                 </button>
                             </div>
 
-                            <!-- Live Tab Content with Transition -->
+                            <!-- Konten tab interaktif -->
                             <Transition name="tab-fade" mode="out-in">
                                 
-                                <!-- ================= TAB 1: MATERI BELAJAR (DEFAULT) ================= -->
+                                <!-- Tab 1: Materi Belajar -->
                                 <div v-if="activeTab === 'materi'" key="materi" class="space-y-3">
                                     <div class="flex items-center justify-between pb-1">
                                         <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
@@ -415,13 +413,12 @@ const guideSteps = [
                                         </span>
                                     </div>
 
-                                    <!-- Alert Toast Feedback Download -->
+                                    <!-- Toast notifikasi download -->
                                     <div v-if="downloadToast" class="p-2.5 rounded-xl bg-indigo-50 border border-indigo-200 text-xs font-semibold text-indigo-800 flex items-center gap-2 animate-pulse">
                                         <Download class="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
                                         <span>{{ downloadToast }}</span>
                                     </div>
 
-                                    <!-- Modul 1 -->
                                     <div class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-indigo-300 transition-colors">
                                         <div class="flex items-start gap-3">
                                             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 border border-red-100">
@@ -445,7 +442,6 @@ const guideSteps = [
                                         </button>
                                     </div>
 
-                                    <!-- Modul 2 -->
                                     <div class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-indigo-300 transition-colors">
                                         <div class="flex items-start gap-3">
                                             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 border border-blue-100">
@@ -469,7 +465,6 @@ const guideSteps = [
                                         </button>
                                     </div>
 
-                                    <!-- Modul 3 -->
                                     <div class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-indigo-300 transition-colors">
                                         <div class="flex items-start gap-3">
                                             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 border border-amber-100">
@@ -494,9 +489,9 @@ const guideSteps = [
                                     </div>
                                 </div>
 
-                                <!-- ================= TAB 2: CATATAN PRESENSI (98.5%) ================= -->
+                                <!-- Tab 2: Catatan Presensi -->
                                 <div v-else-if="activeTab === 'presensi'" key="presensi" class="space-y-3.5">
-                                    <!-- Summary Stat Bar -->
+                                    <!-- Ringkasan status kehadiran -->
                                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
                                         <div class="p-2.5 sm:p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-center">
                                             <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Hadir</span>
@@ -520,7 +515,7 @@ const guideSteps = [
                                         </div>
                                     </div>
 
-                                    <!-- Progress Bar Kehadiran -->
+                                    <!-- Progress bar kehadiran -->
                                     <div class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80">
                                         <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-1 mb-1.5">
                                             <span class="font-bold text-slate-800">Tingkat Disiplin Kehadiran Semester Ini</span>
@@ -531,7 +526,7 @@ const guideSteps = [
                                         </div>
                                     </div>
 
-                                    <!-- 3 Riwayat Presensi Terakhir -->
+                                    <!-- Riwayat presensi terbaru -->
                                     <div class="space-y-2">
                                         <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Catatan Harian Terbaru</div>
                                         
@@ -555,7 +550,7 @@ const guideSteps = [
                                     </div>
                                 </div>
 
-                                <!-- ================= TAB 3: DISKUSI KELAS ================= -->
+                                <!-- Tab 3: Diskusi Kelas -->
                                 <div v-else-if="activeTab === 'diskusi'" key="diskusi" class="space-y-3">
                                     <div class="flex items-center justify-between pb-1">
                                         <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
@@ -565,7 +560,7 @@ const guideSteps = [
                                         <span class="text-[10px] sm:text-[11px] text-slate-500 font-medium">Topik: Keamanan REST API</span>
                                     </div>
 
-                                    <!-- Daftar Postingan Diskusi Live -->
+                                    <!-- Feed diskusi -->
                                     <div class="space-y-2.5 max-h-56 overflow-y-auto pr-1">
                                         <div 
                                             v-for="post in discussionPosts" 
@@ -587,7 +582,7 @@ const guideSteps = [
                                         </div>
                                     </div>
 
-                                    <!-- Interactive Input Balasan Simulasi -->
+                                    <!-- Form input komentar -->
                                     <form @submit.prevent="sendDiscussion" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2 border-t border-slate-100">
                                         <input 
                                             type="text" 
@@ -606,7 +601,7 @@ const guideSteps = [
                                 </div>
                             </Transition>
 
-                            <!-- Footer Card Simulasi -->
+                            <!-- Catatan footer preview -->
                             <div class="mt-4 sm:mt-5 pt-3 sm:pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
                                 <div class="flex items-center gap-1.5">
                                     <ShieldCheck class="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
@@ -618,9 +613,7 @@ const guideSteps = [
                     </div>
                 </div>
 
-                <!-- ======================================================== -->
-                <!-- 3. BAGIAN RINGKASAN FITUR SISWA (3 KARTU) -->
-                <!-- ======================================================== -->
+                <!-- Section: Ringkasan Fitur Siswa -->
                 <div class="mt-16 sm:mt-20 text-left">
                     <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-10 px-2">
                         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
@@ -631,7 +624,6 @@ const guideSteps = [
                         </p>
                     </div>
 
-                    <!-- 3 Kartu Saja Sesuai Spesifikasi -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
                         <div 
                             v-for="feature in studentFeatures" 
@@ -654,9 +646,7 @@ const guideSteps = [
                     </div>
                 </div>
 
-                <!-- ======================================================== -->
-                <!-- 4. CARA MULAI MENGGUNAKAN PORTAL (PENGGANTI KOTAK DEMO) -->
-                <!-- ======================================================== -->
+                <!-- Section: Panduan Onboarding Siswa -->
                 <div class="mt-16 sm:mt-20 text-left">
                     <div class="bg-gradient-to-b from-white to-slate-50/90 rounded-[2rem] sm:rounded-[2.5rem] border border-slate-200/90 p-6 sm:p-10 lg:p-12 shadow-sm relative overflow-hidden">
                         <div class="max-w-2xl mb-8">
@@ -690,7 +680,7 @@ const guideSteps = [
                             </div>
                         </div>
 
-                        <!-- CTA Row di Bawah Langkah -->
+                        <!-- Kontak bantuan & akses login -->
                         <div class="mt-8 sm:mt-10 pt-6 border-t border-slate-200/70 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div class="text-xs text-slate-500 text-center sm:text-left">
                                 Butuh bantuan terkait akun belajar? Hubungi bagian Tata Usaha atau Tim IT SMKN 1 Ciomas.
@@ -709,7 +699,7 @@ const guideSteps = [
             </div>
         </main>
 
-        <!-- Footer Bersih SMKN 1 Ciomas -->
+        <!-- Footer -->
         <footer class="border-t border-slate-200/80 bg-white mt-auto">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
                 <div class="flex items-center gap-2.5">
@@ -751,7 +741,7 @@ const guideSteps = [
     animation: floatMedium 3.2s ease-in-out infinite 0.5s;
 }
 
-/* Tab transition */
+/* Transisi tab */
 .tab-fade-enter-active,
 .tab-fade-leave-active {
     transition: all 0.2s ease-out;
