@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    @php
+        $logoPath = public_path('images/logo-skanic.png');
+        $logoSrc = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : asset('images/logo-skanic.png');
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surat Edaran - {{ $announcement->title }}</title>
-    <link rel="icon" type="image/png" href="/images/logo-skanic.png">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-skanic.png') }}">
     <style>
         * {
             box-sizing: border-box;
@@ -355,7 +359,7 @@
         <table class="kop-table">
             <tr>
                 <td class="kop-logo">
-                    <img src="/images/logo-skanic.png" alt="Logo SMKN 1 Ciomas">
+                    <img src="{{ $logoSrc }}" alt="Logo SMKN 1 Ciomas">
                 </td>
                 <td class="kop-text">
                     <h4>Pemerintah Daerah Provinsi Jawa Barat</h4>

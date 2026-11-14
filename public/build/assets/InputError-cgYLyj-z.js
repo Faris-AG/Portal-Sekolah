@@ -1,0 +1,1 @@
+import{I as e,V as t,f as n,k as r,v as i,x as a}from"./vendor-inertia-r8sLbpgs.js";var o={class:`text-sm text-red-600`},s={__name:`InputError`,props:{message:{type:String}},setup(s){return(c,l)=>e((r(),a(`div`,null,[i(`p`,o,t(s.message),1)],512)),[[n,s.message]])}};export{s as t};
