@@ -1,12 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
 import { 
-    Megaphone, Plus, Edit, Trash2, 
+    Megaphone, Plus, Trash2, Pencil,
     X, AlertCircle, Users, GraduationCap,
-    Search, Calendar, RotateCcw, Printer,
-    Eye, SearchX, FileText, CheckCircle2
+    Search, RotateCcw, Printer, Eye, SearchX
 } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -20,7 +19,7 @@ const props = defineProps({
     filters: Object,
 });
 
-// State Filter Terpadu
+// State Filter
 const search = ref(props.filters?.search || '');
 const target_role = ref(props.filters?.target_role || '');
 const start_date = ref(props.filters?.start_date || '');
@@ -42,7 +41,7 @@ const form = useForm({
     target_role: 'all',
 });
 
-// Normalisasi data array pengumuman (mendukung pagination object maupun raw array)
+// Normalisasi list data
 const announcementList = computed(() => {
     if (props.announcements && Array.isArray(props.announcements.data)) {
         return props.announcements.data;
@@ -53,12 +52,12 @@ const announcementList = computed(() => {
     return [];
 });
 
-// Cek apakah ada filter yang sedang aktif
+// Cek filter aktif
 const hasActiveFilters = computed(() => {
     return Boolean(search.value || target_role.value || start_date.value || end_date.value);
 });
 
-// URL Mode 1: Export Rekap PDF sesuai filter yang sedang aktif
+// URL Export Rekap PDF sesuai filter aktif
 const exportRekapUrl = computed(() => {
     const params = {};
     if (search.value) params.search = search.value;
@@ -68,7 +67,7 @@ const exportRekapUrl = computed(() => {
     return route('admin.announcements.print-rekap', params);
 });
 
-// Terapkan filter ke server via Inertia router
+// Terapkan filter ke server
 const applyFilters = () => {
     router.get(
         route('admin.announcements.index'),
@@ -87,7 +86,7 @@ const applyFilters = () => {
     );
 };
 
-// Debounce 300ms untuk pencarian teks
+// Debounce 300ms untuk pencarian
 let searchDebounceTimeout = null;
 watch(search, (newVal, oldVal) => {
     if (newVal === oldVal) return;
@@ -97,12 +96,29 @@ watch(search, (newVal, oldVal) => {
     }, 300);
 });
 
-// Filter dropdown dan tanggal langsung trigger request
 const onFilterChange = () => {
     applyFilters();
 };
 
-// Reset seluruh filter
+const goToPage = (url) => {
+    if (!url) return;
+    router.get(
+        url,
+        {
+            search: search.value || undefined,
+            target_role: target_role.value || undefined,
+            start_date: start_date.value || undefined,
+            end_date: end_date.value || undefined,
+            per_page: per_page.value !== 10 ? per_page.value : undefined,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        }
+    );
+};
+
 const resetFilters = () => {
     search.value = '';
     target_role.value = '';
@@ -168,7 +184,7 @@ const closeDeleteModal = () => {
     }, 300);
 };
 
-// Eksekusi Submit Form
+// Submit form
 const submit = () => {
     if (editingId.value) {
         form.put(route('admin.announcements.update', editingId.value), {
@@ -192,7 +208,7 @@ const deleteAnnouncement = () => {
     });
 };
 
-// Utility format tanggal & badge
+// Helpers
 const formatDate = (dateString) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('id-ID', {
@@ -227,179 +243,136 @@ const getTargetIcon = (role) => {
     <Head title="Kelola Pengumuman" />
 
     <AuthenticatedLayout>
-        <!-- Header Halaman & Aksi Utama -->
+        <!-- 1. Header Bersih 1 Baris dengan Tombol Utama Title Case -->
         <template #header>
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
-                <div>
-                    <h2 class="text-xl font-bold leading-tight text-gray-900 flex items-center gap-2">
-                        <Megaphone size="24" class="text-indigo-600" /> Kelola Pengumuman
-                    </h2>
-                    <p class="text-xs text-gray-500 mt-1">
-                        Publikasi informasi, pantau jumlah pembaca, dan cetak dokumen resmi sekolah
-                    </p>
-                </div>
-                
-                <div class="flex items-center gap-2.5 flex-wrap">
-                    <!-- MODE 1: Tombol Export Rekap PDF -->
-                    <a 
-                        :href="exportRekapUrl" 
-                        target="_blank"
-                        class="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors"
-                        title="Cetak seluruh daftar pengumuman sesuai filter aktif"
-                    >
-                        <Printer size="16" /> Export Rekap PDF
-                    </a>
-
-                    <!-- Tombol Buat Pengumuman -->
-                    <button 
-                        @click="openCreateModal"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        <Plus size="16" /> Buat Pengumuman
-                    </button>
-                </div>
+            <div class="flex items-center justify-between w-full">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <Megaphone size="24" class="text-indigo-600" /> Kelola Pengumuman
+                </h2>
+                <button
+                    @click="openCreateModal"
+                    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                >
+                    <Plus size="16" /> Buat Pengumuman
+                </button>
             </div>
         </template>
 
-        <div class="py-8 bg-gray-50/60 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-5">
+        <div class="py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
                 
-                <!-- 1. BARIS PENCARIAN & FILTER TERPADU -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                        
-                        <!-- Input Search (Debounce 300ms) -->
-                        <div class="md:col-span-4 relative">
-                            <Search size="16" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <!-- 2. Bar Pencarian, Filter & Export PDF (Tanpa Container Kotak Putih) -->
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-3 flex-1">
+                        <!-- Input Pencarian -->
+                        <div class="relative min-w-[220px] max-w-xs flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search size="16" class="text-gray-400" />
+                            </div>
                             <input 
-                                v-model="search"
-                                type="text"
-                                placeholder="Cari judul atau isi pengumuman..."
-                                class="w-full pl-10 pr-4 py-2 text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-colors"
-                            />
+                                type="text" 
+                                v-model="search" 
+                                placeholder="Cari judul atau isi..." 
+                                class="pl-10 block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
                         </div>
 
-                        <!-- Dropdown Sasaran (Target Role) -->
-                        <div class="md:col-span-3">
+                        <!-- Dropdown Sasaran -->
+                        <div class="w-auto min-w-[160px]">
                             <select 
-                                v-model="target_role"
+                                v-model="target_role" 
                                 @change="onFilterChange"
-                                class="w-full py-2 px-3 text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-colors"
+                                class="block w-full rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             >
                                 <option value="">Semua Sasaran</option>
-                                <option value="all">Semua Pengguna (Guru & Siswa)</option>
+                                <option value="all">Semua Pengguna</option>
                                 <option value="guru">Khusus Guru</option>
                                 <option value="siswa">Khusus Siswa</option>
                             </select>
                         </div>
 
-                        <!-- Rentang Tanggal Terbit -->
-                        <div class="md:col-span-4 flex items-center gap-2">
-                            <div class="relative flex-1">
-                                <input 
-                                    v-model="start_date"
-                                    @change="onFilterChange"
-                                    type="date"
-                                    title="Dari Tanggal"
-                                    class="w-full py-2 px-2.5 text-xs bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-colors"
-                                />
-                            </div>
-                            <span class="text-xs text-gray-400 font-bold">s/d</span>
-                            <div class="relative flex-1">
-                                <input 
-                                    v-model="end_date"
-                                    @change="onFilterChange"
-                                    type="date"
-                                    title="Sampai Tanggal"
-                                    class="w-full py-2 px-2.5 text-xs bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-colors"
-                                />
-                            </div>
+                        <!-- Filter Rentang Tanggal -->
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <input 
+                                type="date" 
+                                v-model="start_date" 
+                                @change="onFilterChange"
+                                title="Dari Tanggal"
+                                class="rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-1.5 px-3"
+                            >
+                            <span class="text-gray-400">s/d</span>
+                            <input 
+                                type="date" 
+                                v-model="end_date" 
+                                @change="onFilterChange"
+                                title="Sampai Tanggal"
+                                class="rounded-md border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-1.5 px-3"
+                            >
                         </div>
 
                         <!-- Tombol Reset Filter -->
-                        <div class="md:col-span-1 flex justify-end">
+                        <div v-if="hasActiveFilters" class="flex items-center">
                             <button 
-                                v-if="hasActiveFilters"
                                 @click="resetFilters"
                                 type="button"
-                                class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors"
-                                title="Kembalikan tabel ke kondisi awal"
+                                class="text-sm text-indigo-600 hover:text-indigo-800 font-medium px-2 py-1 transition-colors flex items-center gap-1"
                             >
-                                <RotateCcw size="14" /> Reset
+                                <RotateCcw size="14" /> Reset Filter
                             </button>
                         </div>
+                    </div>
 
+                    <!-- Tombol Export Rekap PDF (Sejajar di Sisi Kanan Bar Filter) -->
+                    <div>
+                        <a 
+                            :href="exportRekapUrl" 
+                            target="_blank"
+                            class="flex items-center gap-2 px-3.5 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm whitespace-nowrap"
+                            title="Export Rekap PDF sesuai filter aktif"
+                        >
+                            <Printer size="16" /> Export Rekap PDF
+                        </a>
                     </div>
                 </div>
 
-                <!-- 2. TABEL DATA PENGUMUMAN -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    
-                    <!-- EMPTY STATE: Saat tidak ada data -->
-                    <div v-if="announcementList.length === 0" class="text-center py-16 px-4">
-                        <template v-if="hasActiveFilters">
-                            <SearchX class="mx-auto h-14 w-14 text-gray-300 mb-3" />
-                            <h3 class="text-base font-bold text-gray-900 mb-1">Tidak ada pengumuman yang sesuai</h3>
-                            <p class="text-sm text-gray-500 mb-4 max-w-md mx-auto">
-                                Tidak ditemukan pengumuman dengan kata kunci atau filter tanggal yang Anda tentukan.
-                            </p>
-                            <button 
-                                @click="resetFilters" 
-                                class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-semibold text-xs rounded-xl transition-colors border border-indigo-200"
-                            >
-                                <RotateCcw size="14" /> Reset Filter Pencarian
-                            </button>
-                        </template>
-                        <template v-else>
-                            <Megaphone class="mx-auto h-16 w-16 text-gray-300 mb-4" />
-                            <h3 class="text-lg font-bold text-gray-900 mb-1">Belum ada pengumuman</h3>
-                            <p class="text-gray-500 mb-4">Klik tombol "Buat Pengumuman" untuk mempublikasikan informasi baru.</p>
-                            <button 
-                                @click="openCreateModal"
-                                class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-colors"
-                            >
-                                <Plus size="14" /> Buat Pengumuman Baru
-                            </button>
-                        </template>
-                    </div>
-
-                    <!-- TABEL UTAMA -->
-                    <div v-else class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200/80">
-                            <thead class="bg-gray-50/80">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                <!-- 3. Tabel Data Pengumuman -->
+                <div class="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-100">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/50">
+                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">
                                         Judul Pengumuman
                                     </th>
-                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">
                                         Sasaran
                                     </th>
-                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">
                                         Tanggal Terbit
                                     </th>
-                                    <th scope="col" class="px-6 py-3.5 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-center">
                                         Pembaca
                                     </th>
-                                    <th scope="col" class="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-right">
                                         Aksi
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100">
                                 <tr 
                                     v-for="announcement in announcementList" 
                                     :key="announcement.id" 
-                                    class="hover:bg-indigo-50/30 transition-colors"
+                                    class="hover:bg-gray-50/50 transition-colors"
                                 >
-                                    <!-- Judul & Cuplikan (Bisa Diklik untuk Preview Detail) -->
-                                    <td class="px-6 py-4">
+                                    <!-- Judul (Bisa diklik untuk preview detail) & Cuplikan Isi -->
+                                    <td class="py-4 px-6">
                                         <button 
                                             type="button"
                                             @click="openDetailModal(announcement)"
-                                            class="text-left font-bold text-gray-900 hover:text-indigo-600 transition-colors cursor-pointer group block"
-                                            title="Klik untuk melihat detail lengkap"
+                                            class="text-left font-medium text-gray-900 hover:text-indigo-600 transition-colors cursor-pointer block"
+                                            title="Lihat Detail"
                                         >
-                                            <span class="group-hover:underline">{{ announcement.title }}</span>
+                                            {{ announcement.title }}
                                         </button>
                                         <div class="text-xs text-gray-500 mt-1 line-clamp-1 max-w-md">
                                             {{ announcement.content }}
@@ -407,9 +380,9 @@ const getTargetIcon = (role) => {
                                     </td>
 
                                     <!-- Sasaran Target Badge -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="py-4 px-6 whitespace-nowrap">
                                         <span 
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border"
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border"
                                             :class="getTargetBadgeColor(announcement.target_role)"
                                         >
                                             <component :is="getTargetIcon(announcement.target_role)" size="13" />
@@ -418,124 +391,127 @@ const getTargetIcon = (role) => {
                                     </td>
 
                                     <!-- Tanggal Terbit & Pembuat -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <div class="font-medium text-gray-700">{{ formatDate(announcement.created_at) }}</div>
+                                    <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-500">
+                                        <div class="font-medium text-gray-900">{{ formatDate(announcement.created_at) }}</div>
                                         <div class="text-xs text-gray-400 mt-0.5">Oleh: {{ announcement.user?.name || 'Administrator' }}</div>
                                     </td>
 
                                     <!-- Indikator Jumlah Pembaca -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <td class="py-4 px-6 whitespace-nowrap text-center">
                                         <span 
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/70"
-                                            title="Jumlah akun yang telah membaca pengumuman ini"
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100"
+                                            title="Jumlah pengguna yang telah membaca"
                                         >
                                             <Eye size="13" class="text-blue-500" />
                                             <span>{{ announcement.readers_count || 0 }} Dibaca</span>
                                         </span>
                                     </td>
 
-                                    <!-- Kolom Aksi -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end gap-2.5">
-                                            <!-- Tombol Detail Preview -->
+                                    <!-- 4. Kolom Aksi Lega dengan Ikon Minimalis Berwarna -->
+                                    <td class="py-4 px-6 text-right whitespace-nowrap">
+                                        <div class="flex justify-end items-center gap-2">
+                                            <!-- Ikon Detail (Mata) -->
                                             <button 
                                                 @click="openDetailModal(announcement)"
-                                                class="inline-flex items-center gap-1 text-slate-600 hover:text-indigo-600 font-bold text-xs transition-colors"
-                                                title="Lihat detail lengkap pengumuman"
+                                                class="p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                                title="Lihat Detail"
                                             >
-                                                <Eye size="14" /> Detail
+                                                <Eye size="18" />
                                             </button>
 
-                                            <!-- MODE 2: Tombol Cetak PDF / Surat Edaran Resmi -->
+                                            <!-- Ikon Cetak Surat PDF (Printer Hijau/Emerald) -->
                                             <a 
                                                 :href="route('admin.announcements.print-letter', announcement.id)"
                                                 target="_blank"
-                                                class="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-800 font-bold text-xs transition-colors"
-                                                title="Cetak format Surat Edaran Resmi SMKN 1 Ciomas"
+                                                class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors inline-flex items-center"
+                                                title="Cetak Surat PDF"
                                             >
-                                                <Printer size="14" /> Cetak PDF
+                                                <Printer size="18" />
                                             </a>
 
-                                            <!-- Tombol Edit -->
+                                            <!-- Ikon Edit (Pensil Biru) -->
                                             <button 
-                                                @click="openEditModal(announcement)" 
-                                                class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-900 font-bold text-xs transition-colors"
+                                                @click="openEditModal(announcement)"
+                                                class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                title="Edit Pengumuman"
                                             >
-                                                <Edit size="14" /> Edit
+                                                <Pencil size="18" />
                                             </button>
 
-                                            <!-- Tombol Hapus -->
+                                            <!-- Ikon Hapus (Tempat Sampah Merah) -->
                                             <button 
-                                                @click="openDeleteModal(announcement)" 
-                                                class="inline-flex items-center gap-1 text-red-600 hover:text-red-900 font-bold text-xs transition-colors"
+                                                @click="openDeleteModal(announcement)"
+                                                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Hapus Pengumuman"
                                             >
-                                                <Trash2 size="14" /> Hapus
+                                                <Trash2 size="18" />
                                             </button>
                                         </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Empty State -->
+                                <tr v-if="announcementList.length === 0">
+                                    <td colspan="5" class="py-12 text-center text-gray-500">
+                                        <template v-if="hasActiveFilters">
+                                            <SearchX class="mx-auto h-12 w-12 text-gray-300 mb-2" />
+                                            <p class="font-medium text-gray-700">Tidak ada pengumuman yang sesuai dengan filter pencarian.</p>
+                                            <button 
+                                                @click="resetFilters" 
+                                                class="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-medium text-xs rounded-lg transition-colors border border-indigo-200"
+                                            >
+                                                <RotateCcw size="14" /> Reset Filter
+                                            </button>
+                                        </template>
+                                        <template v-else>
+                                            Belum ada data pengumuman.
+                                        </template>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- 3. PAGINASI & KONSISTENSI DATA -->
-                    <div 
-                        v-if="props.announcements && props.announcements.total > 0" 
-                        class="px-6 py-4 bg-white border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4"
-                    >
-                        <div class="flex items-center gap-4 text-xs text-gray-500">
-                            <span>
-                                Menampilkan 
-                                <strong class="text-gray-700">{{ props.announcements.from || 0 }}</strong>
-                                –
-                                <strong class="text-gray-700">{{ props.announcements.to || 0 }}</strong>
-                                dari 
-                                <strong class="text-gray-700">{{ props.announcements.total || 0 }}</strong>
-                                pengumuman
-                            </span>
-                            <div class="flex items-center gap-1.5">
-                                <span>Per halaman:</span>
-                                <select 
-                                    v-model="per_page" 
-                                    @change="onFilterChange" 
-                                    class="text-xs py-1 px-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                                    <option :value="10">10</option>
-                                    <option :value="25">25</option>
-                                    <option :value="50">50</option>
-                                </select>
-                            </div>
+                    <!-- 5. Footer Pagination & Dropdown Per Page Seragam -->
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500">Tampilkan:</span>
+                            <select 
+                                v-model="per_page" 
+                                @change="onFilterChange" 
+                                class="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1.5 pl-3 pr-8"
+                            >
+                                <option :value="10">10 baris</option>
+                                <option :value="25">25 baris</option>
+                                <option :value="50">50 baris</option>
+                            </select>
                         </div>
 
-                        <!-- Tombol Pagination Links -->
-                        <div 
-                            v-if="props.announcements.links && props.announcements.links.length > 3" 
-                            class="flex gap-1 flex-wrap justify-center"
-                        >
-                            <Link
-                                v-for="link in props.announcements.links"
-                                :key="link.label"
-                                :href="link.url ?? '#'"
-                                v-html="link.label"
-                                class="px-3 py-1.5 rounded-lg text-xs transition-colors"
-                                :class="[
-                                    link.active ? 'bg-indigo-600 text-white font-bold shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50',
-                                    !link.url ? 'opacity-40 pointer-events-none' : ''
-                                ]"
-                                preserve-scroll
-                                preserve-state
-                            />
+                        <div class="flex gap-1" v-if="props.announcements?.links">
+                            <template v-for="(link, i) in props.announcements.links" :key="i">
+                                <button
+                                    v-if="link.url"
+                                    @click="goToPage(link.url)"
+                                    class="px-3 py-1 rounded text-sm font-medium transition-colors"
+                                    :class="link.active ? 'bg-indigo-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50'"
+                                    v-html="link.label"
+                                ></button>
+                                <span 
+                                    v-else 
+                                    class="px-3 py-1 rounded text-sm text-gray-400 bg-white border border-gray-200 opacity-60 cursor-not-allowed" 
+                                    v-html="link.label"
+                                ></span>
+                            </template>
                         </div>
                     </div>
-
                 </div>
+
             </div>
         </div>
 
-        <!-- 4. MODAL PREVIEW DETAIL PENGUMUMAN -->
+        <!-- Modal Detail Preview -->
         <Modal :show="isDetailModalOpen" @close="closeDetailModal" max-width="2xl">
             <div class="p-6">
-                <!-- Header Modal Detail -->
                 <div class="flex items-start justify-between pb-4 border-b border-gray-100">
                     <div>
                         <div class="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -546,7 +522,7 @@ const getTargetIcon = (role) => {
                                 <component :is="getTargetIcon(detailAnnouncement?.target_role)" size="12" />
                                 {{ getTargetLabel(detailAnnouncement?.target_role) }}
                             </span>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                                 <Eye size="12" class="text-blue-500" />
                                 {{ detailAnnouncement?.readers_count || 0 }} Telah Membaca
                             </span>
@@ -563,17 +539,15 @@ const getTargetIcon = (role) => {
                     </button>
                 </div>
 
-                <!-- Isi Lengkap Pengumuman -->
                 <div class="my-5">
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                         Isi Pengumuman:
                     </label>
-                    <div class="bg-gray-50/80 border border-gray-200/80 rounded-xl p-4 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed max-h-[50vh] overflow-y-auto font-sans">
+                    <div class="bg-gray-50/80 border border-gray-200/80 rounded-xl p-4 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed max-h-[50vh] overflow-y-auto">
                         {{ detailAnnouncement?.content }}
                     </div>
                 </div>
 
-                <!-- Footer Aksi Modal Detail -->
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100">
                     <div class="text-xs text-gray-400">
                         ID Pengumuman: #{{ detailAnnouncement?.id }}
@@ -586,7 +560,7 @@ const getTargetIcon = (role) => {
                             v-if="detailAnnouncement"
                             :href="route('admin.announcements.print-letter', detailAnnouncement.id)"
                             target="_blank"
-                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm transition-colors"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg shadow-sm transition-colors"
                         >
                             <Printer size="15" /> Cetak Surat Edaran (PDF)
                         </a>
@@ -595,26 +569,26 @@ const getTargetIcon = (role) => {
             </div>
         </Modal>
 
-        <!-- 5. MODAL CREATE / EDIT PENGUMUMAN -->
+        <!-- Modal Tambah / Edit -->
         <Modal :show="isModalOpen" @close="closeModal" max-width="2xl">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-6 pb-3 border-b border-gray-100">
-                    <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
                         <Megaphone size="20" class="text-indigo-600" />
-                        {{ editingId ? 'Edit Pengumuman' : 'Buat Pengumuman Baru' }}
+                        {{ editingId ? 'Edit Pengumuman' : 'Tambah Pengumuman Baru' }}
                     </h2>
                     <button @click="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
                         <X size="22" />
                     </button>
                 </div>
 
-                <form @submit.prevent="submit" class="space-y-5">
+                <form @submit.prevent="submit" class="space-y-4">
                     <div>
                         <InputLabel for="title" value="Judul Pengumuman" />
                         <TextInput
                             id="title"
                             type="text"
-                            class="mt-1 block w-full rounded-xl"
+                            class="mt-1 block w-full rounded-md"
                             v-model="form.title"
                             placeholder="Contoh: Jadwal Ujian Akhir Semester Genap 2026/2027"
                             required
@@ -627,7 +601,7 @@ const getTargetIcon = (role) => {
                         <InputLabel for="target_role" value="Sasaran Pengumuman" />
                         <select
                             id="target_role"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm text-sm"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
                             v-model="form.target_role"
                             required
                         >
@@ -643,7 +617,7 @@ const getTargetIcon = (role) => {
                         <textarea
                             id="content"
                             rows="6"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xl shadow-sm resize-none text-sm"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm resize-none text-sm"
                             placeholder="Tuliskan isi pengumuman secara lengkap dan jelas..."
                             v-model="form.content"
                             required
@@ -654,20 +628,20 @@ const getTargetIcon = (role) => {
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                         <SecondaryButton @click="closeModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                            {{ form.processing ? 'Menyimpan...' : (editingId ? 'Perbarui Pengumuman' : 'Publikasikan Pengumuman') }}
+                            {{ form.processing ? 'Menyimpan...' : (editingId ? 'Simpan Perubahan' : 'Simpan Pengumuman') }}
                         </PrimaryButton>
                     </div>
                 </form>
             </div>
         </Modal>
 
-        <!-- 6. MODAL KONFIRMASI HAPUS -->
+        <!-- Modal Konfirmasi Hapus -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
             <div class="p-6">
                 <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-4 mx-auto">
                     <AlertCircle class="text-red-600" size="24" />
                 </div>
-                <h2 class="text-lg font-bold text-center text-gray-900 mb-2">Hapus Pengumuman?</h2>
+                <h2 class="text-lg font-semibold text-center text-gray-900 mb-2">Hapus Pengumuman?</h2>
                 <p class="text-sm text-center text-gray-600 mb-6">
                     Apakah Anda yakin ingin menghapus pengumuman <span class="font-bold text-gray-800">"{{ selectedAnnouncement?.title }}"</span>? Tindakan ini tidak dapat dibatalkan.
                 </p>
@@ -675,7 +649,7 @@ const getTargetIcon = (role) => {
                     <SecondaryButton @click="closeDeleteModal">Batal</SecondaryButton>
                     <button 
                         @click="deleteAnnouncement"
-                        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-xl font-bold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                        class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-medium text-sm text-white hover:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >

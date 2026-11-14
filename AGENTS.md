@@ -45,3 +45,8 @@ php artisan boost:install
 
 Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
 </laravel-boost-guidelines>
+
+## Aturan Eksekusi & Batasan Keamanan (Guardrails)
+1. **Gunakan Built-in File Tools:** Untuk membaca isi file, mencari file, atau melihat daftar direktori (seperti mengecek folder `resources/js/Pages` atau `app/Http/Controllers`), WAJIB gunakan tool pembaca file/pencarian bawaan IDE. JANGAN gunakan perintah terminal PowerShell seperti `Get-ChildItem`, `Get-Content`, `cat`, atau `dir` agar tidak memicu konfirmasi izin terminal.
+2. **Batas Perintah Terminal Aman:** Kamu diizinkan menjalankan perintah non-destruktif seperti `php artisan config:clear`, `php artisan route:list`, `php artisan migrate`, dan `npm run build`.
+3. **Batas Terlarang (Wajib Izin User):** DILARANG menjalankan perintah yang menghapus data/file atau mengubah riwayat Git (`migrate:fresh`, `migrate:reset`, `db:wipe`, `Remove-Item`, `rm`, `git push`, `git reset --hard`) tanpa persetujuan eksplisit dari user.
