@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +24,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Paksa skema HTTPS saat diakses via Cloudflare Tunnel (trycloudflare.com),
+        // reverse proxy dengan X-Forwarded-Proto https, atau environment produksi
+        if (
+            $this->app->environment('production') ||
+            str_contains(request()->getHost(), 'trycloudflare.com') ||
+            request()->header('X-Forwarded-Proto') === 'https' ||
+            env('FORCE_HTTPS', false)
+        ) {
+            URL::forceScheme('https');
+        }
+
         Vite::prefetch(concurrency: 3);
 
         // Kustomisasi Email Verifikasi Bahasa Indonesia
