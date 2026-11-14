@@ -74,6 +74,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
     Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 
+    Route::get('/announcements/print-rekap', [AnnouncementController::class, 'printRekap'])->name('announcements.print-rekap');
+    Route::get('/announcements/{announcement}/print-letter', [AnnouncementController::class, 'printLetter'])->name('announcements.print-letter');
     Route::resource('announcements', AnnouncementController::class)->except(['create', 'edit', 'show'])->names('announcements');
     
     Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('attendance.index');
