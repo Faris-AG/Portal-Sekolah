@@ -99,11 +99,11 @@ const statusColors = {
             </h2>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Filters -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <InputLabel for="date" value="Tanggal Presensi" />
@@ -162,7 +162,7 @@ const statusColors = {
 
                 <!-- Students List & Attendance Form -->
                 <div v-if="filterForm.school_class_id && filterForm.subject_id" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-indigo-50/30">
+                    <div class="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between bg-indigo-50/30">
                         <div class="flex items-center gap-2">
                             <Users class="text-indigo-600" size="20" />
                             <h3 class="text-lg font-bold text-gray-900">Daftar Kehadiran</h3>
@@ -185,23 +185,23 @@ const statusColors = {
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-gray-50/50 text-xs uppercase tracking-wider text-gray-500">
-                                        <th class="py-4 px-6 font-semibold w-16">No</th>
-                                        <th class="py-4 px-6 font-semibold w-1/3">Nama Siswa</th>
-                                        <th class="py-4 px-6 font-semibold w-auto">Status Kehadiran</th>
-                                        <th class="py-4 px-6 font-semibold w-1/4">Catatan (Opsional)</th>
+                                        <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-16 whitespace-nowrap">No</th>
+                                        <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/3 whitespace-nowrap">Nama Siswa</th>
+                                        <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-auto whitespace-nowrap">Status Kehadiran</th>
+                                        <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/4 whitespace-nowrap">Catatan (Opsional)</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50">
                                     <tr v-for="(student, index) in students" :key="student.id" class="hover:bg-gray-50/30 transition-colors">
-                                        <td class="py-4 px-6 font-medium text-gray-500">{{ index + 1 }}</td>
-                                        <td class="py-4 px-6">
+                                        <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-medium text-gray-500">{{ index + 1 }}</td>
+                                        <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                             <div class="font-bold text-gray-900">{{ student.name }}</div>
                                             <div class="text-xs text-gray-500">{{ student.email }}</div>
                                         </td>
-                                        <td class="py-4 px-6">
-                                            <div class="flex flex-wrap gap-2">
+                                        <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
+                                            <div class="flex flex-wrap gap-1.5 sm:gap-2">
                                                 <label v-for="st in ['hadir', 'sakit', 'izin', 'alpa']" :key="st" 
-                                                    class="cursor-pointer border rounded-lg px-3 py-1.5 text-sm font-bold transition-all flex items-center gap-1.5"
+                                                    class="cursor-pointer border rounded-lg px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5"
                                                     :class="attendanceForm.attendances[index].status === st ? statusColors[st] : 'border-gray-200 text-gray-500 hover:bg-gray-50'"
                                                 >
                                                     <input 
@@ -215,7 +215,7 @@ const statusColors = {
                                                 </label>
                                             </div>
                                         </td>
-                                        <td class="py-4 px-6">
+                                        <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                             <input
                                                 type="text"
                                                 v-model="attendanceForm.attendances[index].note"
@@ -232,10 +232,10 @@ const statusColors = {
                                 </tbody>
                             </table>
                         </div>
-                        <div class="p-6 border-t border-gray-100 flex justify-end bg-gray-50">
+                        <div class="p-4 sm:p-6 border-t border-gray-100 flex justify-end bg-gray-50">
                             <PrimaryButton 
                                 type="submit" 
-                                class="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2 px-6 py-3"
+                                class="bg-indigo-600 hover:bg-indigo-700 inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm whitespace-nowrap shrink-0"
                                 :class="{ 'opacity-50 cursor-not-allowed': attendanceForm.processing }"
                                 :disabled="attendanceForm.processing || students.length === 0"
                             >

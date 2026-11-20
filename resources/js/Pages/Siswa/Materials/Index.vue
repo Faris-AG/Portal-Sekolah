@@ -75,8 +75,8 @@ const formatDate = (dateString) => {
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Filter Tabs -->
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
@@ -84,7 +84,7 @@ const formatDate = (dateString) => {
                         <button 
                             @click="onTabClick('all')"
                             :class="[
-                                'px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap',
+                                'px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap',
                                 activeTab === 'all' 
                                     ? 'bg-indigo-600 text-white shadow-md' 
                                     : 'text-gray-600 hover:bg-gray-100'
@@ -97,7 +97,7 @@ const formatDate = (dateString) => {
                             :key="subject.id"
                             @click="onTabClick(subject.id)"
                             :class="[
-                                'px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap',
+                                'px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap',
                                 String(activeTab) === String(subject.id)
                                     ? 'bg-indigo-600 text-white shadow-md' 
                                     : 'text-gray-600 hover:bg-gray-100'
@@ -123,7 +123,7 @@ const formatDate = (dateString) => {
                     <div 
                         v-for="material in materials" 
                         :key="material.id" 
-                        class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col relative group"
+                        class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col relative group"
                     >
                         <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl pointer-events-none"></div>
                         
@@ -154,7 +154,7 @@ const formatDate = (dateString) => {
                                     :href="`/storage/${material.file_path}`" 
                                     download 
                                     target="_blank"
-                                    class="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 hover:border-transparent rounded-xl font-bold text-sm transition-all"
+                                    class="inline-flex items-center justify-center gap-2 w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 hover:border-transparent rounded-xl font-bold text-xs sm:text-sm transition-all"
                                 >
                                     <Download size="16" /> Unduh Berkas
                                 </a>
@@ -163,7 +163,7 @@ const formatDate = (dateString) => {
                                     v-if="material.link_url" 
                                     :href="material.link_url" 
                                     target="_blank"
-                                    class="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-purple-50 text-purple-700 hover:bg-purple-600 hover:text-white border border-purple-200 hover:border-transparent rounded-xl font-bold text-sm transition-all"
+                                    class="inline-flex items-center justify-center gap-2 w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-purple-50 text-purple-700 hover:bg-purple-600 hover:text-white border border-purple-200 hover:border-transparent rounded-xl font-bold text-xs sm:text-sm transition-all"
                                 >
                                     <ExternalLink size="16" /> Buka Tautan
                                 </a>

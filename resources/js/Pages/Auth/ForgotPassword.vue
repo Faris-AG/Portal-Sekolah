@@ -31,7 +31,7 @@ const submit = () => {
                 <ArrowLeft size="16" /> Kembali ke Login
             </Link>
             
-            <h2 class="text-2xl font-bold text-slate-900 mb-2">Lupa Kata Sandi?</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">Lupa Kata Sandi?</h2>
             <p class="text-slate-500 text-sm leading-relaxed">
                 Tidak masalah. Beri tahu kami alamat email Anda, dan kami akan mengirimkan tautan pengaturan ulang kata sandi yang memungkinkan Anda memilih kata sandi baru.
             </p>
@@ -61,7 +61,7 @@ const submit = () => {
 
             <div class="pt-2">
                 <PrimaryButton
-                    class="w-full justify-center py-3 bg-indigo-600 hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                    class="w-full justify-center py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-xs sm:text-sm"
                     :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
                     :disabled="form.processing"
                 >

@@ -73,7 +73,7 @@ const goBack = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-4">
                     <button @click="goBack" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors" title="Kembali">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
@@ -83,10 +83,10 @@ const goBack = () => {
                     </h2>
                 </div>
                 
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                     <button 
                         @click="markAllAsRead"
-                        class="px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors shadow-sm"
+                        class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors shadow-sm whitespace-nowrap shrink-0"
                     >
                         Tandai Semua Dibaca
                     </button>
@@ -106,21 +106,21 @@ const goBack = () => {
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-4xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Tabs -->
                 <div class="flex space-x-2 mb-6">
                     <button 
                         @click="onTabClick('semua')"
-                        class="px-5 py-2 rounded-full text-sm font-bold transition-colors"
+                        class="px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-bold transition-colors"
                         :class="activeTab === 'semua' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
                     >
                         Semua Pengumuman
                     </button>
                     <button 
                         @click="onTabClick('belum')"
-                        class="px-5 py-2 rounded-full text-sm font-bold transition-colors flex items-center gap-2"
+                        class="px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-bold transition-colors flex items-center gap-1.5 sm:gap-2"
                         :class="activeTab === 'belum' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
                     >
                         <Bell size="16" :class="activeTab === 'belum' ? 'text-indigo-200' : 'text-indigo-500'" /> Belum Dibaca
@@ -141,7 +141,7 @@ const goBack = () => {
                     <div 
                         v-for="ann in announcements" 
                         :key="ann.id" 
-                        class="bg-white rounded-2xl p-6 border transition-all cursor-pointer relative overflow-hidden group"
+                        class="bg-white rounded-2xl p-4 sm:p-6 border transition-all cursor-pointer relative overflow-hidden group"
                         :class="!ann.is_read ? 'border-l-4 border-indigo-500 shadow-md' : 'border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200'"
                         @click="markAsRead(ann.id, ann.is_read)"
                     >

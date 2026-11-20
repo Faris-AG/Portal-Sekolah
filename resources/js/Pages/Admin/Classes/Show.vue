@@ -41,37 +41,37 @@ const formatTime = (timeString) => {
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Class Info Banner -->
-                <div class="bg-indigo-900 rounded-3xl p-8 relative overflow-hidden shadow-lg border border-indigo-800 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="bg-indigo-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 relative overflow-hidden shadow-lg border border-indigo-800 text-white flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6">
                     <div class="absolute right-0 top-0 w-64 h-64 bg-indigo-500 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none"></div>
                     
                     <div class="flex items-center gap-6 relative z-10">
-                        <div class="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 backdrop-blur-sm shrink-0">
-                            <School size="40" class="text-indigo-200" />
+                        <div class="w-14 h-14 sm:w-20 sm:h-20 bg-white/10 rounded-xl sm:rounded-2xl flex items-center justify-center border border-white/20 backdrop-blur-sm shrink-0">
+                            <School size="28" class="text-indigo-200 sm:w-10 sm:h-10" />
                         </div>
                         <div>
                             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-800 text-indigo-100 border border-indigo-700 mb-3">
                                 TINGKAT {{ schoolClass.grade_level }}
                             </div>
-                            <h3 class="text-3xl font-black mb-1">Kelas {{ schoolClass.name }}</h3>
+                            <h3 class="text-xl sm:text-3xl font-black mb-1">Kelas {{ schoolClass.name }}</h3>
                             <p class="text-indigo-200 font-medium flex items-center gap-2">
                                 <UserIcon size="16" /> Wali Kelas: {{ schoolClass.wali_kelas || 'Belum diatur' }}
                             </p>
                         </div>
                     </div>
 
-                    <div class="flex gap-4 relative z-10 w-full md:w-auto">
-                        <div class="bg-indigo-800/50 backdrop-blur-sm border border-indigo-700 rounded-2xl p-4 flex-1 md:w-32 flex flex-col items-center justify-center text-center">
+                    <div class="flex gap-3 sm:gap-4 relative z-10 w-full md:w-auto">
+                        <div class="bg-indigo-800/50 backdrop-blur-sm border border-indigo-700 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex-1 md:w-32 flex flex-col items-center justify-center text-center">
                             <Users size="24" class="text-indigo-300 mb-2" />
-                            <div class="text-3xl font-black text-white leading-none mb-1">{{ students.length }}</div>
+                            <div class="text-2xl sm:text-3xl font-black text-white leading-none mb-1">{{ students.length }}</div>
                             <div class="text-xs font-medium text-indigo-300 uppercase tracking-wider">Siswa</div>
                         </div>
                         <div class="bg-indigo-800/50 backdrop-blur-sm border border-indigo-700 rounded-2xl p-4 flex-1 md:w-32 flex flex-col items-center justify-center text-center">
                             <Calendar size="24" class="text-indigo-300 mb-2" />
-                            <div class="text-3xl font-black text-white leading-none mb-1">{{ schedules.length }}</div>
+                            <div class="text-2xl sm:text-3xl font-black text-white leading-none mb-1">{{ schedules.length }}</div>
                             <div class="text-xs font-medium text-indigo-300 uppercase tracking-wider">Sesi Mapel</div>
                         </div>
                     </div>
@@ -81,8 +81,8 @@ const formatTime = (timeString) => {
                     
                     <!-- Student List -->
                     <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                                 <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <Users class="text-indigo-600" size="20" /> Daftar Siswa
                                 </h3>
@@ -108,8 +108,8 @@ const formatTime = (timeString) => {
 
                     <!-- Schedule -->
                     <div class="lg:col-span-2 space-y-6">
-                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50">
                                 <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <Calendar class="text-indigo-600" size="20" /> Jadwal Pelajaran Mingguan
                                 </h3>
@@ -120,7 +120,7 @@ const formatTime = (timeString) => {
                                     v-for="day in daysOfWeek" 
                                     :key="day"
                                     @click="activeTab = day"
-                                    class="flex-1 py-4 px-4 text-sm font-bold transition-all border-b-2 whitespace-nowrap focus:outline-none text-center"
+                                    class="flex-1 py-3 px-3 sm:py-4 sm:px-4 text-xs sm:text-sm font-bold transition-all border-b-2 whitespace-nowrap focus:outline-none text-center"
                                     :class="activeTab === day ? 'border-indigo-600 text-indigo-700 bg-indigo-50/30' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
                                 >
                                     {{ day }}
@@ -129,6 +129,7 @@ const formatTime = (timeString) => {
 
                             <div class="p-0 min-h-[400px]">
                                 <div v-for="day in daysOfWeek" :key="'content-'+day" v-show="activeTab === day">
+                                    <div class="overflow-x-auto w-full">
                                     <table class="w-full text-left border-collapse">
                                         <thead>
                                             <tr class="bg-gray-50/50 text-xs uppercase tracking-wider text-gray-500">
@@ -168,6 +169,7 @@ const formatTime = (timeString) => {
                                             </tr>
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

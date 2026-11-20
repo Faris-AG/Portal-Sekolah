@@ -63,17 +63,17 @@ const getTargetLabel = (role) => {
             </h2>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 <!-- Welcome & Profile Banner -->
-                <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between relative overflow-hidden">
+                <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between relative overflow-hidden">
                     <div class="absolute right-0 top-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/4"></div>
                     <div class="flex items-center gap-6">
-                        <div class="h-20 w-20 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-white shadow-sm">
-                            <User class="h-10 w-10 text-indigo-500" />
+                        <div class="h-14 w-14 sm:h-20 sm:w-20 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-white shadow-sm">
+                            <User class="h-7 w-7 sm:h-10 sm:w-10 text-indigo-500" />
                         </div>
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-900">Selamat Datang, {{ student.name }}</h3>
+                            <h3 class="text-xl sm:text-3xl font-bold text-gray-900">Selamat Datang, {{ student.name }}</h3>
                             <p class="mt-1 text-gray-500 flex items-center gap-2">
                                 <span>{{ student.email }}</span>
                             </p>
@@ -99,7 +99,7 @@ const getTargetLabel = (role) => {
 
                         <!-- Tasks & Assignments Section -->
                         <div v-if="schoolClass" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-                            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                            <div class="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <div class="flex items-center gap-2">
                                     <FileText class="text-orange-500" size="20" />
                                     <h3 class="text-lg font-bold text-gray-900">Tugas Perlu Dikerjakan</h3>
@@ -108,13 +108,13 @@ const getTargetLabel = (role) => {
                                     Lihat Semua Tugas <ArrowRight size="16" />
                                 </Link>
                             </div>
-                            <div class="p-6">
+                            <div class="p-4 sm:p-6">
                                 <div v-if="tugasTerdekat.length === 0" class="text-gray-400 text-center py-12 flex flex-col items-center">
                                     <CheckCircle size="48" class="mb-4 opacity-20" />
                                     <p>Yeay! Tidak ada tugas mendesak saat ini.</p>
                                 </div>
                                 <div v-else class="space-y-4">
-                                    <div v-for="tugas in tugasTerdekat" :key="tugas.id" class="border border-gray-100 rounded-xl p-5 hover:border-indigo-100 hover:shadow-md transition-all bg-white relative overflow-hidden group">
+                                    <div v-for="tugas in tugasTerdekat" :key="tugas.id" class="border border-gray-100 rounded-xl p-3.5 sm:p-5 hover:border-indigo-100 hover:shadow-md transition-all bg-white relative overflow-hidden group">
                                         <div class="absolute top-0 left-0 w-1 h-full" :class="hasSubmitted(tugas) ? 'bg-green-500' : 'bg-red-500'"></div>
                                         <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 ml-2">
                                             <div class="flex-1">
@@ -196,19 +196,19 @@ const getTargetLabel = (role) => {
                                 <div class="grid grid-cols-2 gap-3">
                                     <div class="text-center bg-green-50 rounded-xl p-3 border border-green-100">
                                         <p class="text-xs font-bold text-green-700 uppercase">Hadir</p>
-                                        <p class="text-3xl font-black text-green-900">{{ attendanceStats?.hadir || 0 }}</p>
+                                        <p class="text-2xl sm:text-3xl font-black text-green-900">{{ attendanceStats?.hadir || 0 }}</p>
                                     </div>
                                     <div class="text-center bg-orange-50 rounded-xl p-3 border border-orange-100">
                                         <p class="text-xs font-bold text-orange-700 uppercase">Sakit</p>
-                                        <p class="text-3xl font-black text-orange-900">{{ attendanceStats?.sakit || 0 }}</p>
+                                        <p class="text-2xl sm:text-3xl font-black text-orange-900">{{ attendanceStats?.sakit || 0 }}</p>
                                     </div>
                                     <div class="text-center bg-blue-50 rounded-xl p-3 border border-blue-100">
                                         <p class="text-xs font-bold text-blue-700 uppercase">Izin</p>
-                                        <p class="text-3xl font-black text-blue-900">{{ attendanceStats?.izin || 0 }}</p>
+                                        <p class="text-2xl sm:text-3xl font-black text-blue-900">{{ attendanceStats?.izin || 0 }}</p>
                                     </div>
                                     <div class="text-center bg-red-50 rounded-xl p-3 border border-red-100">
                                         <p class="text-xs font-bold text-red-700 uppercase">Alpa</p>
-                                        <p class="text-3xl font-black text-red-900">{{ attendanceStats?.alpa || 0 }}</p>
+                                        <p class="text-2xl sm:text-3xl font-black text-red-900">{{ attendanceStats?.alpa || 0 }}</p>
                                     </div>
                                 </div>
                             </div>

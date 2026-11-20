@@ -245,21 +245,21 @@ const getTargetIcon = (role) => {
     <AuthenticatedLayout>
         <!-- 1. Header Bersih 1 Baris dengan Tombol Utama Title Case -->
         <template #header>
-            <div class="flex items-center justify-between w-full">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <Megaphone size="24" class="text-indigo-600" /> Kelola Pengumuman
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <Megaphone size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Kelola Pengumuman
                 </h2>
                 <button
                     @click="openCreateModal"
-                    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap shrink-0 w-fit"
                 >
                     <Plus size="16" /> Buat Pengumuman
                 </button>
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- 2. Bar Pencarian, Filter & Export PDF (Tanpa Container Kotak Putih) -->
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -327,7 +327,7 @@ const getTargetIcon = (role) => {
                         <a 
                             :href="exportRekapUrl" 
                             target="_blank"
-                            class="flex items-center gap-2 px-3.5 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm whitespace-nowrap"
+                            class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm whitespace-nowrap shrink-0 w-fit"
                             title="Export Rekap PDF sesuai filter aktif"
                         >
                             <Printer size="16" /> Export Rekap PDF
@@ -341,19 +341,19 @@ const getTargetIcon = (role) => {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50">
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 whitespace-nowrap">
                                         Judul Pengumuman
                                     </th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 whitespace-nowrap">
                                         Sasaran
                                     </th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 whitespace-nowrap">
                                         Tanggal Terbit
                                     </th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-center">
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 text-center whitespace-nowrap">
                                         Pembaca
                                     </th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-right">
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 text-right whitespace-nowrap">
                                         Aksi
                                     </th>
                                 </tr>
@@ -365,7 +365,7 @@ const getTargetIcon = (role) => {
                                     class="hover:bg-gray-50/50 transition-colors"
                                 >
                                     <!-- Judul (Bisa diklik untuk preview detail) & Cuplikan Isi -->
-                                    <td class="py-4 px-6">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                         <button 
                                             type="button"
                                             @click="openDetailModal(announcement)"
@@ -380,7 +380,7 @@ const getTargetIcon = (role) => {
                                     </td>
 
                                     <!-- Sasaran Target Badge -->
-                                    <td class="py-4 px-6 whitespace-nowrap">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                         <span 
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border"
                                             :class="getTargetBadgeColor(announcement.target_role)"
@@ -391,13 +391,13 @@ const getTargetIcon = (role) => {
                                     </td>
 
                                     <!-- Tanggal Terbit & Pembuat -->
-                                    <td class="py-4 px-6 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-gray-500">
                                         <div class="font-medium text-gray-900">{{ formatDate(announcement.created_at) }}</div>
                                         <div class="text-xs text-gray-400 mt-0.5">Oleh: {{ announcement.user?.name || 'Administrator' }}</div>
                                     </td>
 
                                     <!-- Indikator Jumlah Pembaca -->
-                                    <td class="py-4 px-6 whitespace-nowrap text-center">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-center">
                                         <span 
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100"
                                             title="Jumlah pengguna yang telah membaca"
@@ -408,7 +408,7 @@ const getTargetIcon = (role) => {
                                     </td>
 
                                     <!-- 4. Kolom Aksi Lega dengan Ikon Minimalis Berwarna -->
-                                    <td class="py-4 px-6 text-right whitespace-nowrap">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-right whitespace-nowrap">
                                         <div class="flex justify-end items-center gap-2">
                                             <!-- Ikon Detail (Mata) -->
                                             <button 
@@ -473,7 +473,7 @@ const getTargetIcon = (role) => {
                     </div>
 
                     <!-- 5. Footer Pagination & Dropdown Per Page Seragam -->
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row gap-3 items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-500">Tampilkan:</span>
                             <select 
@@ -511,7 +511,7 @@ const getTargetIcon = (role) => {
 
         <!-- Modal Detail Preview -->
         <Modal :show="isDetailModalOpen" @close="closeDetailModal" max-width="2xl">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <div class="flex items-start justify-between pb-4 border-b border-gray-100">
                     <div>
                         <div class="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -571,7 +571,7 @@ const getTargetIcon = (role) => {
 
         <!-- Modal Tambah / Edit -->
         <Modal :show="isModalOpen" @close="closeModal" max-width="2xl">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <div class="flex items-center justify-between mb-6 pb-3 border-b border-gray-100">
                     <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
                         <Megaphone size="20" class="text-indigo-600" />
@@ -625,7 +625,7 @@ const getTargetIcon = (role) => {
                         <InputError class="mt-2" :message="form.errors.content" />
                     </div>
 
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <div class="flex flex-wrap justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-100">
                         <SecondaryButton @click="closeModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                             {{ form.processing ? 'Menyimpan...' : (editingId ? 'Simpan Perubahan' : 'Simpan Pengumuman') }}
@@ -637,7 +637,7 @@ const getTargetIcon = (role) => {
 
         <!-- Modal Konfirmasi Hapus -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-4 mx-auto">
                     <AlertCircle class="text-red-600" size="24" />
                 </div>
@@ -645,7 +645,7 @@ const getTargetIcon = (role) => {
                 <p class="text-sm text-center text-gray-600 mb-6">
                     Apakah Anda yakin ingin menghapus pengumuman <span class="font-bold text-gray-800">"{{ selectedAnnouncement?.title }}"</span>? Tindakan ini tidak dapat dibatalkan.
                 </p>
-                <div class="flex justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
                     <SecondaryButton @click="closeDeleteModal">Batal</SecondaryButton>
                     <button 
                         @click="deleteAnnouncement"

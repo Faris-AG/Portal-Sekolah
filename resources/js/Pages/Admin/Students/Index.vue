@@ -205,23 +205,23 @@ const submit = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between w-full">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <Users size="24" class="text-indigo-600" /> Daftar Siswa &amp; Penempatan Kelas
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <Users size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Daftar Siswa &amp; Penempatan Kelas
                 </h2>
                 <!-- Tombol Kenaikan Kelas -->
                 <button
                     @click="openPromotionModal"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 whitespace-nowrap shrink-0 w-fit"
                 >
-                    <ArrowRightLeft size="16" />
+                    <ArrowRightLeft size="15" />
                     Kenaikan Kelas / Pindah Rombel
                 </button>
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-4">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
 
                 <!-- Flash success -->
                 <div
@@ -328,7 +328,7 @@ const submit = () => {
                                             class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4"
                                         />
                                     </th>
-                                    <th @click="sortBy('name')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('name')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Nama Siswa
                                             <span v-if="currentSortBy === 'name'">
@@ -337,7 +337,7 @@ const submit = () => {
                                             </span>
                                         </div>
                                     </th>
-                                    <th @click="sortBy('email')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('email')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Email
                                             <span v-if="currentSortBy === 'email'">
@@ -346,7 +346,7 @@ const submit = () => {
                                             </span>
                                         </div>
                                     </th>
-                                    <th @click="sortBy('class_id')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('class_id')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Kelas Saat Ini
                                             <span v-if="currentSortBy === 'class_id'">
@@ -355,7 +355,7 @@ const submit = () => {
                                             </span>
                                         </div>
                                     </th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-right">Aksi</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 text-right whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -383,13 +383,13 @@ const submit = () => {
                                             class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer w-4 h-4"
                                         />
                                     </td>
-                                    <td class="py-4 px-6">
-                                        <span class="font-bold text-gray-900 text-base">{{ student.name }}</span>
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
+                                        <span class="font-bold text-gray-900 text-sm sm:text-base">{{ student.name }}</span>
                                     </td>
-                                    <td class="py-4 px-6 text-gray-600">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                                         {{ student.email }}
                                     </td>
-                                    <td class="py-4 px-6">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                         <span v-if="student.school_class" class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
                                             {{ student.school_class.name }}
                                         </span>
@@ -397,12 +397,12 @@ const submit = () => {
                                             Belum memiliki kelas
                                         </span>
                                     </td>
-                                    <td class="py-4 px-6 text-right">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm text-right whitespace-nowrap">
                                         <button
                                             @click="openModal(student)"
-                                            class="text-blue-600 hover:text-blue-800 transition-colors py-1.5 px-3 rounded-lg hover:bg-blue-50 inline-flex items-center gap-1.5 text-sm font-medium focus:outline-none"
+                                            class="text-blue-600 hover:text-blue-800 transition-colors py-1.5 px-2.5 sm:px-3 rounded-lg hover:bg-blue-50 inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium focus:outline-none whitespace-nowrap shrink-0"
                                         >
-                                            <RefreshCw size="16" /> Ubah Kelas
+                                            <RefreshCw size="15" /> Ubah Kelas
                                         </button>
                                     </td>
                                 </tr>
@@ -411,7 +411,7 @@ const submit = () => {
                     </div>
 
                     <!-- Pagination & Per Page -->
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row gap-3 items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-500">Tampilkan:</span>
                             <select v-model="currentPerPage" @change="changePerPage" class="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 pl-2 pr-8">
@@ -442,7 +442,7 @@ const submit = () => {
         <!-- Modal 1: Ubah Kelas Siswa Tunggal (existing)        -->
         <!-- ──────────────────────────────────────────────────── -->
         <Modal :show="isModalOpen" @close="closeModal" max-width="md">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <BookOpen class="text-indigo-600" size="24" />
                     Atur Kelas Siswa
@@ -483,7 +483,7 @@ const submit = () => {
         <!-- Modal 2: Kenaikan Kelas Rombongan (Mass Promotion)      -->
         <!-- ──────────────────────────────────────────────────────── -->
         <Modal :show="isPromotionModalOpen" @close="closePromotionModal" max-width="2xl">
-            <div class="p-6 flex flex-col gap-6 max-h-[85vh]">
+            <div class="p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 max-h-[85vh]">
                 <!-- Header -->
                 <div class="flex items-center gap-3">
                     <div class="p-2.5 rounded-xl bg-gradient-to-br from-violet-100 to-indigo-100">
@@ -586,7 +586,7 @@ const submit = () => {
                 <InputError :message="promotionForm.errors.student_ids" />
 
                 <!-- Footer actions -->
-                <div class="flex justify-end gap-3 pt-2 border-t border-gray-100">
+                <div class="flex flex-wrap justify-end gap-2 sm:gap-3 pt-2 border-t border-gray-100">
                     <SecondaryButton @click="closePromotionModal" type="button">Batal</SecondaryButton>
                     <button
                         @click="submitPromotion"

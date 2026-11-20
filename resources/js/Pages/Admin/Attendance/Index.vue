@@ -40,16 +40,16 @@ watch(
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                <CheckSquare size="24" class="text-indigo-600" /> Laporan Presensi Sekolah
+            <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                <CheckSquare size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Laporan Presensi Sekolah
             </h2>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Filters -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <Search size="20" class="text-gray-400" /> Filter Laporan
                     </h3>
@@ -93,7 +93,7 @@ watch(
 
                 <!-- Report Table -->
                 <div v-if="form.school_class_id" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <div class="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <h3 class="text-lg font-bold text-gray-900">Rekapitulasi Kehadiran</h3>
                         <div v-if="report.length > 0" class="text-sm text-gray-500">
                             Total Siswa: {{ report.length }}
@@ -108,25 +108,25 @@ watch(
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50 border-b border-gray-200">
-                                    <th class="p-4 font-semibold text-gray-600 text-sm">Nama Siswa</th>
-                                    <th class="p-4 font-semibold text-green-600 text-sm text-center">Hadir</th>
-                                    <th class="p-4 font-semibold text-blue-600 text-sm text-center">Sakit</th>
-                                    <th class="p-4 font-semibold text-yellow-600 text-sm text-center">Izin</th>
-                                    <th class="p-4 font-semibold text-red-600 text-sm text-center">Alpa</th>
-                                    <th class="p-4 font-semibold text-gray-600 text-sm text-center">Total PTM</th>
+                                    <th class="p-2.5 sm:p-4 font-semibold text-gray-600 text-xs sm:text-sm whitespace-nowrap">Nama Siswa</th>
+                                    <th class="p-2.5 sm:p-4 font-semibold text-green-600 text-xs sm:text-sm text-center whitespace-nowrap">Hadir</th>
+                                    <th class="p-2.5 sm:p-4 font-semibold text-blue-600 text-xs sm:text-sm text-center whitespace-nowrap">Sakit</th>
+                                    <th class="p-2.5 sm:p-4 font-semibold text-yellow-600 text-xs sm:text-sm text-center whitespace-nowrap">Izin</th>
+                                    <th class="p-2.5 sm:p-4 font-semibold text-red-600 text-xs sm:text-sm text-center whitespace-nowrap">Alpa</th>
+                                    <th class="p-2.5 sm:p-4 font-semibold text-gray-600 text-xs sm:text-sm text-center whitespace-nowrap">Total PTM</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 <tr v-for="item in report" :key="item.student.id" class="hover:bg-gray-50 transition-colors">
-                                    <td class="p-4">
+                                    <td class="p-2.5 sm:p-4 text-xs sm:text-sm">
                                         <div class="font-medium text-gray-900">{{ item.student.name }}</div>
                                         <div class="text-xs text-gray-500">{{ item.student.nis || item.student.email }}</div>
                                     </td>
-                                    <td class="p-4 text-center font-bold text-green-600 bg-green-50/30">{{ item.hadir }}</td>
-                                    <td class="p-4 text-center font-bold text-blue-600 bg-blue-50/30">{{ item.sakit }}</td>
-                                    <td class="p-4 text-center font-bold text-yellow-600 bg-yellow-50/30">{{ item.izin }}</td>
-                                    <td class="p-4 text-center font-bold text-red-600 bg-red-50/30">{{ item.alpa }}</td>
-                                    <td class="p-4 text-center font-bold text-gray-700 bg-gray-50">{{ item.total }}</td>
+                                    <td class="p-2.5 sm:p-4 text-center font-bold text-green-600 bg-green-50/30 text-xs sm:text-sm">{{ item.hadir }}</td>
+                                    <td class="p-2.5 sm:p-4 text-center font-bold text-blue-600 bg-blue-50/30 text-xs sm:text-sm">{{ item.sakit }}</td>
+                                    <td class="p-2.5 sm:p-4 text-center font-bold text-yellow-600 bg-yellow-50/30 text-xs sm:text-sm">{{ item.izin }}</td>
+                                    <td class="p-2.5 sm:p-4 text-center font-bold text-red-600 bg-red-50/30 text-xs sm:text-sm">{{ item.alpa }}</td>
+                                    <td class="p-2.5 sm:p-4 text-center font-bold text-gray-700 bg-gray-50 text-xs sm:text-sm">{{ item.total }}</td>
                                 </tr>
                             </tbody>
                         </table>

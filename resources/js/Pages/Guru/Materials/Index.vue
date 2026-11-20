@@ -127,21 +127,21 @@ const formatDate = (dateString) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between w-full">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <Library size="24" class="text-indigo-600" /> Kelola Materi Belajar
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <Library size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Kelola Materi Belajar
                 </h2>
                 <button 
                     @click="openCreateModal"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-bold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 border border-transparent rounded-lg font-bold text-xs sm:text-sm text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors whitespace-nowrap shrink-0 w-fit"
                 >
                     <Plus size="16" /> Tambah Materi
                 </button>
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 <!-- Search & Filters -->
                 <div class="flex flex-col sm:flex-row gap-4 mb-2">
                     <div class="w-full relative" :class="subjects && subjects.length > 1 ? 'sm:w-1/3' : 'sm:w-1/2'">
@@ -202,28 +202,28 @@ const formatDate = (dateString) => {
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Materi</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kelas & Mapel</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe Lampiran</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Diunggah</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Materi</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Kelas & Mapel</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Tipe Lampiran</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Diunggah</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-right text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-100">
                                 <tr v-for="material in materials" :key="material.id" class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm font-bold text-gray-900">{{ material.title }}</div>
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
+                                        <div class="text-xs sm:text-sm font-bold text-gray-900">{{ material.title }}</div>
                                         <div class="text-xs text-gray-500 mt-1 line-clamp-1">{{ material.description }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-indigo-700 bg-indigo-50 inline-block px-2 py-0.5 rounded border border-indigo-100 mb-1">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
+                                        <div class="text-xs sm:text-sm font-bold text-indigo-700 bg-indigo-50 inline-block px-2 py-0.5 rounded border border-indigo-100 mb-1">
                                             {{ material.school_class?.name }}
                                         </div>
                                         <div class="text-xs text-gray-500 font-medium">
                                             {{ material.subject?.name }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                         <div class="flex flex-col gap-1.5">
                                             <span v-if="material.file_path" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                                                 <FileText size="12" /> Berkas
@@ -233,10 +233,10 @@ const formatDate = (dateString) => {
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-gray-500">
                                         {{ formatDate(material.created_at) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-right font-medium">
                                         <button @click="openDeleteModal(material)" class="text-red-600 hover:text-red-900 font-bold p-2 hover:bg-red-50 rounded-lg transition-colors">
                                             <Trash2 size="18" />
                                         </button>
@@ -251,7 +251,7 @@ const formatDate = (dateString) => {
 
         <!-- Create Modal -->
         <Modal :show="isCreateModalOpen" @close="closeCreateModal" max-width="lg">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <div class="flex items-center gap-2 mb-6">
                     <Library size="24" class="text-indigo-600" />
                     <h2 class="text-xl font-bold text-gray-900">Tambah Materi Baru</h2>
@@ -355,7 +355,7 @@ const formatDate = (dateString) => {
                         <div class="bg-indigo-600 h-2 rounded-full transition-all duration-300" :style="{ width: form.progress.percentage + '%' }"></div>
                     </div>
 
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <div class="flex flex-wrap justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-100">
                         <SecondaryButton @click="closeCreateModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                             {{ form.processing ? 'Mengunggah...' : 'Simpan Materi' }}
@@ -367,7 +367,7 @@ const formatDate = (dateString) => {
 
         <!-- Delete Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-4 mx-auto">
                     <AlertCircle class="text-red-600" size="24" />
                 </div>
@@ -375,7 +375,7 @@ const formatDate = (dateString) => {
                 <p class="text-sm text-center text-gray-600 mb-6">
                     Apakah Anda yakin ingin menghapus materi <span class="font-bold">"{{ materialToDelete?.title }}"</span>? Tindakan ini tidak dapat dibatalkan dan akan menghapus berkas dari server.
                 </p>
-                <div class="flex justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
                     <SecondaryButton @click="closeDeleteModal">Batal</SecondaryButton>
                     <button 
                         @click="deleteMaterial"

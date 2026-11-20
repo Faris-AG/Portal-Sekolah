@@ -35,7 +35,7 @@ const submit = () => {
         <Head title="Masuk Portal" />
 
         <div class="mb-8 text-center">
-            <h2 class="text-2xl font-bold text-slate-900">Selamat Datang Kembali</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Selamat Datang Kembali</h2>
             <p class="text-slate-500 mt-2 text-sm">Silakan masukkan email dan kata sandi Anda untuk mengakses portal.</p>
         </div>
 
@@ -97,7 +97,7 @@ const submit = () => {
 
             <div class="pt-2">
                 <PrimaryButton
-                    class="w-full justify-center py-3 bg-indigo-600 hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                    class="w-full justify-center py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-xs sm:text-sm"
                     :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
                     :disabled="form.processing"
                 >

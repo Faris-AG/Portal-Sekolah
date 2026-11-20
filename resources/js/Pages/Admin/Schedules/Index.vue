@@ -110,24 +110,24 @@ const formatTime = (timeString) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between w-full">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <Calendar size="24" class="text-indigo-600" /> Jadwal Pelajaran
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <Calendar size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Jadwal Pelajaran
                 </h2>
                 <button
                     @click="openModal"
-                    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap shrink-0 w-fit"
                 >
                     <Plus size="16" /> Tambah Jadwal
                 </button>
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Filter Section -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-end gap-6 justify-between">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-end gap-4 sm:gap-6 justify-between">
                     <div class="flex-1 max-w-sm">
                         <InputLabel for="filter_class" value="Pilih Kelas:" class="mb-1" />
                         <select
@@ -148,7 +148,7 @@ const formatTime = (timeString) => {
                         <div class="flex gap-2">
                             <button 
                                 @click="currentDayFilter = 'Semua'"
-                                class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all"
+                                class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-bold whitespace-nowrap transition-all"
                                 :class="currentDayFilter === 'Semua' ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
                             >
                                 Semua Hari
@@ -193,7 +193,7 @@ const formatTime = (timeString) => {
                             <h3 class="text-lg font-bold text-gray-900">{{ day }}</h3>
                         </div>
                         
-                        <div class="p-0">
+                        <div class="p-0 overflow-x-auto w-full">
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="hidden md:table-row bg-white border-b border-gray-50 text-xs uppercase tracking-wider text-gray-500">
@@ -206,25 +206,25 @@ const formatTime = (timeString) => {
                                 <tbody class="divide-y divide-gray-50">
                                     <template v-for="schedule in schedules.filter(s => s.day === day)" :key="schedule.id">
                                         <tr class="hover:bg-gray-50/50 transition-colors flex flex-col md:table-row">
-                                            <td class="py-4 px-6">
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                                 <div class="flex items-center gap-2 text-gray-900 font-medium">
                                                     <Clock size="16" class="text-indigo-400" />
                                                     {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
                                                 </div>
                                             </td>
-                                            <td class="py-4 px-6">
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                                 <div class="font-bold text-gray-900">{{ schedule.subject?.name }}</div>
                                                 <div class="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
                                                     <BookOpen size="14" /> {{ schedule.subject?.code }}
                                                 </div>
                                             </td>
-                                            <td class="py-4 px-6">
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                                 <div class="flex items-center gap-2">
                                                     <User size="16" class="text-gray-400" />
                                                     <span class="text-gray-700 font-medium">{{ schedule.teacher?.name || 'Belum ditentukan' }}</span>
                                                 </div>
                                             </td>
-                                            <td class="py-4 px-6 text-right">
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm text-right whitespace-nowrap">
                                                 <button
                                                     @click="confirmDelete(schedule)"
                                                     class="text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50 inline-flex items-center justify-center focus:outline-none"
@@ -251,7 +251,7 @@ const formatTime = (timeString) => {
 
         <!-- Add Schedule Modal -->
         <Modal :show="isModalOpen" @close="closeModal">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <Calendar class="text-indigo-600" size="24" />
                     Tambah Jadwal Pelajaran
@@ -347,7 +347,7 @@ const formatTime = (timeString) => {
                         </div>
                     </div>
 
-                    <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <div class="mt-6 sm:mt-8 flex flex-wrap justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-100">
                         <SecondaryButton @click="closeModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton
                             :class="{ 'opacity-25': form.processing }"
@@ -362,7 +362,7 @@ const formatTime = (timeString) => {
 
         <!-- Delete Confirmation Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
-            <div class="p-6 text-center">
+            <div class="p-4 sm:p-6 text-center">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5 shadow-sm">
                     <Trash2 class="h-8 w-8 text-red-600" stroke-width="2" />
                 </div>
@@ -373,7 +373,7 @@ const formatTime = (timeString) => {
                     Apakah Anda yakin ingin menghapus jadwal <span class="font-bold text-gray-900">{{ scheduleToDelete?.subject?.name }}</span> ini? Data tidak dapat dikembalikan.
                 </p>
 
-                <div class="flex justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
                     <SecondaryButton @click="closeDeleteModal"> Batal </SecondaryButton>
                     <DangerButton
                         :class="{ 'opacity-25': form.processing }"

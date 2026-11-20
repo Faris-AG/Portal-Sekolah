@@ -50,30 +50,30 @@ const toggleSubject = (subjectName) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                <Award size="24" class="text-indigo-600" /> Nilai Saya
+            <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                <Award size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Nilai Saya
             </h2>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
                 
                 <!-- Statistik Section -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Rata-rata Keseluruhan</p>
-                            <p class="text-3xl font-black text-gray-900">{{ statistics.average }}</p>
+                            <p class="text-2xl sm:text-3xl font-black text-gray-900">{{ statistics.average }}</p>
                         </div>
                         <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
                             <TrendingUp size="24" />
                         </div>
                     </div>
                     
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Total Dinilai</p>
-                            <p class="text-3xl font-black text-gray-900">{{ statistics.total }}</p>
+                            <p class="text-2xl sm:text-3xl font-black text-gray-900">{{ statistics.total }}</p>
                         </div>
                         <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
                             <CheckSquare size="24" />
@@ -83,7 +83,7 @@ const toggleSubject = (subjectName) => {
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Nilai Tertinggi</p>
-                            <p class="text-3xl font-black text-gray-900">{{ statistics.highest }}</p>
+                            <p class="text-2xl sm:text-3xl font-black text-gray-900">{{ statistics.highest }}</p>
                         </div>
                         <div class="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
                             <Award size="24" />
@@ -101,7 +101,7 @@ const toggleSubject = (subjectName) => {
                 <div v-else class="space-y-6">
                     <div v-for="(assignments, subjectName) in gradesBySubject" :key="subjectName" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         
-                        <button @click="toggleSubject(subjectName)" class="w-full px-6 py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-100 focus:outline-none">
+                        <button @click="toggleSubject(subjectName)" class="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors border-b border-gray-100 focus:outline-none">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center">
                                     <BookOpen size="20" />
@@ -119,23 +119,23 @@ const toggleSubject = (subjectName) => {
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-white">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/2">Judul Tugas</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tanggal Dinilai</th>
-                                        <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Skor Nilai</th>
+                                        <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/2 whitespace-nowrap">Judul Tugas</th>
+                                        <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Tanggal Dinilai</th>
+                                        <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-right text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Skor Nilai</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-50">
                                     <tr v-for="(item, index) in assignments" :key="index" class="hover:bg-slate-50/50 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm font-bold text-gray-900 mb-1">{{ item.assignment_title }}</div>
+                                        <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
+                                            <div class="text-xs sm:text-sm font-bold text-gray-900 mb-1">{{ item.assignment_title }}</div>
                                             <div v-if="item.feedback" class="text-sm text-gray-600 italic bg-gray-50 p-2 rounded border border-gray-100 inline-block mt-1">
                                                 Catatan Guru: "{{ item.feedback }}"
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-gray-500">
                                             {{ formatDate(item.graded_at) }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-right">
                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold border" :class="getGradeBadgeColor(item.grade)">
                                                 {{ item.grade }}
                                             </span>

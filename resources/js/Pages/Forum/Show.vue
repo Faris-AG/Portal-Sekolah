@@ -244,7 +244,7 @@ const reportReasons = [
                     >
                         <Lock size="10" /> Dikunci
                     </span>
-                    <h2 class="text-xl font-semibold leading-tight text-gray-800 truncate">
+                    <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 truncate">
                         {{ topic.title }}
                     </h2>
                 </div>
@@ -293,14 +293,14 @@ const reportReasons = [
         </template>
 
         <div class="py-8 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-4xl sm:px-6 lg:px-8 flex flex-col h-[calc(100vh-140px)]">
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col h-[calc(100vh-140px)]">
 
                 <!-- Replies + Topic Area -->
                 <div class="flex-1 overflow-y-auto mb-6 pr-2 custom-scrollbar" ref="repliesContainer">
 
                     <!-- Original Post -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-                        <div class="p-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-4 sm:mb-6">
+                        <div class="p-4 sm:p-6">
                             <div class="flex items-center gap-4 mb-4">
                                 <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg">
                                     {{ topic.user.name.substring(0, 2).toUpperCase() }}
@@ -332,7 +332,7 @@ const reportReasons = [
                         <div
                             v-for="reply in topic.replies"
                             :key="reply.id"
-                            class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 ml-4 sm:ml-12"
+                            class="bg-white rounded-xl shadow-sm border border-gray-100 p-3.5 sm:p-5 ml-2 sm:ml-12"
                             :class="{ 'border-l-4 border-l-indigo-500': reply.user?.role === 'guru' }"
                         >
                             <!-- ── TOMBSTONED (dihapus moderator) ── -->

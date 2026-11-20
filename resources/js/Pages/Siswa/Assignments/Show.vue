@@ -74,11 +74,11 @@ const submitTask = () => {
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Header Tugas -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-6 relative overflow-hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 mb-4 sm:mb-6 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500"></div>
                     <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
                         <div>
@@ -90,7 +90,7 @@ const submitTask = () => {
                                     <BookOpen size="16"/> {{ assignment.teacher?.name }}
                                 </span>
                             </div>
-                            <h2 class="text-3xl font-black text-gray-900 mb-2">{{ assignment.title }}</h2>
+                            <h2 class="text-xl sm:text-3xl font-black text-gray-900 mb-2">{{ assignment.title }}</h2>
                         </div>
                         <div class="shrink-0">
                             <div class="bg-orange-50 border border-orange-100 rounded-xl p-4 flex items-center gap-3">
@@ -111,13 +111,13 @@ const submitTask = () => {
                     <!-- Kiri: Deskripsi Tugas -->
                     <div class="lg:col-span-2">
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                            <div class="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50">
                                 <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <FileText size="20" class="text-gray-500" /> Instruksi Tugas
                                 </h3>
                             </div>
-                            <div class="p-6 md:p-8">
-                                <div class="prose prose-indigo max-w-none text-gray-700 whitespace-pre-line leading-relaxed">
+                            <div class="p-4 sm:p-6 md:p-8">
+                                <div class="prose prose-indigo max-w-none text-gray-700 whitespace-pre-line leading-relaxed text-xs sm:text-sm">
                                     {{ assignment.description }}
                                 </div>
                             </div>
@@ -130,14 +130,14 @@ const submitTask = () => {
                         <!-- Card Hasil Penilaian (Hanya jika sudah dinilai) -->
                         <div v-if="isGraded" class="bg-white rounded-2xl shadow-sm border border-green-200 overflow-hidden relative">
                             <div class="absolute top-0 inset-x-0 h-1 bg-green-500"></div>
-                            <div class="p-6 bg-green-50/30 border-b border-green-100">
+                            <div class="p-4 sm:p-6 bg-green-50/30 border-b border-green-100">
                                 <h3 class="text-lg font-bold text-green-900 flex items-center gap-2">
                                     <CheckSquare size="20" class="text-green-600" /> Hasil Penilaian
                                 </h3>
                             </div>
-                            <div class="p-6">
-                                <div class="flex items-end gap-2 mb-6">
-                                    <span class="text-5xl font-black text-gray-900">{{ submission.grade }}</span>
+                            <div class="p-4 sm:p-6">
+                                <div class="flex items-end gap-2 mb-4 sm:mb-6">
+                                    <span class="text-3xl sm:text-5xl font-black text-gray-900">{{ submission.grade }}</span>
                                     <span class="text-xl font-bold text-gray-400 mb-1">/100</span>
                                 </div>
                                 
@@ -151,7 +151,7 @@ const submitTask = () => {
 
                         <!-- Card Status Pengumpulan -->
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                            <div class="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                                 <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <UploadCloud size="20" class="text-indigo-600" /> 
                                     {{ hasSubmitted ? 'Status Pengumpulan' : 'Kumpulkan Tugas' }}
@@ -165,8 +165,8 @@ const submitTask = () => {
                                 </span>
                             </div>
                             
-                            <div class="p-6">
-                                <div v-if="hasSubmitted" class="mb-6 space-y-3">
+                            <div class="p-4 sm:p-6">
+                                <div v-if="hasSubmitted" class="mb-4 sm:mb-6 space-y-3">
                                     <p class="text-sm text-gray-500">Tugas Anda telah dikumpulkan pada:</p>
                                     <p class="text-sm font-bold text-gray-900">{{ formatDate(submission.created_at) }}</p>
                                     

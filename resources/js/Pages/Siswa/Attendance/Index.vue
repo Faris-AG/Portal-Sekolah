@@ -82,13 +82,13 @@ const getStatusIcon = (status) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                <Calendar size="24" class="text-indigo-600" /> Riwayat Kehadiran
+            <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                <Calendar size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Riwayat Kehadiran
             </h2>
         </template>
 
-        <div class="py-10 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-8">
+        <div class="py-6 sm:py-10 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
                 
                 <!-- Widget Ringkasan Semester Ini -->
                 <div>
@@ -106,45 +106,45 @@ const getStatusIcon = (status) => {
 
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Hadir (Hijau) -->
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100/80 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-emerald-100/80 flex items-center gap-3 sm:gap-4 hover:shadow-md transition-shadow">
                             <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center shrink-0 border border-green-100">
                                 <CheckCircle size="24" />
                             </div>
                             <div>
-                                <p class="text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.hadir || 0 }}</p>
+                                <p class="text-2xl sm:text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.hadir || 0 }}</p>
                                 <p class="text-xs font-bold text-green-700 uppercase tracking-wider mt-1.5">Hadir</p>
                             </div>
                         </div>
                         
                         <!-- Sakit (Kuning/Oranye) -->
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-amber-100/80 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-amber-100/80 flex items-center gap-3 sm:gap-4 hover:shadow-md transition-shadow">
                             <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shrink-0 border border-amber-100">
                                 <AlertCircle size="24" />
                             </div>
                             <div>
-                                <p class="text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.sakit || 0 }}</p>
+                                <p class="text-2xl sm:text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.sakit || 0 }}</p>
                                 <p class="text-xs font-bold text-amber-700 uppercase tracking-wider mt-1.5">Sakit</p>
                             </div>
                         </div>
 
                         <!-- Izin (Biru) -->
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-blue-100/80 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-blue-100/80 flex items-center gap-3 sm:gap-4 hover:shadow-md transition-shadow">
                             <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0 border border-blue-100">
                                 <Clock size="24" />
                             </div>
                             <div>
-                                <p class="text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.izin || 0 }}</p>
+                                <p class="text-2xl sm:text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.izin || 0 }}</p>
                                 <p class="text-xs font-bold text-blue-700 uppercase tracking-wider mt-1.5">Izin</p>
                             </div>
                         </div>
 
                         <!-- Alpa / Tanpa Keterangan (Merah) -->
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-rose-100/80 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-rose-100/80 flex items-center gap-3 sm:gap-4 hover:shadow-md transition-shadow">
                             <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center shrink-0 border border-red-100">
                                 <XCircle size="24" />
                             </div>
                             <div>
-                                <p class="text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.alpa || 0 }}</p>
+                                <p class="text-2xl sm:text-3xl font-black text-gray-900 leading-none">{{ attendanceStats?.alpa || 0 }}</p>
                                 <p class="text-xs font-bold text-red-700 uppercase tracking-wider mt-1.5">Alpa / Tanpa Ket.</p>
                             </div>
                         </div>
@@ -154,7 +154,7 @@ const getStatusIcon = (status) => {
                 <!-- History List & Filter Card -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <!-- Card Header with Filter -->
-                    <div class="p-5 sm:px-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">
+                    <div class="p-4 sm:px-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-white">
                         <div>
                             <h3 class="text-lg font-bold text-gray-900">Detail Riwayat Harian</h3>
                             <p class="text-xs text-gray-500 mt-0.5">Daftar presensi dan catatan absensi pembelajaran</p>
@@ -238,7 +238,7 @@ const getStatusIcon = (status) => {
                     <!-- Pagination Controls -->
                     <div 
                         v-if="attendances.data && attendances.data.length > 0" 
-                        class="px-6 py-4 border-t border-gray-100 bg-gray-50/60 flex flex-col sm:flex-row items-center justify-between gap-3"
+                        class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 bg-gray-50/60 flex flex-col sm:flex-row items-center justify-between gap-3"
                     >
                         <div class="text-xs sm:text-sm text-gray-500">
                             Menampilkan <span class="font-semibold text-gray-900">{{ attendances.from || 0 }}</span> - <span class="font-semibold text-gray-900">{{ attendances.to || 0 }}</span> dari <span class="font-semibold text-gray-900">{{ attendances.total || 0 }}</span> data

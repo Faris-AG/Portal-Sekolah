@@ -180,7 +180,7 @@ const emailUpdatedAndSent = computed(
                 </div>
             </div>
 
-            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Verifikasi Alamat Email Anda</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Verifikasi Alamat Email Anda</h2>
         </div>
 
         <!-- Notifikasi Status -->

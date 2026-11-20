@@ -124,22 +124,22 @@ const deleteAssignment = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold leading-tight text-gray-800 flex items-center gap-2">
-                    <CheckSquare size="24" class="text-indigo-600" />
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-bold leading-tight text-gray-800 flex items-center gap-2">
+                    <CheckSquare size="22" class="text-indigo-600 sm:w-6 sm:h-6" />
                     Kelola Tugas Siswa
                 </h2>
                 <button
                     @click="openCreateModal"
-                    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-indigo-700 transition-all shadow-indigo-100"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md hover:bg-indigo-700 transition-all shadow-indigo-100 whitespace-nowrap shrink-0 w-fit"
                 >
-                    <Plus size="18" /> Buat Tugas Baru
+                    <Plus size="16" /> Buat Tugas Baru
                 </button>
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 <!-- Search & Filters -->
                 <div class="flex flex-col sm:flex-row gap-4 mb-2">
                     <div class="w-full relative" :class="subjects && subjects.length > 1 ? 'sm:w-1/3' : 'sm:w-1/2'">
@@ -201,16 +201,16 @@ const deleteAssignment = () => {
                         <table class="min-w-full divide-y divide-gray-200 text-left">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tugas</th>
-                                    <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Kelas & Mapel</th>
-                                    <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tenggat Waktu</th>
-                                    <th scope="col" class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Terkumpul</th>
-                                    <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Tugas</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Kelas & Mapel</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Tenggat Waktu</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Terkumpul</th>
+                                    <th scope="col" class="py-3 px-3 sm:py-4 sm:px-6 text-right text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 <tr v-for="assignment in assignments" :key="assignment.id" class="hover:bg-gray-50/50 transition-colors group">
-                                    <td class="px-6 py-4">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                         <div class="font-bold text-gray-900">
                                             <Link :href="route('guru.assignments.show', assignment.id)" class="hover:text-indigo-600 transition-colors">
                                                 {{ assignment.title }}
@@ -220,7 +220,7 @@ const deleteAssignment = () => {
                                             {{ assignment.description }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-1">
                                             <GraduationCap size="13" /> {{ assignment.school_class?.name }}
                                         </span>
@@ -228,20 +228,20 @@ const deleteAssignment = () => {
                                             <BookOpen size="12" /> {{ assignment.subject?.name }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-gray-600 font-medium">
                                         <div class="flex items-center gap-1.5 text-orange-600 bg-orange-50 px-2.5 py-1 rounded-md border border-orange-100 w-fit text-xs font-semibold">
                                             <Clock size="13" /> {{ formatDate(assignment.due_date) }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                         <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-100">
                                             <Users size="13" /> {{ assignment.submissions_count || 0 }} pengumpulan
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap text-right space-x-1 sm:space-x-2">
                                         <Link
                                             :href="route('guru.assignments.show', assignment.id)"
-                                            class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors border border-indigo-200"
+                                            class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-colors border border-indigo-200 whitespace-nowrap shrink-0"
                                         >
                                             Periksa & Nilai
                                         </Link>
@@ -263,7 +263,7 @@ const deleteAssignment = () => {
 
         <!-- Create Assignment Modal -->
         <Modal :show="isCreateModalOpen" @close="closeCreateModal" max-width="lg">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <FileText class="text-indigo-600" size="24" />
                     Buat Tugas Baru
@@ -341,7 +341,7 @@ const deleteAssignment = () => {
                         <InputError class="mt-2" :message="form.errors.description" />
                     </div>
 
-                    <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <div class="mt-6 sm:mt-8 flex flex-wrap justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-100">
                         <SecondaryButton @click="closeCreateModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton
                             :class="{ 'opacity-25': form.processing }"
@@ -357,7 +357,7 @@ const deleteAssignment = () => {
 
         <!-- Delete Confirmation Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
-            <div class="p-6 text-center">
+            <div class="p-4 sm:p-6 text-center">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5 shadow-sm">
                     <AlertCircle class="h-8 w-8 text-red-600" stroke-width="2" />
                 </div>
@@ -368,7 +368,7 @@ const deleteAssignment = () => {
                     Apakah Anda yakin ingin menghapus tugas <span class="font-bold text-gray-900">{{ assignmentToDelete?.title }}</span>? Semua jawaban siswa pada tugas ini akan ikut terhapus.
                 </p>
 
-                <div class="flex justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
                     <SecondaryButton @click="closeDeleteModal"> Batal </SecondaryButton>
                     <DangerButton
                         :class="{ 'opacity-25': form.processing }"

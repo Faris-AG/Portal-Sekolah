@@ -130,10 +130,10 @@ const submitGrade = () => {
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 <!-- Assignment Info Card -->
-                <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-start justify-between relative overflow-hidden">
+                <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-start justify-between relative overflow-hidden">
                     <div class="absolute right-0 top-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/4"></div>
                     <div>
                         <div class="flex items-center gap-2 mb-2 text-sm font-bold text-gray-500 uppercase tracking-wider">
@@ -141,7 +141,7 @@ const submitGrade = () => {
                             <span class="mx-2">&bull;</span>
                             <span class="text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{{ assignment.school_class?.name }}</span>
                         </div>
-                        <h3 class="text-3xl font-bold text-gray-900">{{ assignment.title }}</h3>
+                        <h3 class="text-xl sm:text-3xl font-bold text-gray-900">{{ assignment.title }}</h3>
                         <p class="mt-2 text-gray-600 max-w-2xl">{{ assignment.description }}</p>
                     </div>
                     <div class="mt-6 md:mt-0 bg-orange-50 border border-orange-100 px-5 py-3 rounded-2xl flex flex-col items-center md:items-end min-w-[200px]">
@@ -156,7 +156,7 @@ const submitGrade = () => {
 
                 <!-- Students Table -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-2">
                             <UserCheck class="text-blue-500" size="20" />
                             <h3 class="text-lg font-bold text-gray-900">Daftar Pengumpulan Siswa</h3>
@@ -187,7 +187,7 @@ const submitGrade = () => {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50 text-xs uppercase tracking-wider text-gray-500">
-                                    <th @click="sortBy('student_name')" class="py-4 px-6 font-semibold w-1/4 cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('student_name')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/4 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Nama Siswa
                                             <span v-if="currentSortBy === 'student_name'">
@@ -197,8 +197,8 @@ const submitGrade = () => {
                                             <span v-else class="text-gray-300 opacity-0 group-hover:opacity-100"><ChevronUp size="14" /></span>
                                         </div>
                                     </th>
-                                    <th class="py-4 px-6 font-semibold w-1/6">Status</th>
-                                    <th @click="sortBy('submitted_at')" class="py-4 px-6 font-semibold w-1/4 cursor-pointer hover:bg-gray-100">
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/6 whitespace-nowrap">Status</th>
+                                    <th @click="sortBy('submitted_at')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/4 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Waktu Kumpul
                                             <span v-if="currentSortBy === 'submitted_at'">
@@ -207,7 +207,7 @@ const submitGrade = () => {
                                             </span>
                                         </div>
                                     </th>
-                                    <th @click="sortBy('grade')" class="py-4 px-6 font-semibold w-1/12 text-center cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('grade')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/12 text-center cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1">
                                             Nilai
                                             <span v-if="currentSortBy === 'grade'">
@@ -216,17 +216,17 @@ const submitGrade = () => {
                                             </span>
                                         </div>
                                     </th>
-                                    <th class="py-4 px-6 font-semibold text-right">Aksi</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-right whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-50">
                                 <tr v-for="student in studentsList?.data" :key="student.student_id" class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="py-4 px-6">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                         <div class="font-bold text-gray-900">{{ student.student_name }}</div>
                                         <div class="text-xs text-gray-500 mt-0.5">{{ student.student_email }}</div>
                                     </td>
                                     
-                                    <td class="py-4 px-6">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                         <span v-if="student.submission_id" class="inline-flex items-center gap-1.5 text-green-700 bg-green-50 border border-green-200 px-2.5 py-1 rounded-md text-xs font-bold">
                                             <CheckCircle size="14" /> Sudah Kumpul
                                         </span>
@@ -235,7 +235,7 @@ const submitGrade = () => {
                                         </span>
                                     </td>
 
-                                    <td class="py-4 px-6">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
                                         <div v-if="student.submission_id" class="text-sm font-medium text-gray-600 flex items-center gap-1.5">
                                             <Clock size="14" class="text-gray-400" />
                                             {{ formatDate(student.submitted_at) }}
@@ -243,14 +243,14 @@ const submitGrade = () => {
                                         <span v-else class="text-gray-400 italic text-sm">-</span>
                                     </td>
 
-                                    <td class="py-4 px-6 text-center">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm text-center whitespace-nowrap">
                                         <div v-if="student.grade !== null && student.grade !== undefined" class="font-bold text-lg text-blue-700">
                                             {{ student.grade }}
                                         </div>
                                         <span v-else class="text-gray-400 font-medium">-</span>
                                     </td>
 
-                                    <td class="py-4 px-6 text-right">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm text-right whitespace-nowrap">
                                         <div v-if="student.submission_id" class="flex justify-end gap-2">
                                             <a 
                                                 :href="route('guru.submissions.download', student.submission_id)" 
@@ -262,7 +262,7 @@ const submitGrade = () => {
                                             </a>
                                             <button 
                                                 @click="openGradingModal({ name: student.student_name }, { id: student.submission_id, grade: student.grade, feedback: student.feedback, note: student.note })"
-                                                class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap shrink-0"
                                             >
                                                 <Star size="16" /> Nilai
                                             </button>
@@ -282,7 +282,7 @@ const submitGrade = () => {
                     </div>
                     
                     <!-- Pagination & Per Page -->
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between" v-if="studentsList">
+                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row gap-3 items-center justify-between" v-if="studentsList">
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-500">Tampilkan:</span>
                             <select v-model="currentPerPage" @change="changePerPage" class="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 pl-2 pr-8">
@@ -312,7 +312,7 @@ const submitGrade = () => {
 
         <!-- Grading Modal -->
         <Modal :show="isGradingModalOpen" @close="closeGradingModal" max-width="md">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <Star class="text-blue-600" size="24" />
                     Beri Nilai: {{ selectedStudent?.name }}
@@ -350,7 +350,7 @@ const submitGrade = () => {
                         <InputError class="mt-2" :message="form.errors.feedback" />
                     </div>
 
-                    <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <div class="mt-6 sm:mt-8 flex flex-wrap justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-100">
                         <SecondaryButton @click="closeGradingModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton
                             :class="{ 'opacity-25': form.processing }"

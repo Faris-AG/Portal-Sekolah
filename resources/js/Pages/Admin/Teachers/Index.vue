@@ -148,21 +148,21 @@ const deleteTeacher = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between w-full">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <Users size="24" class="text-indigo-600" /> Manajemen Guru
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <Users size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Manajemen Guru
                 </h2>
                 <button
                     @click="openModal(false)"
-                    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap shrink-0 w-fit"
                 >
                     <Plus size="16" /> Tambah Guru
                 </button>
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 <!-- Search & Filters -->
                 <div class="flex flex-col sm:flex-row gap-4 mb-2">
                     <div class="w-full sm:w-1/3 relative">
@@ -217,7 +217,7 @@ const deleteTeacher = () => {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50">
-                                    <th @click="sortBy('name')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('name')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Nama Guru
                                             <span v-if="currentSortBy === 'name'">
@@ -227,7 +227,7 @@ const deleteTeacher = () => {
                                             <span v-else class="text-gray-300 opacity-0 group-hover:opacity-100"><ChevronUp size="14" /></span>
                                         </div>
                                     </th>
-                                    <th @click="sortBy('email')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('email')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Email
                                             <span v-if="currentSortBy === 'email'">
@@ -236,7 +236,7 @@ const deleteTeacher = () => {
                                             </span>
                                         </div>
                                     </th>
-                                    <th @click="sortBy('subject_id')" class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100">
+                                    <th @click="sortBy('subject_id')" class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 cursor-pointer hover:bg-gray-100 whitespace-nowrap">
                                         <div class="flex items-center gap-1">
                                             Spesialisasi Mapel
                                             <span v-if="currentSortBy === 'subject_id'">
@@ -245,50 +245,50 @@ const deleteTeacher = () => {
                                             </span>
                                         </div>
                                     </th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Status Wali Kelas</th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-right">Aksi</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 whitespace-nowrap">Status Wali Kelas</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 text-right whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 <tr v-for="teacher in teachers.data" :key="teacher.id" class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="py-4 px-6">
-                                        <div class="flex items-center gap-3">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6">
+                                        <div class="flex items-center gap-2 sm:gap-3">
                                             <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
                                                 {{ teacher.name.substring(0, 2).toUpperCase() }}
                                             </div>
                                             <span class="font-medium text-gray-900">{{ teacher.name }}</span>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-6 text-gray-600">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-gray-600 text-xs sm:text-sm whitespace-nowrap">
                                         {{ teacher.email }}
                                     </td>
-                                    <td class="py-4 px-6">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 whitespace-nowrap">
                                         <span v-if="teacher.subject" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                                             {{ teacher.subject.name }}
                                         </span>
                                         <span v-else class="text-gray-400 italic text-sm">Belum ditentukan</span>
                                     </td>
-                                    <td class="py-4 px-6">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                         <span v-if="teacher.wali_class" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
                                             Wali Kelas {{ teacher.wali_class.name }}
                                         </span>
                                         <span v-else class="text-gray-400 text-center">-</span>
                                     </td>
-                                    <td class="py-4 px-6 text-right">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-right whitespace-nowrap">
                                         <div class="flex justify-end gap-2">
                                             <button 
                                                 @click="openModal(true, teacher)"
                                                 class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                 title="Edit"
                                             >
-                                                <Pencil size="18" />
+                                                <Pencil size="16" class="sm:w-[18px] sm:h-[18px]" />
                                             </button>
                                             <button 
                                                 @click="openDeleteModal(teacher)"
                                                 class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                 title="Hapus"
                                             >
-                                                <Trash2 size="18" />
+                                                <Trash2 size="16" class="sm:w-[18px] sm:h-[18px]" />
                                             </button>
                                         </div>
                                     </td>
@@ -303,7 +303,7 @@ const deleteTeacher = () => {
                     </div>
                     
                     <!-- Pagination & Per Page -->
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row gap-3 items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-500">Tampilkan:</span>
                             <select v-model="currentPerPage" @change="changePerPage" class="text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 pl-2 pr-8">
@@ -332,7 +332,7 @@ const deleteTeacher = () => {
 
         <!-- Add/Edit Modal -->
         <Modal :show="isModalOpen" @close="closeModal">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">
                     {{ isEditMode ? 'Edit Guru' : 'Tambah Guru Baru' }}
                 </h2>
@@ -409,7 +409,7 @@ const deleteTeacher = () => {
                         </div>
                     </div>
 
-                    <div class="mt-6 flex justify-end gap-3">
+                    <div class="mt-6 flex flex-wrap justify-end gap-2 sm:gap-3">
                         <SecondaryButton @click="closeModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton
                             :class="{ 'opacity-25': form.processing }"
@@ -424,7 +424,7 @@ const deleteTeacher = () => {
 
         <!-- Delete Confirmation Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
-            <div class="p-6 text-center">
+            <div class="p-4 sm:p-6 text-center">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5 shadow-sm">
                     <AlertCircle class="h-8 w-8 text-red-600" stroke-width="2" />
                 </div>
@@ -432,7 +432,7 @@ const deleteTeacher = () => {
                 <p class="text-base text-gray-500 mb-8">
                     Apakah Anda yakin ingin menghapus guru <span class="font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">{{ teacherToDelete?.name }}</span>? Tindakan ini tidak dapat dibatalkan.
                 </p>
-                <div class="flex justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
                     <SecondaryButton @click="closeDeleteModal"> Batal </SecondaryButton>
                     <DangerButton
                         :class="{ 'opacity-25': form.processing }"

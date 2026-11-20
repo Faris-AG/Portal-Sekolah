@@ -139,15 +139,15 @@ const toggleLock = (topic, e) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex justify-between items-center w-full">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <MessageCircle size="24" class="text-indigo-600" /> Forum Diskusi
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <MessageCircle size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Forum Diskusi
                 </h2>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                     <Link 
                         v-if="!isStudent"
                         :href="route(userRole + '.forum.reports')" 
-                        class="bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 px-3.5 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm"
+                        class="bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors flex items-center gap-1.5 sm:gap-2 shadow-sm whitespace-nowrap shrink-0"
                     >
                         <Flag size="16" class="text-amber-600" />
                         <span>Laporan Pesan</span>
@@ -161,19 +161,19 @@ const toggleLock = (topic, e) => {
                     <button 
                         v-if="filterForm.school_class_id"
                         @click="showNewTopicModal = true" 
-                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:bg-indigo-700 transition-colors flex items-center gap-2 shadow-sm"
+                        class="bg-indigo-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium text-xs sm:text-sm hover:bg-indigo-700 transition-colors flex items-center gap-1.5 sm:gap-2 shadow-sm whitespace-nowrap shrink-0"
                     >
-                        <Plus size="18" /> Buat Topik
+                        <Plus size="16" /> Buat Topik
                     </button>
                 </div>
             </div>
         </template>
 
-        <div class="py-8 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-6 sm:py-8 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Class Selector for Guru/Admin -->
-                <div v-if="!isStudent" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div v-if="!isStudent" class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 mb-4 sm:mb-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <Search size="20" class="text-gray-400" /> Pilih Kelas
                     </h3>
@@ -218,7 +218,7 @@ const toggleLock = (topic, e) => {
 
                 <!-- Forum Topics List -->
                 <div v-if="filterForm.school_class_id" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <div class="p-4 sm:p-6 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                         <h3 class="text-lg font-bold text-gray-900">Diskusi Kelas: {{ currentClass?.name }}</h3>
                         <span class="text-sm font-medium text-gray-500">{{ topics.length }} Topik</span>
                     </div>
@@ -244,7 +244,7 @@ const toggleLock = (topic, e) => {
                         >
                             <Link
                                 :href="route(userRole + '.forum.show', topic.id)"
-                                class="block p-6 hover:bg-gray-50/80 transition-colors"
+                                class="block p-4 sm:p-6 hover:bg-gray-50/80 transition-colors"
                                 :class="{ 'hover:bg-indigo-50/60': topic.is_pinned }"
                             >
                                 <div class="flex items-start gap-4">
@@ -361,8 +361,8 @@ const toggleLock = (topic, e) => {
         <!-- Create Topic Modal -->
         <div v-if="showNewTopicModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <h3 class="text-lg font-bold text-gray-900">Buat Topik Diskusi Baru</h3>
+                <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-base sm:text-lg font-bold text-gray-900">Buat Topik Diskusi Baru</h3>
                     <button @click="showNewTopicModal = false" class="text-gray-400 hover:text-gray-600">
                         <span class="sr-only">Close</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -370,7 +370,7 @@ const toggleLock = (topic, e) => {
                         </svg>
                     </button>
                 </div>
-                <form @submit.prevent="submitTopic" class="p-6 space-y-6">
+                <form @submit.prevent="submitTopic" class="p-4 sm:p-6 space-y-4 sm:space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Judul Diskusi</label>
                         <input 
@@ -391,7 +391,7 @@ const toggleLock = (topic, e) => {
                             placeholder="Tuliskan pertanyaan atau topik yang ingin didiskusikan secara detail..."
                         ></textarea>
                     </div>
-                    <div class="flex justify-end gap-3 pt-2">
+                    <div class="flex flex-wrap justify-end gap-2 sm:gap-3 pt-2">
                         <button 
                             type="button" 
                             @click="showNewTopicModal = false"
@@ -447,7 +447,7 @@ const toggleLock = (topic, e) => {
                         </div>
 
                         <!-- Body -->
-                        <div class="p-6">
+                        <div class="p-4 sm:p-6">
                             <div class="flex items-start gap-4 mb-5">
                                 <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
                                     <Trash2 size="18" class="text-red-500" />
@@ -470,7 +470,7 @@ const toggleLock = (topic, e) => {
                             </div>
 
                             <!-- Actions -->
-                            <div class="flex justify-end gap-3">
+                            <div class="flex flex-wrap justify-end gap-2 sm:gap-3">
                                 <button
                                     type="button"
                                     @click="closeDeleteTopicModal"

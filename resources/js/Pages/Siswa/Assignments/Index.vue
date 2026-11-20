@@ -112,13 +112,13 @@ const hasSubmitted = (assignment) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                <BookOpen size="24" class="text-indigo-600" /> Tugas Belajar
+            <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                <BookOpen size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Tugas Belajar
             </h2>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Search & Filters -->
                 <div class="flex flex-col sm:flex-row gap-4 mb-4">
@@ -152,14 +152,14 @@ const hasSubmitted = (assignment) => {
                 <div class="flex space-x-2 mb-6 overflow-x-auto pb-2 hide-scrollbar">
                     <button 
                         @click="onTabClick('semua')"
-                        class="px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors"
+                        class="px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-colors"
                         :class="activeTab === 'semua' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
                     >
                         Semua Tugas
                     </button>
                     <button 
                         @click="onTabClick('belum')"
-                        class="px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-2"
+                        class="px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-colors flex items-center gap-1.5 sm:gap-2"
                         :class="activeTab === 'belum' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'"
                     >
                         <XCircle size="16" :class="activeTab === 'belum' ? 'text-red-200' : 'text-red-500'" /> Belum Dikumpulkan
@@ -196,7 +196,7 @@ const hasSubmitted = (assignment) => {
                     </div>
 
                     <div v-else class="divide-y divide-gray-100">
-                        <div v-for="item in tugas" :key="item.id" class="p-6 hover:bg-gray-50 transition-colors">
+                        <div v-for="item in tugas" :key="item.id" class="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
                             <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-3">
@@ -244,7 +244,7 @@ const hasSubmitted = (assignment) => {
 
                                     <Link 
                                         :href="route('siswa.assignments.show', item.id)"
-                                        class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-sm"
+                                        class="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm"
                                         :class="hasSubmitted(item) 
                                             ? 'bg-white border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50'
                                             : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md'"

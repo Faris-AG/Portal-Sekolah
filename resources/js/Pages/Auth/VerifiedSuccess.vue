@@ -23,7 +23,7 @@ defineProps({
                 </div>
             </div>
 
-            <h2 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-2">
                 Email Berhasil Diverifikasi!
             </h2>
 
@@ -47,7 +47,7 @@ defineProps({
             <div class="w-full pt-1">
                 <Link
                     :href="route('dashboard')"
-                    class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20 hover:shadow-lg transition-all text-sm"
+                    class="w-full inline-flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-md shadow-indigo-500/20 hover:shadow-lg transition-all text-xs sm:text-sm"
                 >
                     <span>Masuk ke Dashboard</span>
                     <ArrowRight class="w-4 h-4" />

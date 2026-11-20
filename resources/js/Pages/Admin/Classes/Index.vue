@@ -85,31 +85,31 @@ const deleteClass = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between w-full">
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
-                    <LayoutList size="24" class="text-indigo-600" /> Manajemen Kelas
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                <h2 class="text-lg sm:text-xl font-semibold leading-tight text-gray-800 flex items-center gap-2">
+                    <LayoutList size="22" class="text-indigo-600 sm:w-6 sm:h-6" /> Manajemen Kelas
                 </h2>
                 <button
                     @click="openModal(false)"
-                    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap shrink-0 w-fit"
                 >
                     <Plus size="16" /> Tambah Kelas
                 </button>
             </div>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Classes Table -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto w-full">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50">
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Nama Kelas</th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Tingkat</th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100">Wali Kelas</th>
-                                    <th class="py-4 px-6 text-sm font-semibold text-gray-500 border-b border-gray-100 text-right">Aksi</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 whitespace-nowrap">Nama Kelas</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 whitespace-nowrap">Tingkat</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 whitespace-nowrap">Wali Kelas</th>
+                                    <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-gray-500 border-b border-gray-100 text-right whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -120,40 +120,40 @@ const deleteClass = () => {
                                     </td>
                                 </tr>
                                 <tr v-for="cls in classes" :key="cls.id" class="hover:bg-gray-50/50 transition-colors group">
-                                    <td class="py-4 px-6">
-                                        <span class="font-bold text-gray-900 text-base">{{ cls.name }}</span>
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6">
+                                        <span class="font-bold text-gray-900 text-sm sm:text-base">{{ cls.name }}</span>
                                     </td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
-                                            <GraduationCap size="14" /> Kelas {{ cls.grade_level }}
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold bg-indigo-100 text-indigo-800 whitespace-nowrap">
+                                            <GraduationCap size="13" class="sm:w-3.5 sm:h-3.5" /> Kelas {{ cls.grade_level }}
                                         </span>
                                     </td>
-                                    <td class="py-4 px-6">
-                                        <span v-if="cls.wali_kelas" class="font-medium text-gray-700">{{ cls.wali_kelas }}</span>
-                                        <span v-else class="text-gray-400 italic text-sm">Belum ditentukan</span>
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6">
+                                        <span v-if="cls.wali_kelas" class="font-medium text-gray-700 text-xs sm:text-sm">{{ cls.wali_kelas }}</span>
+                                        <span v-else class="text-gray-400 italic text-xs sm:text-sm">Belum ditentukan</span>
                                     </td>
-                                    <td class="py-4 px-6 text-right">
-                                        <div class="flex justify-end gap-2">
+                                    <td class="py-3 px-3 sm:py-4 sm:px-6 text-right whitespace-nowrap">
+                                        <div class="flex justify-end gap-1 sm:gap-2">
                                             <Link
                                                 :href="route('admin.classes.show', cls.id)"
-                                                class="text-indigo-500 hover:text-indigo-700 transition-colors p-2 rounded-lg hover:bg-indigo-50 inline-flex items-center justify-center focus:outline-none"
+                                                class="text-indigo-500 hover:text-indigo-700 transition-colors p-1.5 sm:p-2 rounded-lg hover:bg-indigo-50 inline-flex items-center justify-center focus:outline-none"
                                                 title="Detail"
                                             >
-                                                <LayoutList size="18" />
+                                                <LayoutList size="16" class="sm:w-[18px] sm:h-[18px]" />
                                             </Link>
                                             <button
                                                 @click="openModal(true, cls)"
-                                                class="text-blue-500 hover:text-blue-700 transition-colors p-2 rounded-lg hover:bg-blue-50 inline-flex items-center justify-center focus:outline-none"
+                                                class="text-blue-500 hover:text-blue-700 transition-colors p-1.5 sm:p-2 rounded-lg hover:bg-blue-50 inline-flex items-center justify-center focus:outline-none"
                                                 title="Edit"
                                             >
-                                                <Pencil size="18" />
+                                                <Pencil size="16" class="sm:w-[18px] sm:h-[18px]" />
                                             </button>
                                             <button
                                                 @click="confirmDelete(cls)"
-                                                class="text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50 inline-flex items-center justify-center focus:outline-none"
+                                                class="text-red-500 hover:text-red-700 transition-colors p-1.5 sm:p-2 rounded-lg hover:bg-red-50 inline-flex items-center justify-center focus:outline-none"
                                                 title="Hapus"
                                             >
-                                                <Trash2 size="18" />
+                                                <Trash2 size="16" class="sm:w-[18px] sm:h-[18px]" />
                                             </button>
                                         </div>
                                     </td>
@@ -167,13 +167,13 @@ const deleteClass = () => {
 
         <!-- Add/Edit Class Modal -->
         <Modal :show="isModalOpen" @close="closeModal">
-            <div class="p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <LayoutList class="text-indigo-600" size="24" />
+            <div class="p-4 sm:p-6">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2">
+                    <LayoutList class="text-indigo-600" size="22" />
                     {{ isEditMode ? 'Edit Kelas' : 'Tambah Kelas Baru' }}
                 </h2>
 
-                <form @submit.prevent="submit" class="space-y-5">
+                <form @submit.prevent="submit" class="space-y-4 sm:space-y-5">
                     <div>
                         <InputLabel for="name" value="Nama Kelas" />
                         <TextInput
@@ -215,11 +215,12 @@ const deleteClass = () => {
                         <InputError class="mt-2" :message="form.errors.wali_kelas" />
                     </div>
 
-                    <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        <SecondaryButton @click="closeModal" type="button"> Batal </SecondaryButton>
+                    <div class="mt-6 sm:mt-8 flex flex-wrap justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-100">
+                        <SecondaryButton @click="closeModal" type="button" class="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"> Batal </SecondaryButton>
                         <PrimaryButton
                             :class="{ 'opacity-25': form.processing }"
                             :disabled="form.processing"
+                            class="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
                         >
                             {{ isEditMode ? 'Simpan Perubahan' : 'Tambahkan Kelas' }}
                         </PrimaryButton>
@@ -230,24 +231,24 @@ const deleteClass = () => {
 
         <!-- Delete Confirmation Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
-            <div class="p-6 text-center">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5 shadow-sm">
-                    <Trash2 class="h-8 w-8 text-red-600" stroke-width="2" />
+            <div class="p-4 sm:p-6 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-red-100 mb-4 sm:mb-5 shadow-sm">
+                    <Trash2 class="h-6 w-6 sm:h-8 sm:w-8 text-red-600" stroke-width="2" />
                 </div>
-                <h2 class="text-xl font-bold text-gray-900 mb-2">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">
                     Hapus Data Kelas
                 </h2>
-                <p class="text-base text-gray-500 mb-8">
+                <p class="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8">
                     Apakah Anda yakin ingin menghapus kelas <span class="font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">{{ classToDelete?.name }}</span>? Data ini tidak dapat dikembalikan lagi setelah dihapus.
                 </p>
 
-                <div class="flex justify-center gap-3">
-                    <SecondaryButton @click="closeDeleteModal"> Batal </SecondaryButton>
+                <div class="flex justify-center gap-2 sm:gap-3">
+                    <SecondaryButton @click="closeDeleteModal" class="px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"> Batal </SecondaryButton>
                     <DangerButton
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                         @click="deleteClass"
-                        class="gap-2"
+                        class="gap-1.5 sm:gap-2 px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
                     >
                         Ya, Hapus Kelas
                     </DangerButton>

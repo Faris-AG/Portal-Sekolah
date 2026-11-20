@@ -119,35 +119,35 @@ const deleteAssignment = () => {
             </h2>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
+        <div class="py-6 sm:py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
                 
                 <!-- Welcome Banner -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between">
+                <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900">Selamat Datang, {{ user.name }}</h3>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Selamat Datang, {{ user.name }}</h3>
                         <p class="text-gray-500 mt-1">Semoga hari ini penuh inspirasi dan semangat mengajar.</p>
                     </div>
                 </div>
 
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-5 hover:shadow-md transition-all">
-                        <div class="p-4 bg-indigo-50 text-indigo-600 rounded-2xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 flex items-center space-x-4 sm:space-x-5 hover:shadow-md transition-all">
+                        <div class="p-3 sm:p-4 bg-indigo-50 text-indigo-600 rounded-xl sm:rounded-2xl">
                             <GraduationCap size="32" stroke-width="2" />
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Kelas Diampu</p>
-                            <h4 class="text-3xl font-bold text-gray-900 mt-1">{{ totalClassesTaught }} <span class="text-lg font-medium text-gray-400">kelas</span></h4>
+                            <h4 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{{ totalClassesTaught }} <span class="text-base sm:text-lg font-medium text-gray-400">kelas</span></h4>
                         </div>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-5 hover:shadow-md transition-all">
-                        <div class="p-4 bg-orange-50 text-orange-600 rounded-2xl">
+                    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 flex items-center space-x-4 sm:space-x-5 hover:shadow-md transition-all">
+                        <div class="p-3 sm:p-4 bg-orange-50 text-orange-600 rounded-xl sm:rounded-2xl">
                             <CheckSquare size="32" stroke-width="2" />
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Tugas Aktif</p>
-                            <h4 class="text-3xl font-bold text-gray-900 mt-1">{{ activeAssignments }} <span class="text-lg font-medium text-gray-400">tugas</span></h4>
+                            <h4 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{{ activeAssignments }} <span class="text-base sm:text-lg font-medium text-gray-400">tugas</span></h4>
                         </div>
                     </div>
                 </div>
@@ -186,14 +186,14 @@ const deleteAssignment = () => {
 
                     <!-- Assignments List -->
                     <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full">
-                        <div class="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 rounded-t-2xl">
+                        <div class="p-4 sm:p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/50 rounded-t-2xl">
                             <div class="flex items-center gap-2">
                                 <FileText class="text-blue-600" size="20" />
                                 <h3 class="text-lg font-bold text-gray-900">Daftar Tugas Diberikan</h3>
                             </div>
                             <button
                                 @click="openCreateModal"
-                                class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap shrink-0 w-fit"
                             >
                                 <Plus size="16" /> Buat Tugas Baru
                             </button>
@@ -208,15 +208,15 @@ const deleteAssignment = () => {
                                 <table class="w-full text-left border-collapse">
                                     <thead>
                                         <tr class="bg-white border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
-                                            <th class="py-4 px-6 font-semibold w-1/3">Judul Tugas</th>
-                                            <th class="py-4 px-6 font-semibold w-1/4">Kelas & Mapel</th>
-                                            <th class="py-4 px-6 font-semibold w-1/4">Tenggat Waktu</th>
-                                            <th class="py-4 px-6 font-semibold text-right">Aksi</th>
+                                            <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/3 whitespace-nowrap">Judul Tugas</th>
+                                            <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/4 whitespace-nowrap">Kelas & Mapel</th>
+                                            <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold w-1/4 whitespace-nowrap">Tenggat Waktu</th>
+                                            <th class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-right whitespace-nowrap">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-50">
                                         <tr v-for="assignment in assignments" :key="assignment.id" class="hover:bg-gray-50/50 transition-colors group">
-                                            <td class="py-4 px-6">
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm">
                                                 <div class="font-bold text-gray-900">
                                                     <Link :href="route('guru.assignments.show', assignment.id)" class="hover:text-blue-600 transition-colors">
                                                         {{ assignment.title }}
@@ -224,22 +224,22 @@ const deleteAssignment = () => {
                                                 </div>
                                                 <div class="text-xs text-gray-500 mt-1 line-clamp-1" :title="assignment.description">{{ assignment.description }}</div>
                                             </td>
-                                            <td class="py-4 px-6">
-                                                <div class="text-sm font-bold text-indigo-700 bg-indigo-50 inline-block px-2 py-0.5 rounded border border-indigo-100 mb-1">{{ assignment.school_class?.name }}</div>
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
+                                                <div class="text-xs sm:text-sm font-bold text-indigo-700 bg-indigo-50 inline-block px-2 py-0.5 rounded border border-indigo-100 mb-1">{{ assignment.school_class?.name }}</div>
                                                 <div class="text-xs text-gray-500 font-medium flex items-center gap-1">
                                                     <BookOpen size="12" /> {{ assignment.subject?.name }}
                                                 </div>
                                             </td>
-                                            <td class="py-4 px-6">
-                                                <div class="text-sm text-gray-700 font-medium flex items-center gap-1.5">
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm whitespace-nowrap">
+                                                <div class="text-xs sm:text-sm text-gray-700 font-medium flex items-center gap-1.5">
                                                     <Clock size="14" class="text-orange-500" />
                                                     {{ formatDate(assignment.due_date) }}
                                                 </div>
                                             </td>
-                                            <td class="py-4 px-6 text-right">
+                                            <td class="py-3 px-3 sm:py-4 sm:px-6 text-xs sm:text-sm text-right whitespace-nowrap">
                                                 <button
                                                     @click="openDeleteModal(assignment)"
-                                                    class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 inline-flex items-center justify-center focus:outline-none opacity-0 group-hover:opacity-100"
+                                                    class="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 inline-flex items-center justify-center focus:outline-none opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                                                     title="Hapus"
                                                 >
                                                     <Trash2 size="16" />
@@ -258,7 +258,7 @@ const deleteAssignment = () => {
 
         <!-- Create Assignment Modal -->
         <Modal :show="isCreateModalOpen" @close="closeCreateModal" max-width="lg">
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <FileText class="text-blue-600" size="24" />
                     Buat Tugas Baru
@@ -336,7 +336,7 @@ const deleteAssignment = () => {
                         <InputError class="mt-2" :message="form.errors.description" />
                     </div>
 
-                    <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <div class="mt-6 sm:mt-8 flex flex-wrap justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-100">
                         <SecondaryButton @click="closeCreateModal" type="button"> Batal </SecondaryButton>
                         <PrimaryButton
                             :class="{ 'opacity-25': form.processing }"
@@ -352,7 +352,7 @@ const deleteAssignment = () => {
 
         <!-- Delete Confirmation Modal -->
         <Modal :show="isDeleteModalOpen" @close="closeDeleteModal" max-width="md">
-            <div class="p-6 text-center">
+            <div class="p-4 sm:p-6 text-center">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5 shadow-sm">
                     <AlertCircle class="h-8 w-8 text-red-600" stroke-width="2" />
                 </div>
@@ -363,7 +363,7 @@ const deleteAssignment = () => {
                     Apakah Anda yakin ingin menghapus tugas <span class="font-bold text-gray-900">{{ assignmentToDelete?.title }}</span>? Semua jawaban siswa mungkin akan terpengaruh.
                 </p>
 
-                <div class="flex justify-center gap-3">
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
                     <SecondaryButton @click="closeDeleteModal"> Batal </SecondaryButton>
                     <DangerButton
                         :class="{ 'opacity-25': form.processing }"
